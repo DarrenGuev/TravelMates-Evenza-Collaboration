@@ -9,6 +9,8 @@ Auth::requireAdmin('../frontend/login.php');
 $roomModel = new Room();
 $roomTypeModel = new RoomType();
 $featureModel = new Feature();
+$featureCategoryModel = new FeatureCategory();
+$featureCategories = $featureCategoryModel->getAllOrdered();
 
 $imageUpload = new ImageUpload('assets/');
 
@@ -395,12 +397,11 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                                                                 <label class="form-label text-muted small">Add Custom Feature</label>
                                                                                 <div class="input-group">
                                                                                     <select class="form-select" id="customFeatureCategoryInputEdit<?php echo $row['roomID']; ?>" style="max-width: 140px;">
-                                                                                        <option value="Beds">Beds</option>
-                                                                                        <option value="Rooms">Rooms</option>
-                                                                                        <option value="Bathroom">Bathroom</option>
-                                                                                        <option value="Amenities">Amenities</option>
-                                                                                        <option value="Entertainment">Entertainment</option>
-                                                                                        <option value="General" selected>General</option>
+                                                                                        <?php foreach ($featureCategories as $cat): ?>
+                                                                                            <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>" <?php echo $cat['categoryName'] === 'General' ? 'selected' : ''; ?>>
+                                                                                                <?php echo htmlspecialchars($cat['categoryName']); ?>
+                                                                                            </option>
+                                                                                        <?php endforeach; ?>
                                                                                     </select>
                                                                                     <input type="text" class="form-control" id="customFeatureInputEdit<?php echo $row['roomID']; ?>" placeholder="Enter new feature name">
                                                                                     <button type="button" class="btn btn-outline-success" onclick="addCustomFeature('editRoomFeaturesContainer<?php echo $row['roomID']; ?>', 'customFeatureInputEdit<?php echo $row['roomID']; ?>', 'editFeatures[]', '<?php echo $row['roomID']; ?>', 'customFeatureCategoryInputEdit<?php echo $row['roomID']; ?>')">
@@ -512,12 +513,11 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                                 <label class="form-label text-muted small">Add Custom Feature</label>
                                                 <div class="input-group">
                                                     <select class="form-select" id="customFeatureCategoryInput" style="max-width: 140px;">
-                                                        <option value="Beds">Beds</option>
-                                                        <option value="Rooms">Rooms</option>
-                                                        <option value="Bathroom">Bathroom</option>
-                                                        <option value="Amenities">Amenities</option>
-                                                        <option value="Entertainment">Entertainment</option>
-                                                        <option value="General" selected>General</option>
+                                                        <?php foreach ($featureCategories as $cat): ?>
+                                                            <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>" <?php echo $cat['categoryName'] === 'General' ? 'selected' : ''; ?>>
+                                                                <?php echo htmlspecialchars($cat['categoryName']); ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
                                                     </select>
                                                     <input type="text" class="form-control" id="customFeatureInput" placeholder="Enter new feature name">
                                                     <button type="button" class="btn btn-outline-success" onclick="addCustomFeature('addRoomFeaturesContainer', 'customFeatureInput', 'features[]', null, 'customFeatureCategoryInput')">
@@ -554,7 +554,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                         <label for="newRoomType" class="form-label">Add New Room Type</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="newRoomType" name="newRoomType" 
-                                   placeholder="e.g., Presidential, Economy, VIP" required>
+                                placeholder="e.g., Presidential, Economy, VIP" required>
                             <button type="submit" name="add_room_type" class="btn btn-success">
                                 <i class="bi bi-plus-lg me-1"></i>Add
                             </button>
@@ -601,8 +601,8 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                     <form method="POST" class="d-flex align-items-center gap-2">
                                         <input type="hidden" name="updateRoomTypeID" value="<?php echo $type['roomTypeID']; ?>">
                                         <input type="text" class="form-control form-control-sm" name="updateRoomTypeName" 
-                                               id="editInput<?php echo $type['roomTypeID']; ?>" 
-                                               value="<?php echo htmlspecialchars($type['roomType']); ?>" required>
+                                            id="editInput<?php echo $type['roomTypeID']; ?>" 
+                                            value="<?php echo htmlspecialchars($type['roomType']); ?>" required>
                                         <button type="submit" name="update_room_type" class="btn btn-success btn-sm" title="Save">
                                             <i class="bi bi-check-lg"></i>
                                         </button>
@@ -681,8 +681,8 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text"><i class="bi bi-tag"></i></span>
                                             <input type="text" class="form-control" name="updateRoomTypeName" 
-                                                   id="deleteEditInput<?php echo $type['roomTypeID']; ?>" 
-                                                   value="<?php echo htmlspecialchars($type['roomType']); ?>" required>
+                                                id="deleteEditInput<?php echo $type['roomTypeID']; ?>" 
+                                                value="<?php echo htmlspecialchars($type['roomType']); ?>" required>
                                         </div>
                                         <button type="submit" name="update_room_type" class="btn btn-success btn-sm" title="Save Changes">
                                             <i class="bi bi-check-lg"></i> Save
@@ -712,353 +712,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
 
     <script src="<?php echo JS_URL; ?>/showAlert.js"></script>
     <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
-    <script>
-
-        // Room Type Edit Functions for Add Room Type Modal
-        function enableEditMode(typeId, currentName) {
-            document.getElementById('displayMode' + typeId).classList.add('d-none');
-            document.getElementById('editMode' + typeId).classList.remove('d-none');
-            const input = document.getElementById('editInput' + typeId);
-            input.value = currentName;
-            input.focus();
-            input.select();
-        }
-        
-        function cancelEditMode(typeId) {
-            document.getElementById('displayMode' + typeId).classList.remove('d-none');
-            document.getElementById('editMode' + typeId).classList.add('d-none');
-        }
-        
-        // Room Type Edit Functions for Delete/Edit Room Type Modal
-        function enableDeleteModalEditMode(typeId, currentName) {
-            document.getElementById('deleteDisplayMode' + typeId).classList.add('d-none');
-            document.getElementById('deleteEditMode' + typeId).classList.remove('d-none');
-            const input = document.getElementById('deleteEditInput' + typeId);
-            input.value = currentName;
-            input.focus();
-            input.select();
-        }
-        
-        function cancelDeleteModalEditMode(typeId) {
-            document.getElementById('deleteDisplayMode' + typeId).classList.remove('d-none');
-            document.getElementById('deleteEditMode' + typeId).classList.add('d-none');
-        }
-
-        // Pagination variables
-        const roomsPerPage = 7;
-        let currentPage = 1;
-        let currentFilter = 'All';
-
-        function filterRooms(roomType) {
-            currentFilter = roomType;
-            currentPage = 1; // Reset to first page when filter changes
-            
-            // Update active tab
-            document.querySelectorAll('#roomTabs .nav-link').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            const activeTab = document.querySelector(`#roomTabs [data-room-type="${roomType}"]`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-            }
-
-            applyPagination();
-        }
-
-        function getFilteredRows() {
-            const tableRows = document.querySelectorAll('#roomsTableBody tr');
-            const filtered = [];
-            tableRows.forEach(row => {
-                if (currentFilter === 'All' || row.dataset.roomType === currentFilter) {
-                    filtered.push(row);
-                }
-            });
-            return filtered;
-        }
-
-        function applyPagination() {
-            const filteredRows = getFilteredRows();
-            const totalRooms = filteredRows.length;
-            const totalPages = Math.ceil(totalRooms / roomsPerPage);
-            
-            // Ensure current page is valid
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-            
-            const startIndex = (currentPage - 1) * roomsPerPage;
-            const endIndex = Math.min(startIndex + roomsPerPage, totalRooms);
-            
-            // Hide all rows first
-            document.querySelectorAll('#roomsTableBody tr').forEach(row => {
-                row.style.display = 'none';
-            });
-            
-            // Show only rows for current page
-            filteredRows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.style.display = '';
-                }
-            });
-            
-            // Update pagination info (top and bottom)
-            updatePaginationInfo(startIndex + 1, endIndex, totalRooms);
-            
-            // Generate pagination controls
-            generatePaginationControls(totalPages);
-        }
-
-        function updatePaginationInfo(start, end, total) {
-            // Top pagination info
-            document.getElementById('showingStart').textContent = total > 0 ? start : 0;
-            document.getElementById('showingEnd').textContent = end;
-            document.getElementById('totalRooms').textContent = total;
-            
-            // Bottom pagination info
-            document.getElementById('showingStartBottom').textContent = total > 0 ? start : 0;
-            document.getElementById('showingEndBottom').textContent = end;
-            document.getElementById('totalRoomsBottom').textContent = total;
-        }
-
-        function generatePaginationControls(totalPages) {
-            const paginationHTML = generatePaginationHTML(totalPages);
-            document.getElementById('paginationControls').innerHTML = paginationHTML;
-            document.getElementById('paginationControlsBottom').innerHTML = paginationHTML;
-        }
-
-        function generatePaginationHTML(totalPages) {
-            if (totalPages <= 1) {
-                return '';
-            }
-            
-            let html = '';
-            
-            // Previous button
-            html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;" aria-label="Previous">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>`;
-            
-            // Page numbers
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            // First page and ellipsis
-            if (startPage > 1) {
-                html += `<li class="page-item">
-                    <a class="page-link" href="#" onclick="goToPage(1); return false;">1</a>
-                </li>`;
-                if (startPage > 2) {
-                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-                }
-            }
-            
-            // Page numbers
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
-                </li>`;
-            }
-            
-            // Last page and ellipsis
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-                }
-                html += `<li class="page-item">
-                    <a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a>
-                </li>`;
-            }
-            
-            // Next button
-            html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;" aria-label="Next">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>`;
-            
-            return html;
-        }
-
-        function goToPage(page) {
-            const filteredRows = getFilteredRows();
-            const totalPages = Math.ceil(filteredRows.length / roomsPerPage);
-            
-            if (page < 1 || page > totalPages) return;
-            
-            currentPage = page;
-            applyPagination();
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            filterRooms('All');
-        });
-
-        // Function to add custom feature via AJAX
-        function addCustomFeature(containerId, inputId, checkboxName, roomId = null, categorySelectId = null) {
-            const input = document.getElementById(inputId);
-            const featureName = input.value.trim();
-            let category = 'General';
-            if (categorySelectId) {
-                const categorySelect = document.getElementById(categorySelectId);
-                if (categorySelect) {
-                    category = categorySelect.value;
-                }
-            }
-
-            if (!featureName) {
-                showAlert('Please enter a feature name to continue.', 'warning', 'Feature Name Required');
-                input.focus();
-                return;
-            }
-
-            // Create FormData
-            const formData = new FormData();
-            formData.append('featureName', featureName);
-            formData.append('category', category);
-
-            // Send AJAX request
-            fetch('php/add_feature.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        addFeatureCheckboxToCategory(containerId, data.featureId, data.featureName, data.category, checkboxName, roomId, true);
-                        addFeatureToAllContainers(data.featureId, data.featureName, data.category, containerId);
-                        input.value = '';
-                        showToast('Feature "' + data.featureName + '" added to ' + data.category + ' successfully!', 'success');
-                    } else if (data.error === 'Feature already exists') {
-                        const existingCheckbox = document.querySelector('#' + containerId + ' input[value="' + data.featureId + '"]');
-                        if (existingCheckbox) {
-                            existingCheckbox.checked = true;
-                            showToast('Feature already exists. It has been selected.', 'info');
-                        } else {
-                            addFeatureCheckboxToCategory(containerId, data.featureId, featureName, data.category || 'General', checkboxName, roomId, true);
-                            showToast('Feature already exists. It has been added and selected.', 'info');
-                        }
-                        input.value = '';
-                    } else {
-                        showToast('Error: ' + data.error, 'danger');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred while adding the feature', 'danger');
-                });
-        }
-
-        function addFeatureCheckboxToCategory(containerId, featureId, featureName, category, checkboxName, roomId = null, isChecked = false) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-
-            const existingCheckbox = container.querySelector('input[value="' + featureId + '"]');
-            if (existingCheckbox) {
-                if (isChecked) existingCheckbox.checked = true;
-                return;
-            }
-
-            // Find existing category section by looking for h6 with matching text
-            let categorySection = null;
-            const allSections = container.querySelectorAll('.mb-3');
-            allSections.forEach(section => {
-                const h6 = section.querySelector('h6');
-                if (h6 && h6.textContent.trim() === category) {
-                    categorySection = section;
-                }
-            });
-
-            if (!categorySection) {
-                // Create new category section only if it doesn't exist
-                categorySection = document.createElement('div');
-                categorySection.className = 'col-12 col-md-6 col-lg-4 mb-3';
-                categorySection.innerHTML = `
-                    <h6 class="text-muted border-bottom pb-1"><i class="bi bi-tag-fill me-1"></i>${escapeHtml(category)}</h6>
-                    <div class="row category-features"></div>
-                `;
-                
-                // Insert before the "Add Custom Feature" section if it exists
-                const customFeatureSection = container.querySelector('.border-top.pt-3')?.closest('.row.justify-content-center') 
-                    || container.querySelector('.mt-3.border-top');
-                if (customFeatureSection) {
-                    customFeatureSection.parentNode.insertBefore(categorySection, customFeatureSection);
-                } else {
-                    // For add modal, insert into the row container
-                    const rowContainer = container.querySelector('.row.justify-content-center');
-                    if (rowContainer) {
-                        rowContainer.appendChild(categorySection);
-                    } else {
-                        container.appendChild(categorySection);
-                    }
-                }
-            }
-
-            // Find the features row within the category section
-            let featuresRow = categorySection.querySelector('.category-features') || categorySection.querySelector('.row');
-            if (!featuresRow) {
-                featuresRow = document.createElement('div');
-                featuresRow.className = 'row category-features';
-                categorySection.appendChild(featuresRow);
-            }
-
-            const checkboxId = roomId ? 'editFeature' + roomId + '_' + featureId : 'feature' + featureId;
-            const colDiv = document.createElement('div');
-            colDiv.className = 'col-6';
-            colDiv.innerHTML = `
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="${checkboxName}" value="${featureId}" id="${checkboxId}" ${isChecked ? 'checked' : ''}>
-                    <label class="form-check-label" for="${checkboxId}">
-                        ${escapeHtml(featureName)}
-                    </label>
-                </div>
-            `;
-
-            featuresRow.appendChild(colDiv);
-        }
-
-        function addFeatureCheckbox(containerId, featureId, featureName, checkboxName, roomId = null, isChecked = false) {
-            addFeatureCheckboxToCategory(containerId, featureId, featureName, 'General', checkboxName, roomId, isChecked);
-        }
-
-        function addFeatureToAllContainers(featureId, featureName, category, excludeContainerId) {
-            if (excludeContainerId !== 'addRoomFeaturesContainer') {
-                addFeatureCheckboxToCategory('addRoomFeaturesContainer', featureId, featureName, category, 'features[]', null, false);
-            }
-
-            document.querySelectorAll('[id^="editRoomFeaturesContainer"]').forEach(container => {
-                if (container.id !== excludeContainerId) {
-                    const roomId = container.id.replace('editRoomFeaturesContainer', '');
-                    addFeatureCheckboxToCategory(container.id, featureId, featureName, category, 'editFeatures[]', roomId, false);
-                }
-            });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showToast(message, type = 'success') {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-            alertDiv.style.cssText = 'z-index: 99999; max-width: 600px; width: calc(100% - 2rem);';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.body.appendChild(alertDiv);
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 3000);
-        }
-    </script>
+    <script src="javascript/rooms.js"></script>
 </body>
 
 </html>
