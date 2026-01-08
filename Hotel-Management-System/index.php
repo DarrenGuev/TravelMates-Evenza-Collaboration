@@ -126,15 +126,27 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
                     <div class="col-12 col-md-4">
                         <div class="row g-3">
                             <div class="col-12">
-                                <div class="ratio ratio-4x3 rounded-3 overflow-hidden">
+                                <div class="ratio ratio-4x3 rounded-3 overflow-hidden position-relative gallery-item">
                                     <img src="<?php echo IMAGES_URL; ?>/rooms/special(2).jpeg" alt="Gallery 2"
                                         class="img-fluid object-fit-cover">
+                                    <div class="gallery-overlay">
+                                        <div class="gallery-text">
+                                            <h4>Special Suite</h4>
+                                            <p>Luxury accommodations with premium amenities</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="ratio ratio-4x3 rounded-3 overflow-hidden">
+                                <div class="ratio ratio-4x3 rounded-3 overflow-hidden position-relative gallery-item">
                                     <img src="<?php echo IMAGES_URL; ?>/rooms/family_rooms/F(1).jpg" alt="Gallery 3"
                                         class="img-fluid object-fit-cover">
+                                    <div class="gallery-overlay">
+                                        <div class="gallery-text">
+                                            <h4>Family Room</h4>
+                                            <p>Spacious rooms perfect for families</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -143,21 +155,39 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
                 <!--bottom row with 3 images-->
                 <div class="row g-3 mt-0">
                     <div class="col-12 col-md-4">
-                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden">
+                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden position-relative gallery-item">
                             <img src="<?php echo IMAGES_URL; ?>/rooms/family_rooms/F(3).jpeg" alt="Gallery 4"
                                 class="img-fluid object-fit-cover">
+                            <div class="gallery-overlay">
+                                <div class="gallery-text">
+                                    <h4>Deluxe Family Room</h4>
+                                    <p>Extra space for memorable family moments</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
-                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden">
+                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden position-relative gallery-item">
                             <img src="<?php echo IMAGES_URL; ?>/rooms/single_rooms/(1).jpg" alt="Gallery 5"
                                 class="img-fluid object-fit-cover">
+                            <div class="gallery-overlay">
+                                <div class="gallery-text">
+                                    <h4>Single Room</h4>
+                                    <p>Cozy and comfortable for solo travelers</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
-                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden">
+                        <div class="ratio ratio-4x3 rounded-3 overflow-hidden position-relative gallery-item">
                             <img src="<?php echo IMAGES_URL; ?>/rooms/single_rooms/(2).jpg" alt="Gallery 6"
                                 class="img-fluid object-fit-cover">
+                            <div class="gallery-overlay">
+                                <div class="gallery-text">
+                                    <h4>Premium Single</h4>
+                                    <p>Enhanced comfort with modern amenities</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
