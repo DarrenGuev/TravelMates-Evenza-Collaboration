@@ -261,56 +261,10 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
                                                 </td>
                                             </tr>
 
-                                            <!-- View Log Modal -->
-                                            <div class="modal fade" id="viewLogModal<?php echo $log['id']; ?>" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">SMS Details #<?php echo $log['id']; ?></h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-bold">Phone Number</label>
-                                                                <p class="mb-0"><?php echo htmlspecialchars($log['phone_number']); ?></p>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-bold">Message</label>
-                                                                <p class="mb-0 bg-light p-3 rounded"><?php echo nl2br(htmlspecialchars($log['message'])); ?></p>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-6">
-                                                                    <label class="form-label fw-bold">Status</label>
-                                                                    <p class="mb-0"><span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst($log['status']); ?></span></p>
-                                                                </div>
-                                                                <div class="col-6">
-                                                                    <label class="form-label fw-bold">Direction</label>
-                                                                    <p class="mb-0"><?php echo ucfirst($log['direction']); ?></p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <label class="form-label fw-bold">Date</label>
-                                                                <p class="mb-0"><?php echo date('F d, Y H:i:s', strtotime($log['created_at'])); ?></p>
-                                                            </div>
-                                                            <?php if ($log['booking_id']): ?>
-                                                                <div class="mt-3">
-                                                                    <label class="form-label fw-bold">Booking ID</label>
-                                                                    <p class="mb-0">#<?php echo $log['booking_id']; ?></p>
-                                                                </div>
-                                                            <?php endif; ?>
-                                                            <?php if ($log['status'] === 'failed' && !empty($log['response'])): ?>
-                                                                <div class="mt-3">
-                                                                    <label class="form-label fw-bold">Error Details</label>
-                                                                    <pre class="bg-dark text-light p-2 rounded small"><?php echo htmlspecialchars($log['response']); ?></pre>
-                                                                </div>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <?php 
+                                            // INCLUDED MODAL inside the loop
+                                            include ADMIN_INCLUDES_PATH . '/modals/smsModals/viewLogModal.php'; 
+                                            ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </tbody>
@@ -402,51 +356,8 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
         </div>
     </div>
 
-    <!-- Send SMS Modal -->
-    <div class="modal fade" id="sendSmsModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST" class="needs-validation" novalidate>
-                    <input type="hidden" name="action" value="send_sms">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="bi bi-send me-2"></i>Send SMS</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Select Booking (Optional)</label>
-                            <select name="booking_id" class="form-select" id="bookingSelect">
-                                <option value="">-- Select a booking --</option>
-                                <?php foreach ($bookings as $booking): ?>
-                                    <option value="<?php echo $booking['bookingID']; ?>" data-phone="<?php echo htmlspecialchars($booking['phoneNumber']); ?>">
-                                        #<?php echo $booking['bookingID']; ?> - <?php echo htmlspecialchars($booking['firstName'] . ' ' . $booking['lastName']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                            <input type="text" name="phone_number" id="phoneNumber" class="form-control" placeholder="e.g., 09171234567 or 639171234567" required pattern="\d+">
-                            <div class="invalid-feedback">Please enter a valid phone number (numbers only).</div>
-                            <div class="form-text">Enter Philippine mobile number format</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Message <span class="text-danger">*</span></label>
-                            <textarea name="message" id="smsMessage" class="form-control" rows="4" required placeholder="Enter your message here..."></textarea>
-                            <div class="invalid-feedback">You must enter "Your Booking is Approved."</div>
-                            <div class="form-text"><span id="charCount">0</span> characters</div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send me-1"></i>Send SMS
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Modals included from external file -->
+    <?php include ADMIN_INCLUDES_PATH . '/modals/smsModals/sendSmsModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="javascript/sms.js"></script>
