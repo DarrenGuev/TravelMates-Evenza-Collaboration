@@ -1,0 +1,57 @@
+/* Global Page Loader Styles */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+.page-loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+.page-loader .spinner-border {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-content p {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Logo loader variant */
+.page-loader.with-logo .loader-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}

@@ -1,0 +1,60 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#userInput::placeholder {
+    color: #adb5bd;
+}
+
+#sendBtn:hover {
+    transform: scale(1.1) !important;
+}
+
+#sendBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #6c757d;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#chatbotBtn:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
