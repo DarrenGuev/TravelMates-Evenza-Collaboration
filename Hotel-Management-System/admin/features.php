@@ -433,21 +433,9 @@ $categoryList = $categoryModel->getAllOrdered();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Auto-dismiss alert after 3 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const autoAlert = document.getElementById('autoAlert');
-            if (autoAlert) {
-                setTimeout(function() {
-                    const bsAlert = bootstrap.Alert.getOrCreateInstance(autoAlert);
-                    bsAlert.close();
-                }, 3000);
-            }
-            
-            // Initialize pagination
-            filterFeatures('All');
-        });
 
+    <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
+    <script>
         // Confirm delete functions
         function confirmDeleteFeature(featureId) {
             if (confirm('Are you sure you want to delete this feature?')) {

@@ -1,16 +1,10 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/config.php';
-
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
-
-// Include class autoloader
 require_once CLASSES_PATH . '/autoload.php';
 
-// Load recent customer feedbacks for the homepage
 $feedbackQuery = "SELECT f.userName AS username, f.comments AS userReview, f.rating, r.roomName, f.submittedAt FROM feedback f LEFT JOIN rooms r ON f.roomID = r.roomID ORDER BY f.submittedAt DESC LIMIT 8";
 $feedbackResult = $conn->query($feedbackQuery);
 $reviewsArray = [];
@@ -326,41 +320,7 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
             </div>
       `;
         }
-
-        function changeMode() {
-            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', newTheme);
-
-            document.querySelectorAll('#mode i, #mode-lg i').forEach(icon => {
-                icon.className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-            });
-
-            // Update logos
-            const logoPath = newTheme === 'dark' ? '<?php echo IMAGES_URL; ?>/logo/logoW.png' : '<?php echo IMAGES_URL; ?>/logo/logoB.png';
-            document.querySelectorAll('#site-logo, #footer-logo').forEach(function(logo) {
-                logo.src = logoPath;
-            });
-
-            document.querySelectorAll('.text-black, .text-white').forEach(element => {
-                element.classList.toggle('text-black');
-                element.classList.toggle('text-white');
-            });
-
-            document.querySelectorAll('.btn-outline-dark, .btn-outline-light').forEach(element => {
-                element.classList.toggle('btn-outline-dark');
-                element.classList.toggle('btn-outline-light');
-            });
-
-            const aboutSection = document.querySelector('#about-section');
-            if (aboutSection) {
-                if (isDark) {
-                    aboutSection.style.background = "linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)), url('images/loginRegisterImg/img.jpg') center/cover no-repeat";
-                } else {
-                    aboutSection.style.background = "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), url('images/loginRegisterImg/img.jpg') center/cover no-repeat";
-                }
-            }
-        }
+        window.IMAGES_URL = '<?php echo IMAGES_URL; ?>';
 
         function showFullReview(username, reviewText, rating, date, roomName) {
             document.getElementById('modalReviewUsername').textContent = decodeURIComponent(username);
@@ -377,6 +337,7 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
             document.getElementById('modalReviewStars').innerHTML = starsHtml;
         }
     </script>
+    <script src="<?php echo JS_URL; ?>/changeMode.js"></script>
 
     <!-- Full Review Modal -->
     <div class="modal fade" id="fullReviewModal" tabindex="-1" aria-labelledby="fullReviewModalLabel"

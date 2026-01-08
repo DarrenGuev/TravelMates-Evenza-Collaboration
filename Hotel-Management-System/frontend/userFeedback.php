@@ -65,7 +65,7 @@ unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
     <?php include INCLUDES_PATH . '/navbar.php'; ?>
 
     <div class="container py-5">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center pt-5 mt-5">
             <div class="col-12 col-lg-8">
 
                 <!-- Success/Error Alerts -->
@@ -191,6 +191,7 @@ unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
     <script>
+
         const ratingLabels = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
         document.querySelectorAll('.star-rating input').forEach(input => {
             input.addEventListener('change', function() {
@@ -205,7 +206,9 @@ unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
             const rating = document.querySelector('input[name="rating"]:checked');
             if (!rating) {
                 e.preventDefault();
-                alert('Please select a rating before submitting.');
+                showAlert('Please select a star rating to share your experience with us.', 'warning', 'Rating Required');
+                // Scroll to rating section
+                document.querySelector('.star-rating').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return false;
             }
         });

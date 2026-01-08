@@ -1,25 +1,16 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
-
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
-
-// Include class autoloader
 require_once __DIR__ . '/../classes/autoload.php';
 
-// Check if user is logged in
 Auth::requireLogin('login.php');
-
 $userID = Auth::getUserId();
 
-// Initialize models
 $bookingModel = new Booking();
 $roomModel = new Room();
 
-// Get all bookings for this user
 $bookingsData = $bookingModel->getByUserWithDetails($userID);
 
 function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
@@ -378,26 +369,8 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <script>
-        function changeMode() {
-            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', newTheme);
-            
-            document.querySelectorAll('#mode i, #mode-lg i').forEach(icon => {
-                icon.className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-            });
-
-            // Update logos
-            const logoPath = newTheme === 'dark' ? '<?php echo IMAGES_URL; ?>/logo/logoW.png' : '<?php echo IMAGES_URL; ?>/logo/logoB.png';
-            document.querySelectorAll('#site-logo, #footer-logo').forEach(function (logo) {
-                logo.src = logoPath;
-            });
-
-            document.querySelectorAll('.btn-outline-dark, .btn-outline-light').forEach(element => {
-                element.classList.toggle('btn-outline-dark');
-                element.classList.toggle('btn-outline-light');
-            });
-        }
+        window.IMAGES_URL = '<?php echo IMAGES_URL; ?>';
     </script>
+    <script src="<?php echo JS_URL; ?>/changeMode.js"></script>
 </body>
 </html>
