@@ -13,78 +13,12 @@ require_once CLASSES_PATH . '/autoload.php';
 // Check if user is admin
 Auth::requireAdmin('../frontend/login.php');
 
-// Include SMS Service
-require_once SMS_PATH . '/SmsService.php';
-
-// Include Email Service for booking receipts
-require_once GMAIL_PATH . '/EmailService.php';
-
 // Initialize models
 $bookingModel = new Booking();
 $userModel = new User();
 
-// Handle booking status updates
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookingAction'])) {
-    $bookingID = (int)$_POST['bookingID'];
-    $action = $_POST['bookingAction'];
-    
-    // Get booking details for SMS
-    $bookingDetails = $bookingModel->getById($bookingID);
-    if ($bookingDetails) {
-        // Get user details
-        $bookingUser = $userModel->find($bookingDetails['userID']);
-        $phoneNumber = $bookingDetails['phoneNumber'] ?? '';
-        $checkInDate = $bookingDetails['checkInDate'] ?? '';
-        $customerName = trim(($bookingUser['firstName'] ?? '') . ' ' . ($bookingUser['lastName'] ?? ''));
-        
-        if ($action === 'confirm') {
-            if ($bookingModel->confirm($bookingID)) {
-                // Send SMS notification
-                if (!empty($phoneNumber)) {
-                    try {
-                        $smsService = new SmsService();
-                        $smsService->sendBookingApprovalSms($bookingID, $phoneNumber, $customerName, $checkInDate);
-                    } catch (Exception $e) {
-                        error_log('SMS Error: ' . $e->getMessage());
-                    }
-                }
-                
-                // Send email receipt automatically
-                try {
-                    $emailService = new EmailService();
-                    $bookingData = $bookingModel->getByIdWithDetails($bookingID);
-                    
-                    if ($bookingData && !empty($bookingData['email'])) {
-                        $bookingData['customerName'] = trim($bookingData['firstName'] . ' ' . $bookingData['lastName']);
-                        $emailResult = $emailService->sendBookingReceipt($bookingData);
-                        if (!$emailResult['success']) {
-                            error_log('Email Receipt Error for Booking #' . $bookingID . ': ' . ($emailResult['error'] ?? 'Unknown error'));
-                        }
-                    }
-                } catch (Exception $e) {
-                    error_log('Email Service Error: ' . $e->getMessage());
-                }
-                
-                header("Location: admin.php?success=Booking confirmed successfully!");
-                exit();
-            }
-        } elseif ($action === 'cancel') {
-            if ($bookingModel->cancel($bookingID)) {
-                // Send SMS notification
-                if (!empty($phoneNumber)) {
-                    try {
-                        $smsService = new SmsService();
-                        $smsService->sendBookingCancelledSms($bookingID, $phoneNumber, $customerName);
-                    } catch (Exception $e) {
-                        error_log('SMS Error: ' . $e->getMessage());
-                    }
-                }
-                header("Location: admin.php?success=Booking cancelled successfully!");
-                exit();
-            }
-        }
-    }
-}
+// [MODULARIZED] Booking Action Logic moved to: php/booking_status.php
+// If you have forms posting to this page for validation, update their action to 'php/booking_status.php'
 
 // Fetch customers (users with role 'user')
 $customersData = $userModel->getAllCustomers();
@@ -234,7 +168,7 @@ $countCompleted = count($completedBookingsData);
                     <div class="card-body position-relative">
                         <!-- Table Loader (Hidden by default) -->
                         <div id="table-loader" class="d-none position-absolute top-0 start-0 w-100 h-100 justify-content-center align-items-center" 
-                             style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 10; border-radius: inherit;">
+                            style="background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); z-index: 10; border-radius: inherit;">
                             <div class="text-center">
                                 <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
                                     <span class="visually-hidden">Loading...</span>
@@ -261,73 +195,10 @@ $countCompleted = count($completedBookingsData);
         </div>
     </div>
 
-    <!-- View Booking Modal -->
-    <div class="modal fade" id="viewBookingModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Booking Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="bookingDetailsContent"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Role Modal -->
-    <div class="modal fade" id="editRoleModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit User Role</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="php/update_role.php" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="userID" id="editUserID">
-                        <p>User: <strong id="editUserName"></strong></p>
-                        <div class="mb-3">
-                            <label for="newRole" class="form-label">Select Role</label>
-                            <select class="form-select" name="role" id="newRole" required>
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete User Modal -->
-    <div class="modal fade" id="deleteUserModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="php/delete_user.php" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="userID" id="deleteUserID">
-                        <p>Are you sure you want to delete <strong id="deleteUserName"></strong>?</p>
-                        <p class="text-danger"><i class="bi bi-exclamation-triangle me-1"></i>This action cannot be undone.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Delete User</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Modals -->
+    <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/view_booking.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/edit_role.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/delete_user.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"

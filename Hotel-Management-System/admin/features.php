@@ -208,38 +208,8 @@ $categoryList = $categoryModel->getAllOrdered();
                                                     <input type="hidden" name="deleteFeatureId" value="<?php echo (int)$row['featureId']; ?>">
                                                 </form>
 
-                                                <!-- Edit Feature Modal -->
-                                                <div class="modal fade" id="editFeatureModal<?php echo (int)$row['featureId']; ?>" tabindex="-1" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h1 class="modal-title fs-5"><i class="bi bi-pencil me-2"></i>Edit Feature</h1>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body text-start">
-                                                                <form method="POST">
-                                                                    <input type="hidden" name="featureId" value="<?php echo (int)$row['featureId']; ?>">
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label">Category</label>
-                                                                        <select class="form-select" name="editCategory" required>
-                                                                            <?php foreach ($categoryList as $cat) { ?>
-                                                                                <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>" <?php echo ($row['category'] == $cat['categoryName']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['categoryName']); ?></option>
-                                                                            <?php } ?>
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label">Feature Name</label>
-                                                                        <input class="form-control" type="text" name="editFeatureName" value="<?php echo htmlspecialchars($row['featureName']); ?>" required>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                        <button type="submit" name="update_feature" class="btn btn-primary">Save Changes</button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <!-- INCLUDED MODAL inside loop -->
+                                                <?php include ADMIN_INCLUDES_PATH . '/modals/featureModals/editFeatureModal.php'; ?>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -273,167 +243,12 @@ $categoryList = $categoryModel->getAllOrdered();
         </div>
     </div>
 
-    <!-- Add Feature Modal -->
-    <div class="modal fade" id="addFeatureModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5"><i class="bi bi-plus-circle me-2"></i>Add Feature</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select class="form-select" name="category" required>
-                                <option value="" selected disabled>-- Select Category --</option>
-                                <?php foreach ($categoryList as $cat) { ?>
-                                    <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>"><?php echo htmlspecialchars($cat['categoryName']); ?></option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Feature Name</label>
-                            <input class="form-control" type="text" name="featureName" placeholder="e.g., Free Wi-Fi" required>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" name="add_feature" class="btn btn-primary">Save Feature</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Category Modal -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addCategoryModalLabel">
-                        <i class="bi bi-tags me-2"></i>Add New Category
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label for="newCategory" class="form-label">Category Name</label>
-                            <input type="text" class="form-control" id="newCategory" name="newCategory" 
-                                   placeholder="e.g., Kitchen, Outdoor, Safety" required>
-                            <small class="text-muted">Enter a unique name for the new category</small>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" name="add_category" class="btn btn-success">
-                                <i class="bi bi-plus-lg me-1"></i>Add Category
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Manage Categories Modal -->
-    <div class="modal fade" id="manageCategoriesModal" tabindex="-1" aria-labelledby="manageCategoriesModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h1 class="modal-title fs-5" id="manageCategoriesModalLabel">
-                        <i class="bi bi-pencil-square me-2"></i>Manage Categories
-                    </h1>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-muted mb-3">Edit or delete feature categories. Categories with features cannot be deleted.</p>
-                    
-                    <div class="list-group">
-                        <?php 
-                        // Fetch all categories with feature counts using models
-                        $catListForModal = $categoryModel->getAll('categoryName');
-                        // Count features per category
-                        $featureCounts = [];
-                        foreach ($allFeaturesList as $feat) {
-                            $cat = $feat['category'] ?? 'General';
-                            $featureCounts[$cat] = ($featureCounts[$cat] ?? 0) + 1;
-                        }
-                        
-                        foreach ($catListForModal as $catRow) { 
-                            $catID = $catRow['categoryID'];
-                            $catName = $catRow['categoryName'];
-                            $catCount = $featureCounts[$catName] ?? 0;
-                        ?>
-                            <div class="list-group-item" id="categoryItem<?php echo $catID; ?>">
-                                <!-- Display Mode -->
-                                <div class="d-flex justify-content-between align-items-center" id="displayMode<?php echo $catID; ?>">
-                                    <div>
-                                        <i class="bi bi-tag-fill me-2 text-primary"></i>
-                                        <span id="catName<?php echo $catID; ?>"><?php echo htmlspecialchars($catName); ?></span>
-                                        <span class="badge <?php echo $catCount > 0 ? 'bg-warning text-dark' : 'bg-success'; ?> ms-2">
-                                            <?php echo $catCount; ?> feature(s)
-                                        </span>
-                                    </div>
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-outline-primary" 
-                                                onclick="enableCategoryEditMode('<?php echo $catID; ?>', '<?php echo htmlspecialchars($catName, ENT_QUOTES); ?>')" 
-                                                title="Edit Name">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <?php if ($catCount == 0) { ?>
-                                            <button type="button" class="btn btn-danger" title="Delete" 
-                                                    onclick="confirmDeleteCategory(<?php echo $catID; ?>, '<?php echo htmlspecialchars($catName, ENT_QUOTES); ?>')">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </button>
-                                            <form method="POST" id="deleteCategoryForm<?php echo $catID; ?>" style="display:none;">
-                                                <input type="hidden" name="deleteCategoryID" value="<?php echo $catID; ?>">
-                                                <input type="hidden" name="delete_category" value="1">
-                                            </form>
-                                        <?php } else { ?>
-                                            <button type="button" class="btn btn-outline-secondary" disabled title="Cannot delete - has <?php echo $catCount; ?> feature(s)">
-                                                <i class="bi bi-lock"></i> Protected
-                                            </button>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                                <!-- Edit Mode (hidden by default) -->
-                                <div class="d-none" id="editMode<?php echo $catID; ?>">
-                                    <form method="POST" class="d-flex align-items-center gap-2">
-                                        <input type="hidden" name="categoryID" value="<?php echo $catID; ?>">
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                            <input type="text" class="form-control" name="newCategoryName" 
-                                                   id="editInput<?php echo $catID; ?>" 
-                                                   value="<?php echo htmlspecialchars($catName); ?>" required>
-                                        </div>
-                                        <button type="submit" name="rename_category" class="btn btn-success btn-sm" title="Save Changes">
-                                            <i class="bi bi-check-lg"></i> Save
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                                onclick="cancelCategoryEditMode('<?php echo $catID; ?>')" title="Cancel">
-                                            <i class="bi bi-x-lg"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        <?php } ?>
-                    </div>
-                    
-                    <div class="alert alert-warning small mt-3 mb-0">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
-                        <strong>Note:</strong> Categories with existing features are protected. Reassign or delete those features first to delete a category.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modals included from external files -->
+    <?php include ADMIN_INCLUDES_PATH . '/modals/featureModals/addFeatureModal.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/featureModals/addCategoryModal.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/featureModals/manageCategoriesModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
     <script src="javascript/features.js"></script>
 </body>
