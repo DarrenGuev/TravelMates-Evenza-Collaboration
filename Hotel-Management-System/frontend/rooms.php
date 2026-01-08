@@ -342,7 +342,7 @@ function groupFeaturesByCategory($features) {
 
             <!-- Room Listings -->
             <div class="col-12 col-lg-9 col-xl-10 p-4 mt-5">
-                <h2 class="text-center fw-bold mb-4 fst-italic mt-5">Recommended Rooms</h2>
+                <h2 class="text-center fw-bold mb-4 mt-5">ROOMS</h2>
                 <div class="mx-auto mt-3 mb-5" style="width: 80px; height: 4px; background-color: #FF9900;"></div>
 
                 <?php
@@ -705,6 +705,8 @@ function groupFeaturesByCategory($features) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+
+    <script src="<?php echo JS_URL; ?>/showAlert.js"></script>
     <script>
         function initializeFilters() {
             const roomTypeCheckboxes = document.querySelectorAll('input[id^="type"]');
@@ -1016,7 +1018,7 @@ function groupFeaturesByCategory($features) {
 
         function confirmPayment(roomID) {
             if (!selectedPaymentMethod[roomID]) {
-                alert('Please select a payment method');
+                showAlert('Please choose a payment method to continue with your booking.', 'warning', 'Payment Method Required');
                 return;
             }
 
@@ -1030,7 +1032,8 @@ function groupFeaturesByCategory($features) {
                 const total = document.getElementById('totalPriceInput' + roomID).value;
                 const form = document.getElementById('bookingForm' + roomID);
                 if (!form) {
-                    alert('Booking form not found.');
+                    showAlert('We encountered a technical issue loading the booking form. Please refresh the page and try again.', 'danger', 'Form Error');
+                    if (btn) btn.disabled = false;
                     return;
                 }
 
@@ -1047,12 +1050,19 @@ function groupFeaturesByCategory($features) {
                         const url = '<?php echo BASE_URL; ?>/integrations/paypal/create_order.php?roomID=' + encodeURIComponent(roomID) + '&amount=' + encodeURIComponent(total) + '&bookingID=' + encodeURIComponent(data.bookingID);
                         window.location.href = url;
                     } else {
-                        alert('Failed to create booking before redirecting to PayPal.');
-                        location.reload();
+                        showAlert('Unable to process your booking at this time. Your information has been saved, but we couldn\'t connect to PayPal. Please try again or contact support if the issue persists.', 'danger', 'Booking Failed');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'Confirm Payment';
+                        }
                     }
                 }).catch(err => {
                     console.error(err);
-                    alert('Network error creating booking. Please try again.');
+                    showAlert('A network error occurred while processing your booking. Please check your internet connection and try again. If the problem continues, please contact our support team.', 'danger', 'Connection Error');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Confirm Payment';
+                    }
                 });
                 return;
             }

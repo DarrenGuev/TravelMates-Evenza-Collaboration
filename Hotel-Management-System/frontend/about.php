@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
 ?>
 
@@ -109,41 +108,7 @@ require_once __DIR__ . '/../config.php';
             </div>
       `;
         }
-
-        function changeMode() {
-            const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            const newTheme = isDark ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', newTheme);
-
-            document.querySelectorAll('#mode i, #mode-lg i').forEach(icon => {
-                icon.className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-            });
-
-            // Update logos
-            const logoPath = newTheme === 'dark' ? '<?php echo IMAGES_URL; ?>/logo/logoW.png' : '<?php echo IMAGES_URL; ?>/logo/logoB.png';
-            document.querySelectorAll('#site-logo, #footer-logo').forEach(function (logo) {
-                logo.src = logoPath;
-            });
-
-            document.querySelectorAll('.text-black, .text-white').forEach(element => {
-                element.classList.toggle('text-black');
-                element.classList.toggle('text-white');
-            });
-
-            document.querySelectorAll('.btn-outline-dark, .btn-outline-light').forEach(element => {
-                element.classList.toggle('btn-outline-dark');
-                element.classList.toggle('btn-outline-light');
-            });
-
-            const aboutSection = document.querySelector('#about-section');
-            if (aboutSection) {
-                if (isDark) {
-                    aboutSection.style.background = "linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)), url('../images/loginRegisterImg/img.jpg') center/cover no-repeat";
-                } else {
-                    aboutSection.style.background = "linear-gradient(rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.9)), url('../images/loginRegisterImg/img.jpg') center/cover no-repeat";
-                }
-            }
-        }
+        window.IMAGES_URL = '<?php echo IMAGES_URL; ?>';
 
         function showFullReview(username, reviewText, rating, date, roomName) {
             document.getElementById('modalReviewUsername').textContent = decodeURIComponent(username);
@@ -160,6 +125,7 @@ require_once __DIR__ . '/../config.php';
             document.getElementById('modalReviewStars').innerHTML = starsHtml;
         }
     </script>
+    <script src="<?php echo JS_URL; ?>/changeMode.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>

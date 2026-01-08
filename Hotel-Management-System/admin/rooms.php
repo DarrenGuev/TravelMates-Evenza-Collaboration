@@ -710,17 +710,9 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="<?php echo JS_URL; ?>/showAlert.js"></script>
+    <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
     <script>
-        // Auto-dismiss alert after 3 seconds
-        document.addEventListener('DOMContentLoaded', function() {
-            const autoAlert = document.getElementById('autoAlert');
-            if (autoAlert) {
-                setTimeout(function() {
-                    const bsAlert = bootstrap.Alert.getOrCreateInstance(autoAlert);
-                    bsAlert.close();
-                }, 3000);
-            }
-        });
 
         // Room Type Edit Functions for Add Room Type Modal
         function enableEditMode(typeId, currentName) {
@@ -920,7 +912,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
             }
 
             if (!featureName) {
-                alert('Please enter a feature name');
+                showAlert('Please enter a feature name to continue.', 'warning', 'Feature Name Required');
                 input.focus();
                 return;
             }

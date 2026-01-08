@@ -19,7 +19,7 @@
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="<?php echo BASE_URL; ?>/index.php" class="text-body-secondary text-decoration-none">Home</a></li>
                     <li class="mb-2"><a href="<?php echo FRONTEND_URL; ?>/rooms.php" class="text-body-secondary text-decoration-none">Rooms</a></li>
-                    <li class="mb-2"><a href="<?php echo BASE_URL; ?>/index.php#about" class="text-body-secondary text-decoration-none">About Us</a></li>
+                    <li class="mb-2"><a href="<?php echo FRONTEND_URL; ?>/about.php" class="text-body-secondary text-decoration-none">About Us</a></li>
                 </ul>
             </div>
 
