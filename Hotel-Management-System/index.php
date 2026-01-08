@@ -36,7 +36,38 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
     <?php include CHATBOT_PATH . '/chatbotUI.php'; ?>
     <?php include INCLUDES_PATH . '/navbar.php'; ?>
 
-    <div id="home" class="position-relative d-flex align-items-center justify-content-center"
+    <!-- Mobile Hero (Portrait) - visible on small screens -->
+    <div id="home" class="d-md-none position-relative d-flex align-items-center justify-content-center"
+        style="min-height: 100vh; background: url('images/loginRegisterImg/portraitImg.png') center/cover no-repeat fixed;">
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-black opacity-50"></div>
+        <div class="container position-relative">
+            <div class="row justify-content-center pt-5">
+                <div class="col-12 col-md-10 col-lg-8 text-black text-center">
+                    <h1 class="fw-bold mb-3" style="color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
+                        Welcome to
+                    </h1>
+                    <h1 class="display-1 fw-bold mb-3" style="color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
+                        TravelMates Hotel
+                    </h1>
+                    <p class="lead fs-4 mb-5 opacity-75" style="color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
+                        travelmits // aayusin pa to
+                    </p>
+                    <a href="<?php echo FRONTEND_URL; ?>/rooms.php" class="btn btn-warning btn-lg">Book Now</a>
+                </div>
+            </div>
+        </div>
+        <!-- Scroll Down Indicator -->
+        <a href="#our-rooms" class="scroll-down-anchor">
+            <div class="scroll-down-chevrons">
+                <i class="bi bi-chevron-down"></i>
+                <i class="bi bi-chevron-down"></i>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+        </a>
+    </div>
+
+    <!-- Desktop Hero (Landscape) - visible on medium screens and up -->
+    <div id="home-desktop" class="d-none d-md-flex position-relative align-items-center justify-content-center"
         style="min-height: 100vh; background: url('images/loginRegisterImg/img.jpg') center/cover no-repeat fixed;">
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-black opacity-50"></div>
         <div class="container position-relative">
@@ -55,11 +86,19 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
                 </div>
             </div>
         </div>
+        <!-- Scroll Down Indicator -->
+        <a href="#our-rooms" class="scroll-down-anchor">
+            <div class="scroll-down-chevrons">
+                <i class="bi bi-chevron-down"></i>
+                <i class="bi bi-chevron-down"></i>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+        </a>
     </div>
 
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col" id="our-rooms">
                 <h2 class="mt-5 pt-4 mb-2 text-center fw-bold h-font">OUR ROOMS</h2>
                 <div class="mx-auto mt-3 mb-5" style="width: 80px; height: 4px; background-color: #FF9900;"></div>
             </div>
