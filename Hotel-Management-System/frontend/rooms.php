@@ -373,7 +373,7 @@ function groupFeaturesByCategory($features) {
                                         data-capacity="<?php echo (int) $row['capacity']; ?>"
                                         data-features="<?php echo strtolower(implode(',', $features)); ?>">
                                         <div class="card h-100 bg-transparent shadow rounded-3">
-                                            <div class="ratio ratio-4x3 overflow-hidden rounded-top-3">
+                                            <div class="ratio ratio-4x3 overflow-hidden rounded-top-3 position-relative gallery-item">
                                                 <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
                                                     class="card-img-top img-fluid"
                                                     alt="<?php echo htmlspecialchars($row['roomName']); ?>">
@@ -420,9 +420,11 @@ function groupFeaturesByCategory($features) {
                                                 <div class="modal-body">
                                                     <div class="row">
                                                         <div class="col-12 justify-content-center text-center">
-                                                            <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
-                                                                alt="<?php echo htmlspecialchars($row['roomName']); ?>"
-                                                                class="img-fluid rounded-3 mb-3">
+                                                            <div class="position-relative gallery-item d-inline-block rounded-3 overflow-hidden mb-3">
+                                                                <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
+                                                                    alt="<?php echo htmlspecialchars($row['roomName']); ?>"
+                                                                    class="img-fluid rounded-3">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -480,9 +482,11 @@ function groupFeaturesByCategory($features) {
 
                                                         <div class="row">
                                                             <div class="col-12 col-xl-7 justify-content-center text-center">
-                                                                <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
-                                                                    alt="<?php echo htmlspecialchars($row['roomName']); ?>"
-                                                                    class="img-fluid rounded-3 mb-3">
+                                                                <div class="position-relative gallery-item d-inline-block rounded-3 overflow-hidden mb-3">
+                                                                    <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
+                                                                        alt="<?php echo htmlspecialchars($row['roomName']); ?>"
+                                                                        class="img-fluid rounded-3">
+                                                                </div>
                                                                 <div class="col-12 text-start mx-3">
                                                                     <p class="fw-semibold mb-2">Features:</p>
                                                                     <div class="mb-3">
@@ -494,7 +498,7 @@ function groupFeaturesByCategory($features) {
                                                                         } ?>
                                                                     </div>
                                                                     <p class="small text-secondary"><strong>Type:</strong>
-                                                                        <?php echo htmlspecialchars($row['roomTypeName']); ?> |
+                                                                        <?php echo htmlspecialchars($roomTypeName); ?> |
                                                                         <strong>Capacity:</strong>
                                                                         <?php echo (int) $row['capacity']; ?> Guests |
                                                                         <strong>Price:</strong>

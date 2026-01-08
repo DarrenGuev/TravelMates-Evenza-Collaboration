@@ -12,3 +12,62 @@ body {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* Gallery Overlay Hover Effect */
+.gallery-item {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.gallery-item img {
+    transition: transform 0.4s ease-in-out;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.15);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    z-index: 2;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-text {
+    text-align: center;
+    color: white;
+    padding: 1.5rem;
+    transform: translateY(20px);
+    transition: transform 0.4s ease-in-out;
+}
+
+.gallery-item:hover .gallery-text {
+    transform: translateY(0);
+}
+
+.gallery-text h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.gallery-text p {
+    font-size: 1rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
