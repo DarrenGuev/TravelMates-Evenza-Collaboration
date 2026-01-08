@@ -151,26 +151,26 @@
 .glass {
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     transition: all 0.3s ease;
 }
 
 .glass:hover {
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
-    background: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
 }
 
 [data-bs-theme="dark"] .glass {
-    background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    background: rgba(33, 37, 41, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 [data-bs-theme="dark"] .glass:hover {
-    background: rgba(255, 255, 255, 0.03) !important;
+    background: rgba(33, 37, 41, 0.5) !important;
 }
 
 /* Dropdown Toggle Hover */
