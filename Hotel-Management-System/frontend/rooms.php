@@ -388,7 +388,7 @@ function groupFeaturesByCategory($features) {
                                                 </p>
                                                 <p class="fw-semibold mb-3">₱<?php echo number_format($row['base_price'], 2); ?> /
                                                     night</p>
-                                                <div class="mb-3">
+                                                <div class="mx-2">
                                                     <?php if (!empty($features)) {
                                                         foreach ($features as $featureName) { ?>
                                                             <span
@@ -398,14 +398,16 @@ function groupFeaturesByCategory($features) {
                                                         <span class="text-muted small">No features listed</span>
                                                     <?php } ?>
                                                 </div>
-                                                <div class="d-flex gap-2 flex-wrap">
-                                                    <button class="btn btn-warning" data-bs-toggle="modal"
-                                                        data-bs-target="#bookingModal<?php echo $row['roomID']; ?>">Book
-                                                        Now</button>
-                                                    <button class="btn btn-outline-secondary" data-bs-toggle="modal"
-                                                        data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
-                                                        Details</button>
                                                 </div>
+                                                <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
+                                                    <div class="d-flex gap-2 flex-wrap">
+                                                        <button class="btn btn-warning flex-grow-1" data-bs-toggle="modal"
+                                                            data-bs-target="#bookingModal<?php echo $row['roomID']; ?>">Book
+                                                            Now</button>
+                                                        <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="modal"
+                                                            data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
+                                                            Details</button>
+                                                    </div>
                                             </div>
                                         </div>
                                     </div>
