@@ -195,20 +195,34 @@ class Booking extends Model
 
     /**
      * Cancel booking by user (marks it as user-cancelled)
+     * For confirmed bookings: sets to pending for admin approval
+     * For pending bookings: sets to cancelled immediately
      * 
      * @param int $bookingID Booking ID
+     * @param bool $isConfirmedBooking Whether this is a confirmed booking requiring refund approval
      * @return bool
      */
-    public function cancelByUser(int $bookingID): bool
+    public function cancelByUser(int $bookingID, bool $isConfirmedBooking = false): bool
     {
-        $query = "UPDATE `{$this->table}` 
-                  SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
-                  WHERE bookingID = ?";
-        return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+        if ($isConfirmedBooking) {
+            // For confirmed bookings, set to pending (awaiting refund approval)
+            // Keep payment status as-is until admin processes refund
+            $query = "UPDATE `{$this->table}` 
+                      SET bookingStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                      WHERE bookingID = ?";
+            return $this->executeStatement($query, 'si', [self::STATUS_PENDING, $bookingID]) !== false;
+        } else {
+            // For pending bookings, cancel immediately
+            $query = "UPDATE `{$this->table}` 
+                      SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                      WHERE bookingID = ?";
+            return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+        }
     }
 
     /**
-     * Check if booking was cancelled by user
+     * Check if booking was cancelled by user (completed refund)
+     * Note: Pending refund requests are NOT blocked - admins can still process them
      * 
      * @param int $bookingID Booking ID
      * @return bool
@@ -220,9 +234,11 @@ class Booking extends Model
             return false;
         }
         
-        return $booking['bookingStatus'] === self::STATUS_CANCELLED && 
-               isset($booking['cancelledByUser']) && 
-               $booking['cancelledByUser'] == 1;
+        // Only block editing on COMPLETED refunds (cancelled status)
+        // Pending refund requests can still be processed by admin
+        return isset($booking['cancelledByUser']) && 
+               $booking['cancelledByUser'] == 1 &&
+               $booking['bookingStatus'] === self::STATUS_CANCELLED;
     }
 
     public function complete(int $bookingID): bool

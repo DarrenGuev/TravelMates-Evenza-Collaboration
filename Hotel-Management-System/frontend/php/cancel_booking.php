@@ -17,8 +17,15 @@ Auth::requireLogin('../login.php');
 $bookingModel = new Booking();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $bookingID = (int)$_POST['bookingID'];
+    $bookingID = isset($_POST['bookingID']) ? (int)$_POST['bookingID'] : 0;
+    $refundReason = isset($_POST['refundReason']) ? trim($_POST['refundReason']) : '';
     $userID = Auth::getUserId();
+    
+    // Validate booking ID
+    if ($bookingID <= 0) {
+        header("Location: ../bookings.php?error=Invalid booking ID");
+        exit();
+    }
     
     // Verify the booking belongs to this user
     $booking = $bookingModel->find($bookingID);
@@ -28,16 +35,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    if ($booking['bookingStatus'] !== Booking::STATUS_PENDING) {
-        header("Location: ../bookings.php?error=Only pending bookings can be cancelled");
+    // Check if booking is already cancelled
+    if ($booking['bookingStatus'] === Booking::STATUS_CANCELLED) {
+        header("Location: ../bookings.php?error=This booking is already cancelled");
         exit();
     }
     
-    // Cancel the booking using Booking model (mark as user-cancelled)
-    if ($bookingModel->cancelByUser($bookingID)) {
-        header("Location: ../bookings.php?success=Booking cancelled successfully");
+    // Check if booking is completed
+    if ($booking['bookingStatus'] === Booking::STATUS_COMPLETED) {
+        header("Location: ../bookings.php?error=Completed bookings cannot be cancelled");
+        exit();
+    }
+    
+    $isConfirmedBooking = $booking['bookingStatus'] === Booking::STATUS_CONFIRMED;
+    $isPaidBooking = $booking['paymentStatus'] === Booking::PAYMENT_PAID;
+    
+    // For confirmed/paid bookings, validate refund reason
+    if ($isConfirmedBooking) {
+        if (empty($refundReason)) {
+            header("Location: ../bookings.php?error=Please provide a reason for your refund request");
+            exit();
+        }
+        
+        if (strlen($refundReason) < 10) {
+            header("Location: ../bookings.php?error=Refund reason must be at least 10 characters");
+            exit();
+        }
+        
+        if (strlen($refundReason) > 500) {
+            header("Location: ../bookings.php?error=Refund reason is too long (maximum 500 characters)");
+            exit();
+        }
+        
+        // Sanitize the refund reason
+        $refundReason = htmlspecialchars($refundReason, ENT_QUOTES, 'UTF-8');
+        
+        // Add refund request marker to notes
+        $refundNote = "[REFUND_REQUEST] " . date('Y-m-d H:i:s') . " - " . $refundReason;
+    }
+    
+    // Cancel the booking using appropriate method
+    if ($bookingModel->cancelByUser($bookingID, $isConfirmedBooking)) {
+        // Send appropriate success message
+        if ($isConfirmedBooking) {
+            // Try to send SMS notification to admin (optional - won't fail if SMS service unavailable)
+            try {
+                require_once SMS_PATH . '/SmsService.php';
+                $smsService = new SmsService();
+                
+                // Get user details
+                $userModel = new User();
+                $user = $userModel->find($userID);
+                $userName = trim(($user['firstName'] ?? '') . ' ' . ($user['lastName'] ?? ''));
+                
+                // Log refund request for admin review
+                error_log("REFUND REQUEST: Booking #{$bookingID} by {$userName}. Reason: {$refundReason}");
+            } catch (Exception $e) {
+                // Log error but don't stop the process
+                error_log('Notification Error: ' . $e->getMessage());
+            }
+            
+            header("Location: ../bookings.php?success=Refund request submitted successfully. Your booking is now pending admin approval for refund processing");
+        } else {
+            header("Location: ../bookings.php?success=Booking cancelled successfully");
+        }
     } else {
-        header("Location: ../bookings.php?error=Failed to cancel booking. Please try again.");
+        header("Location: ../bookings.php?error=Failed to cancel booking. Please try again or contact support");
     }
     exit();
 } else {

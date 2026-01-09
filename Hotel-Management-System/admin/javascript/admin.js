@@ -22,15 +22,28 @@ function getBookingActions(booking) {
                 <i class="bi bi-eye"></i>
             </button>`;
 
-    // Check if booking was cancelled by user
-    const isUserCancelled = booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1;
+    // Check if this is a refund request (pending with cancelledByUser flag)
+    const isRefundRequest = booking.bookingStatus === 'pending' && booking.cancelledByUser == 1;
+    
+    // Check if this was refunded (cancelled by user)
+    const isRefunded = booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1;
 
-    if (isUserCancelled) {
-        // Show disabled button with tooltip for user-cancelled bookings
-        actions += `<button class="btn btn-outline-secondary" disabled title="Cannot edit - Cancelled by user">
+    if (isRefunded) {
+        // Show disabled lock icon for refunded bookings
+        actions += `<button class="btn btn-outline-secondary" disabled title="Refunded - Cannot edit">
                 <i class="bi bi-lock"></i>
             </button>`;
+    } else if (isRefundRequest) {
+        // Show approve/reject buttons for refund requests
+        actions += `
+            <button class="btn btn-outline-success" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')" title="Keep Booking (Reject Refund)">
+                <i class="bi bi-check-circle"></i>
+            </button>
+            <button class="btn btn-outline-danger" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')" title="Approve Refund (Cancel Booking)">
+                <i class="bi bi-cash-coin"></i>
+            </button>`;
     } else if (booking.bookingStatus === 'pending') {
+        // Regular pending booking (not refund request)
         actions += `
                 <button type="button" class="btn btn-outline-success" title="Approve" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')">
                     <i class="bi bi-check-lg"></i>
@@ -234,6 +247,31 @@ function viewBooking(bookingID) {
     const checkIn = new Date(booking.checkInDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     const checkOut = new Date(booking.checkOutDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+    // Check if this is a pending refund request
+    const isRefundRequest = booking.bookingStatus === 'pending' && booking.cancelledByUser == 1;
+    
+    // Check if this is a completed refund
+    const isRefunded = booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1;
+    
+    let refundRequestSection = '';
+    if (isRefundRequest) {
+        refundRequestSection = `
+            <div class="alert alert-warning border-warning mt-3">
+                <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle me-2"></i>Refund Request - Pending Approval</h6>
+                <p class="mb-1"><strong>Status:</strong> User has requested a refund for this confirmed booking</p>
+                <p class="mb-0"><strong>Action Required:</strong> Please review and approve/process the refund request</p>
+                <p class="mb-0 mt-2"><small class="text-muted"><i class="bi bi-info-circle me-1"></i>Use the action buttons below to approve (Cancel booking) or keep the booking confirmed</small></p>
+            </div>
+        `;
+    } else if (isRefunded) {
+        refundRequestSection = `
+            <div class="alert alert-info border-info mt-3">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check-circle me-2"></i>Refund Processed</h6>
+                <p class="mb-0"><strong>Status:</strong> This booking was cancelled and refunded as per user request</p>
+            </div>
+        `;
+    }
+
     document.getElementById('bookingDetailsContent').innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
@@ -253,6 +291,7 @@ function viewBooking(bookingID) {
                         <p><strong>Status:</strong> ${getStatusBadge(booking.bookingStatus)}</p>
                     </div>
                 </div>
+                ${refundRequestSection}
             `;
     new bootstrap.Modal(document.getElementById('viewBookingModal')).show();
 }
