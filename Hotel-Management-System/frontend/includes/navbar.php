@@ -5,7 +5,7 @@ $userRole = $isLoggedIn && isset($_SESSION['role']) ? $_SESSION['role'] : '';
 ?>
 <link rel="stylesheet" href="<?php echo CSS_URL; ?>/navbar.css">
 <nav class="navbar navbar-expand-lg fixed-top glass shadow animate-nav border-bottom">
-    <div class="container-fluid px-3 mx-3 px-md-5">
+    <div class="container-fluid ps-4">
         <a class="navbar-brand fw-bold fs-3" href="<?php echo BASE_URL; ?>/index.php"><img id="site-logo"
                 src="<?php echo IMAGES_URL; ?>/logo/logoB.png" style="width: 120px;" alt="logo"></a>
 
