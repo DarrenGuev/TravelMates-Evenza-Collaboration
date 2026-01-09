@@ -187,6 +187,9 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                             <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#receiptModal<?php echo $booking['bookingID']; ?>">
                                                 <i class="bi bi-receipt me-1"></i>View Receipt
                                             </button>
+                                            <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $booking['bookingID']; ?>">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>Request Refund
+                                            </button>
                                         <?php endif; ?>
                                         
                                         <?php if ($booking['bookingStatus'] === 'pending'): ?>
@@ -205,26 +208,77 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                     </div>
                 </div>
 
-                <!-- Cancel Modal -->
-                <?php if ($booking['bookingStatus'] === 'pending'): ?>
+                <!-- Cancel/Refund Modal -->
+                <?php if ($booking['bookingStatus'] === 'pending' || $booking['bookingStatus'] === 'confirmed'): ?>
+                <?php 
+                    $isConfirmed = $booking['bookingStatus'] === 'confirmed';
+                    $isPaid = $booking['paymentStatus'] === 'paid';
+                    $modalHeaderClass = $isConfirmed ? 'bg-warning' : 'bg-danger';
+                    $modalTitle = $isConfirmed ? 'Request Refund' : 'Cancel Booking';
+                    $modalIcon = $isConfirmed ? 'arrow-counterclockwise' : 'exclamation-triangle';
+                    $buttonText = $isConfirmed ? 'Submit Refund Request' : 'Yes, Cancel Booking';
+                    $buttonClass = $isConfirmed ? 'btn-warning' : 'btn-danger';
+                ?>
                 <div class="modal fade" id="cancelModal<?php echo $booking['bookingID']; ?>" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Cancel Booking</h5>
+                            <div class="modal-header <?php echo $modalHeaderClass; ?> text-white">
+                                <h5 class="modal-title"><i class="bi bi-<?php echo $modalIcon; ?> me-2"></i><?php echo $modalTitle; ?></h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
-                            <form action="php/cancel_booking.php" method="POST">
+                            <form action="php/cancel_booking.php" method="POST" onsubmit="return confirmCancellation(this, <?php echo $isConfirmed ? 'true' : 'false'; ?>);">
                                 <div class="modal-body">
                                     <input type="hidden" name="bookingID" value="<?php echo $booking['bookingID']; ?>">
-                                    <p>Are you sure you want to cancel your booking for <strong><?php echo htmlspecialchars($booking['roomName']); ?></strong>?</p>
-                                    <div class="alert alert-warning">
-                                        <i class="bi bi-info-circle me-1"></i>This action cannot be undone.
-                                    </div>
+                                    
+                                    <?php if ($isConfirmed): ?>
+                                        <p>You are requesting a refund for your booking:</p>
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                <strong><?php echo htmlspecialchars($booking['roomName']); ?></strong><br>
+                                                <small class="text-muted">
+                                                    Check-in: <?php echo date('M d, Y', strtotime($booking['checkInDate'])); ?><br>
+                                                    Total Paid: ₱<?php echo number_format($booking['totalPrice'], 2); ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="refundReason<?php echo $booking['bookingID']; ?>" class="form-label">
+                                                <strong>Reason for Refund Request <span class="text-danger">*</span></strong>
+                                            </label>
+                                            <textarea class="form-control" 
+                                                      id="refundReason<?php echo $booking['bookingID']; ?>" 
+                                                      name="refundReason" 
+                                                      rows="4" 
+                                                      required 
+                                                      placeholder="Please explain why you need to cancel this confirmed booking..."
+                                                      minlength="10"
+                                                      maxlength="500"></textarea>
+                                            <small class="text-muted">Minimum 10 characters. This will be reviewed by our admin team.</small>
+                                        </div>
+                                        
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            <strong>Please note:</strong>
+                                            <ul class="mb-0 mt-2 small">
+                                                <li>Your refund request will be reviewed by our admin team</li>
+                                                <li>Processing time: 3-5 business days</li>
+                                                <li>Refund will be processed to your original payment method</li>
+                                                <li>You will be notified via email once processed</li>
+                                            </ul>
+                                        </div>
+                                    <?php else: ?>
+                                        <p>Are you sure you want to cancel your booking for <strong><?php echo htmlspecialchars($booking['roomName']); ?></strong>?</p>
+                                        <div class="alert alert-warning">
+                                            <i class="bi bi-info-circle me-1"></i>This action cannot be undone.
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
-                                    <button type="submit" class="btn btn-danger">Yes, Cancel Booking</button>
+                                    <button type="submit" class="btn btn-secondary <?php echo $buttonClass; ?>">
+                                        <i class="bi bi-<?php echo $isConfirmed ? 'send' : 'x-circle'; ?> me-1"></i><?php echo $buttonText; ?>
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -370,6 +424,39 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
         crossorigin="anonymous"></script>
     <script>
         window.IMAGES_URL = '<?php echo IMAGES_URL; ?>';
+        
+        // Client-side validation for refund request
+        function confirmCancellation(form, isRefundRequest) {
+            if (isRefundRequest) {
+                const reasonTextarea = form.querySelector('textarea[name="refundReason"]');
+                if (!reasonTextarea) return true;
+                
+                const reason = reasonTextarea.value.trim();
+                
+                // Validate minimum length
+                if (reason.length < 10) {
+                    alert('Please provide a detailed reason for your refund request (minimum 10 characters).');
+                    reasonTextarea.focus();
+                    return false;
+                }
+                
+                // Validate maximum length
+                if (reason.length > 500) {
+                    alert('Reason is too long. Please keep it under 500 characters.');
+                    reasonTextarea.focus();
+                    return false;
+                }
+                
+                // Show loading indicator
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting...';
+                }
+            }
+            
+            return true;
+        }
     </script>
     <script src="<?php echo JS_URL; ?>/changeMode.js"></script>
 </body>

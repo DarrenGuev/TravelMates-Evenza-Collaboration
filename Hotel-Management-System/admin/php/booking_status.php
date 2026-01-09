@@ -1,4 +1,7 @@
 <?php
+// Start output buffering to prevent any unwanted output before JSON response
+ob_start();
+
 session_start();
 
 // Include configuration file
@@ -12,6 +15,9 @@ require_once CLASSES_PATH . '/autoload.php';
 
 // Helper function to send JSON response
 function sendJsonResponse($success, $message) {
+    // Clear any output that might have been generated
+    if (ob_get_length()) ob_clean();
+    
     header('Content-Type: application/json');
     echo json_encode(['success' => $success, 'message' => $message]);
     exit();
@@ -49,6 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bookingDetails = $bookingModel->find($bookingID);
     if (!$bookingDetails) {
         sendJsonResponse(false, 'Booking not found');
+    }
+
+    // Check if booking was cancelled by user - prevent admin edits
+    if ($bookingModel->isCancelledByUser($bookingID)) {
+        sendJsonResponse(false, 'Cannot modify booking - This booking was cancelled by the user');
     }
 
     // Get user details

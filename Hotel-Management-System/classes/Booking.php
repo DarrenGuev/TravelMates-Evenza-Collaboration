@@ -193,6 +193,55 @@ class Booking extends Model
         return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
     }
 
+    /**
+     * Cancel booking by user (marks it as user-cancelled)
+     * For confirmed bookings: sets to pending for admin approval
+     * For pending bookings: sets to cancelled immediately
+     * 
+     * @param int $bookingID Booking ID
+     * @param bool $isConfirmedBooking Whether this is a confirmed booking requiring refund approval
+     * @param string $refundReason Optional refund reason from user
+     * @return bool
+     */
+    public function cancelByUser(int $bookingID, bool $isConfirmedBooking = false, string $refundReason = ''): bool
+    {
+        if ($isConfirmedBooking) {
+            // For confirmed bookings, set to pending (awaiting refund approval)
+            // Store refund reason for admin review
+            $query = "UPDATE `{$this->table}` 
+                      SET bookingStatus = ?, cancelledByUser = 1, refundReason = ?, updatedAt = NOW() 
+                      WHERE bookingID = ?";
+            return $this->executeStatement($query, 'ssi', [self::STATUS_PENDING, $refundReason, $bookingID]) !== false;
+        } else {
+            // For pending bookings, cancel immediately
+            $query = "UPDATE `{$this->table}` 
+                      SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                      WHERE bookingID = ?";
+            return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+        }
+    }
+
+    /**
+     * Check if booking was cancelled by user (completed refund)
+     * Note: Pending refund requests are NOT blocked - admins can still process them
+     * 
+     * @param int $bookingID Booking ID
+     * @return bool
+     */
+    public function isCancelledByUser(int $bookingID): bool
+    {
+        $booking = $this->find($bookingID);
+        if (!$booking) {
+            return false;
+        }
+        
+        // Only block editing on COMPLETED refunds (cancelled status)
+        // Pending refund requests can still be processed by admin
+        return isset($booking['cancelledByUser']) && 
+               $booking['cancelledByUser'] == 1 &&
+               $booking['bookingStatus'] === self::STATUS_CANCELLED;
+    }
+
     public function complete(int $bookingID): bool
     {
         return $this->updateStatus($bookingID, self::STATUS_COMPLETED);

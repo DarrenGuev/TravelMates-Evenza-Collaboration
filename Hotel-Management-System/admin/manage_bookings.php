@@ -171,6 +171,17 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
                                                     'refunded' => 'bg-secondary',
                                                     default => 'bg-secondary'
                                                 };
+                                                
+                                                // Check if this is a refund request
+                                                // Pending status with cancelledByUser flag means awaiting refund approval
+                                                $isRefundRequest = $booking['bookingStatus'] === 'pending' && 
+                                                                   isset($booking['cancelledByUser']) && 
+                                                                   $booking['cancelledByUser'] == 1;
+                                                
+                                                // Check if this is a completed refund (cancelled by user)
+                                                $isRefunded = $booking['bookingStatus'] === 'cancelled' && 
+                                                              isset($booking['cancelledByUser']) && 
+                                                              $booking['cancelledByUser'] == 1;
                                             ?>
                                             <tr>
                                                 <td><strong>#<?php echo $booking['bookingID']; ?></strong></td>
@@ -216,9 +227,22 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
                                                     </small>
                                                 </td>
                                                 <td>
-                                                    <span class="badge <?php echo $statusBadgeClass; ?>">
-                                                        <?php echo ucfirst($booking['bookingStatus']); ?>
-                                                    </span>
+                                                    <?php if ($isRefundRequest): ?>
+                                                        <button class="badge bg-warning text-dark border-0" 
+                                                                onclick="processRefund(<?php echo $booking['bookingID']; ?>)"
+                                                                title="Click to approve refund and cancel booking"
+                                                                style="cursor: pointer;">
+                                                            <i class="bi bi-clock-history me-1"></i>Process Refund
+                                                        </button>
+                                                    <?php elseif ($isRefunded): ?>
+                                                        <span class="badge bg-danger">
+                                                            <i class="bi bi-x-circle me-1"></i>Refunded
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="badge <?php echo $statusBadgeClass; ?>">
+                                                            <?php echo ucfirst($booking['bookingStatus']); ?>
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
@@ -333,6 +357,58 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
     <script>
         const allBookingsData = <?php echo json_encode($bookingsData); ?>;
         
+        // Process refund function
+        function processRefund(bookingID) {
+            // Find booking data from allBookingsData
+            const booking = allBookingsData.find(b => b.bookingID == bookingID);
+            const refundReason = booking && booking.refundReason ? booking.refundReason : 'No reason provided';
+            
+            // Store booking info for confirmation
+            document.getElementById('bookingStatusBookingID').value = bookingID;
+            document.getElementById('bookingStatusAction').value = 'refund';
+            
+            // Update modal appearance for refund processing
+            const modalHeader = document.getElementById('bookingStatusModalHeader');
+            const modalIcon = document.getElementById('bookingStatusIcon');
+            const modalMessage = document.getElementById('bookingStatusMessage');
+            const confirmBtn = document.getElementById('bookingStatusConfirmBtn');
+            
+            modalHeader.className = 'modal-header bg-warning text-dark';
+            modalIcon.className = 'bi bi-cash-coin text-warning';
+            modalMessage.innerHTML = `Process this refund request?<br><br>
+                <div class="alert alert-warning mb-3" style="text-align: left;">
+                    <strong><i class="bi bi-chat-left-quote me-2"></i>Reason for Refund Request:</strong><br>
+                    <em>${refundReason}</em>
+                </div>
+                <small class="text-muted">This will:<br>• Change booking status to <strong>CANCELLED</strong><br>• Change payment status to <strong>REFUNDED</strong></small>`;
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.textContent = 'Process Refund';
+            
+            // Show confirmation modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookingStatusModal')) || 
+                         new bootstrap.Modal(document.getElementById('bookingStatusModal'));
+            modal.show();
+        }
+        
+        // Check if booking was cancelled by user and disable edit buttons (only for completed refunds)
+        document.addEventListener('DOMContentLoaded', function() {
+            allBookingsData.forEach(booking => {
+                // Only disable edit button for COMPLETED refunds (cancelled status)
+                // Pending refund requests should still be editable
+                if (booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1) {
+                    // Find and disable edit button for this booking
+                    const editBtn = document.querySelector(`button[data-bs-target="#editModal${booking.bookingID}"]`);
+                    if (editBtn) {
+                        editBtn.disabled = true;
+                        editBtn.classList.remove('btn-outline-secondary');
+                        editBtn.classList.add('btn-outline-secondary', 'opacity-50');
+                        editBtn.title = 'Cannot edit - Refunded by user';
+                        editBtn.innerHTML = '<i class="bi bi-lock"></i>';
+                    }
+                }
+            });
+        });
+        
         function submitEditForm(form) {
             const formData = new FormData(form);
             // Close the modal first
@@ -363,5 +439,64 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
         }
     </script>
     <script src="javascript/admin.js"></script>
+    
+    <script>
+        // Override confirmBookingStatusChange AFTER admin.js loads to handle refund action
+        confirmBookingStatusChange = function() {
+            const bookingID = document.getElementById('bookingStatusBookingID').value;
+            const action = document.getElementById('bookingStatusAction').value;
+            
+            // Hide confirmation modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookingStatusModal'));
+            if (modal) modal.hide();
+            
+            // Show loading state immediately
+            showBookingLoading(action === 'refund' ? 'refund' : action);
+
+            const formData = new FormData();
+            formData.append('bookingID', bookingID);
+            
+            if (action === 'refund') {
+                // For refund, we edit the status
+                formData.append('bookingAction', 'edit');
+                formData.append('newStatus', 'cancelled');
+                formData.append('newPaymentStatus', 'refunded');
+            } else {
+                // For regular actions (confirm, cancel, complete)
+                formData.append('bookingAction', action);
+            }
+
+            fetch('php/booking_status.php', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.text();
+            })
+            .then(text => {
+                console.log('Raw response:', text);
+                try {
+                    const data = JSON.parse(text);
+                    showBookingResult(data.success, data.message);
+                    if (data.success) {
+                        const resultModalEl = document.getElementById('bookingResultModal');
+                        if (resultModalEl) resultModalEl.setAttribute('data-reload', 'true');
+                    }
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    console.error('Response text:', text);
+                    showBookingResult(false, 'Error parsing server response.');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                showBookingResult(false, 'An error occurred: ' + error.message);
+            });
+        };
+    </script>
 </body>
 </html>
