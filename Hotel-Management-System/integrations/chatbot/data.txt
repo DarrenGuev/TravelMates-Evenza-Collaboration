@@ -3,6 +3,9 @@ TravelMates Hotel - Quick Info
 ABOUT:
 Luxury hotel with affordable rates and world-class facilities. TravelMates is a web-based booking system designed to automate and simplify hotel operations, particularly room reservations. The system allows customers to view available rooms, make bookings online, and receive booking confirmations, while enabling hotel staff and administrators to manage reservations efficiently.
 
+OUR COLLABORATION:
+TravelMates partners with EVENZA, a premium event reservation and ticketing platform focused on delivering seamless and well-organized hotel-hosted events. EVENZA helps us connect guests with carefully curated experiences through a secure and user-friendly digital system, combining modern technology with professional event management.
+
 CONTACT & LOCATION:
 - Phone: 09924701341
 - Email: matestravel4@gmail.com
@@ -15,25 +18,326 @@ BOOKINGS:
 - Cancellation: Free up to 24 hours before arrival for refundable rates.
 
 CHECK-IN/OUT:
-- Check-in: 3:00 PM
-- Check-out: 11:00 AM
 - Early/Late options: Subject to availability and fees.
 - Required: Valid ID and deposit.
 
-ROOMS:
-- Standard: Queen/Twin beds, Wi-Fi, TV.
-- Deluxe: King bed, View, Minibar.
-- Suite: King bed, Living area, Premium amenities.
-- Accessible: Available upon request.
+ROOM CATEGORIES:
 
-AMENITIES:
-- Free Wi-Fi
-- 24/7 Front Desk
-- Fitness & Business Centers
-- Parking (Valet/Self)
-- Laundry Service
+1. BASIC ROOMS
+   - Description: Comfortable and affordable accommodation perfect for budget-conscious travelers
+   - Bed Configuration: Queen or Twin beds
+   - Guest Capacity: Up to 2 guests
+   - Starting Price: ₱1,389 per night (prices may vary by specific room and season)
+   - Ideal For: Solo travelers, couples, short business trips
 
-DINING:
-- The Compass Restaurant: Breakfast 6:30-10:30 AM.
-- Room Service: 7:00 AM – 10:00 PM.
-- 24/7 Pantry.
+2. FAMILY ROOMS
+   - Description: Spacious accommodations designed for families
+   - Bed Configuration: Multiple beds to accommodate families
+   - Guest Capacity: Up to 4-5 guests
+   - Features: Extra space, family-friendly amenities
+   - Pricing: Starting from ₱2,500 per night (varies by room size)
+   - Ideal For: Families with children, group travelers
+
+3. DELUXE ROOMS
+   - Description: Enhanced comfort with premium amenities
+   - Bed Configuration: King bed
+   - Guest Capacity: Up to 2 guests
+   - Special Features: Room with view, Minibar, enhanced bathroom amenities
+   - Pricing: Starting from ₱3,000 per night
+   - Ideal For: Couples, romantic getaways, guests seeking extra comfort
+
+4. SUITE ROOMS
+   - Description: Luxury accommodations with separate living areas
+   - Bed Configuration: King bed
+   - Guest Capacity: Up to 3 guests
+   - Special Features: Living area, Premium amenities, work desk, additional space
+   - Pricing: Starting from ₱4,500 per night
+   - Ideal For: Extended stays, business travelers, special occasions
+
+5. SPECIAL ROOMS
+   - Description: Unique rooms with distinctive features
+   - Custom configurations available
+   - Various capacities depending on specific room
+   - Premium features and exclusive amenities
+
+ROOM PRICING RANGE:
+- Budget Options: ₱1,000 - ₱2,000 per night
+- Mid-Range: ₱2,000 - ₱5,000 per night
+- Premium: ₱5,000 - ₱20,000 per night
+Note: Prices vary by room type, season, and booking duration. Special rates may apply for extended stays.
+
+
+STANDARD ROOM AMENITIES:
+- Free Wi-Fi (high-speed internet access)
+- Flat-screen TV with cable channels
+- Air conditioning/climate control
+- Private bathroom with hot/cold shower
+- Fresh linens and towels
+- Complimentary toiletries
+- In-room safe
+- Work desk and chair
+- Telephone
+- Daily housekeeping
+
+ENHANCED FEATURES (Select Rooms):
+Depending on room type, the following features may be included:
+- Minibar or refrigerator
+- Coffee/tea making facilities
+- Bathtub
+- Room with scenic view
+- Balcony or terrace
+- Sitting area
+- Premium bedding
+- Enhanced bathroom amenities
+- Bathrobes and slippers
+
+ROOM CATEGORIES BY FEATURES:
+Features are organized into categories including:
+- Bedroom Features: Bed types, bedding quality, sleeping arrangements
+- Bathroom Features: Shower, bathtub, toiletries, towels
+- Entertainment: TV, Wi-Fi, in-room entertainment
+- Comfort: Climate control, seating areas, workspaces
+- Refreshments: Minibar, coffee/tea facilities
+- Views: Garden view, city view, special views
+
+DINING OPTIONS:
+- The Compass Restaurant: 
+  * Breakfast Service: 6:30 AM - 10:30 AM
+  * Full dining menu available
+  * Local and international cuisine
+- Room Service: 7:00 AM – 10:00 PM
+- 24/7 Pantry: Snacks and refreshments available around the clock
+- Coffee Shop/Café (if available)
+
+
+ADDITIONAL FACILITIES:
+- Parking: Both valet and self-parking options available
+- Laundry Service: Professional cleaning and pressing
+- Dry Cleaning Service
+- Gift Shop/Convenience Store
+- ATM/Banking Services (if available)
+- Safety Deposit Boxes
+- Security: 24/7 security personnel and CCTV monitoring
+
+
+HOW TO BOOK:
+- Visit our website and browse available rooms
+- Select your desired room type
+- Choose check-in and check-out dates
+- Provide guest information (name, email, phone number)
+- Select number of guests
+- Complete payment process
+- Receive instant booking confirmation via email
+
+BOOKING REQUIREMENTS:
+- Full Name (First and Last Name)
+- Valid Email Address
+- Phone Number
+- Check-in Date
+- Check-out Date
+- Number of Guests
+- Payment Method
+- Valid ID for check-in
+
+GUEST CAPACITY:
+Rooms accommodate various guest capacities:
+- 1 Guest: Available in all room types
+- 2 Guests: Standard capacity for most rooms
+- 3 Guests: Available in larger rooms
+- 4 Guests: Family rooms and suites
+- 5+ Guests: Special family rooms and multi-room bookings
+
+BOOKING CONFIRMATION:
+- Instant confirmation for online bookings
+- Email confirmation sent immediately with booking details
+- Booking ID/reference number provided
+- Receipt issued upon payment completion
+
+ACCEPTED PAYMENT METHODS:
+- PayPal: Primary online payment method(card not available)
+  * Secure payment processing
+  * Immediate confirmation
+  * Multiple currency support
+  * PayPal account through PayPal
+
+PAYMENT PROCESS:
+1. Review booking summary and total price
+2. Click "Proceed to Payment"
+3. Redirected to secure PayPal payment gateway
+4. Complete payment using PayPal account or card
+5. Return to confirmation page
+6. Receive email receipt and booking confirmation
+
+PAYMENT STATUS:
+- Payment Pending: Initial booking stage, payment not yet completed
+- Payment Paid: Successfully processed payment
+- Payment Refunded: For cancelled bookings (subject to cancellation policy)
+
+PRICING DETAILS:
+- Room rates displayed in Philippine Peso (₱)
+- Price includes: Base room rate per night
+- Price may vary by: Season, room availability, length of stay
+- Additional charges may apply for: Extra guests, special services, upgrades
+- Total price calculated based on: Number of nights × Room rate
+- Taxes and service charges may be added at checkout
+
+REFUND PROCESS:
+- Refund returned to original payment method
+- Refund status: "refunded" will appear in booking details
+- Email notification sent when refund is processed
+
+HOW TO CANCEL:
+1. Log in to your account
+2. Go to "My Bookings" section
+3. Select the booking you wish to cancel
+4. Click "Cancel Booking" button
+5. Confirm cancellation
+6. Receive cancellation confirmation email
+
+EXTENDED STAY:
+- Contact front desk to extend your reservation
+- Subject to room availability
+- Additional nights charged at current rates
+
+PROPERTY POLICIES:
+- Smoking: Designated areas only (non-smoking rooms available)
+- Pets: Please inquire about pet policy
+- Visitors: Guest policy applies
+- Quiet Hours: Respect other guests
+- Damage: Guests responsible for damages
+
+FAMILY SERVICES:
+- Cribs/Baby cots available (upon request)
+- Connecting rooms (subject to availability)
+- Family-friendly amenities
+- Children's services
+
+SHARE YOUR EXPERIENCE:
+We value guest feedback and continuously strive to improve our services.
+
+HOW TO LEAVE FEEDBACK:
+- Visit our "Customer Reviews" page on the website
+- Share your experience after your stay
+- Rate your stay (1-5 stars)
+- Provide detailed comments
+- Mention specific room if desired
+
+FEEDBACK FORM:
+- Your Name (Required)
+- Email Address
+- Rating (1-5 stars)
+- Room Type (Optional)
+- Detailed Comments
+- Submit feedback through our online form
+
+YOUR FEEDBACK HELPS:
+- Improve our services
+- Recognize excellent staff
+- Address any issues
+- Help other guests make informed decisions
+
+REVIEW POLICY:
+- All reviews are monitored
+- Genuine feedback appreciated
+- Used for service improvement
+
+CHATBOT ASSISTANCE:
+- 24/7 automated help
+- Instant answers to common questions
+- Booking assistance
+- Policy information
+- Contact information
+
+GUEST SAFETY:
+- 24/7 Security Personnel
+- CCTV Monitoring
+- Secure key card access
+- In-room safes
+- Emergency procedures posted
+- Fire safety systems
+- First aid available
+
+HEALTH & HYGIENE:
+- Daily housekeeping
+- High sanitation standards
+- Clean linens for every guest
+- Sanitized rooms
+- Professional cleaning protocols
+
+SECURITY MEASURES:
+- Verified guest check-in
+- Secure payment processing
+- Privacy protection
+- Safe environment
+
+CANCELLATION POLICY:
+- Confirmed or completed bookings cannot be cancelled
+- Cancellation must be done through your booking account
+- Cancellation confirmation sent via email
+
+FOR RESERVATIONS:
+- Phone: 09924701341
+- Email: matestravel4@gmail.com
+- Online: Book directly through our website
+
+FOR TECHNICAL SUPPORT:
+- Website issues: Contact through email
+- Booking problems: Call our reservations team
+- Account assistance: Use online contact form
+
+MAIN PAGES:
+- Home: Overview and featured content
+- Rooms: Browse all room types and make bookings
+- About Us: Learn about TravelMates and our team
+- Events: EVENZA collaboration and event hosting
+- My Bookings: Manage your reservations
+- Customer Reviews: Share and read guest experiences
+
+USER ACCOUNT:
+- Register: Create new account
+- Login: Access your account
+- Profile: Manage personal information
+- Booking History: View past stays
+
+HOW TO CREATE/REGISTER AN ACCOUNT:
+1. Visit the TravelMates website
+2. Click on "Register" or "Sign Up" button (usually in the top navigation)
+3. Fill out the registration form with:
+   - First Name (Required)
+   - Last Name (Required)
+   - Email Address (Required) - Must be a valid email
+   - Phone Number (Required)
+   - Password (Required) - Create a secure password
+   - Confirm Password (Required) - Re-enter your password
+4. Review and accept Terms and Conditions
+5. Click "Register" or "Create Account" button
+6. You may receive a verification email (check your inbox)
+7. Once registered, you can log in immediately
+
+ACCOUNT BENEFITS:
+- Faster booking process (saved information)
+- View and manage your bookings
+- Track booking history
+- Receive exclusive offers and promotions
+- Easy cancellation and modifications
+- Secure payment information storage
+- Personalized experience
+
+ACCOUNT SECURITY:
+- Choose a strong password (minimum 8 characters recommended)
+- Keep your login credentials secure
+- Never share your password
+- Use a unique password for TravelMates
+- Log out when using shared devices
+
+SUSTAINABILITY:
+- We are committed to environmental responsibility
+- Energy-efficient systems
+- Waste reduction programs
+- Eco-friendly amenities
+
+LOCAL AREA:
+- Near Ambulong Tanauan
+- Close to the Baywalk
+- Various local attractions nearby
+- Transportation easily accessible
