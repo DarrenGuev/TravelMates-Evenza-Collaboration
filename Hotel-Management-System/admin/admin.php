@@ -199,6 +199,7 @@ $countCompleted = count($completedBookingsData);
     <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/view_booking.php'; ?>
     <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/edit_role.php'; ?>
     <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/delete_user.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/adminDashboardModals/booking_status_modal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
@@ -211,7 +212,6 @@ $countCompleted = count($completedBookingsData);
         const pendingBookingsData = <?php echo json_encode($pendingBookingsData); ?>;
         const completedBookingsData = <?php echo json_encode($completedBookingsData); ?>;
     </script>
-
     <script src="javascript/admin.js"></script>
 </body>
 </html>
