@@ -121,12 +121,11 @@
 
 /* Navbar Toggle Button Hover */
 .navbar-toggler {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid;
 }
 
 .navbar-toggler:hover {
-    transform: rotate(90deg);
     border-color: #FF9900;
     box-shadow: 0 0 10px rgba(255, 153, 0, 0.3);
 }
