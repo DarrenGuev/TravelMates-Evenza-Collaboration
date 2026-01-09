@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    // Cancel the booking using Booking model
-    if ($bookingModel->cancel($bookingID)) {
+    // Cancel the booking using Booking model (mark as user-cancelled)
+    if ($bookingModel->cancelByUser($bookingID)) {
         header("Location: ../bookings.php?success=Booking cancelled successfully");
     } else {
         header("Location: ../bookings.php?error=Failed to cancel booking. Please try again.");

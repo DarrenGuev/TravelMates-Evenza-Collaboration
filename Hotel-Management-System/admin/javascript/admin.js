@@ -22,7 +22,15 @@ function getBookingActions(booking) {
                 <i class="bi bi-eye"></i>
             </button>`;
 
-    if (booking.bookingStatus === 'pending') {
+    // Check if booking was cancelled by user
+    const isUserCancelled = booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1;
+
+    if (isUserCancelled) {
+        // Show disabled button with tooltip for user-cancelled bookings
+        actions += `<button class="btn btn-outline-secondary" disabled title="Cannot edit - Cancelled by user">
+                <i class="bi bi-lock"></i>
+            </button>`;
+    } else if (booking.bookingStatus === 'pending') {
         actions += `
                 <button type="button" class="btn btn-outline-success" title="Approve" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')">
                     <i class="bi bi-check-lg"></i>

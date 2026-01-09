@@ -193,6 +193,38 @@ class Booking extends Model
         return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
     }
 
+    /**
+     * Cancel booking by user (marks it as user-cancelled)
+     * 
+     * @param int $bookingID Booking ID
+     * @return bool
+     */
+    public function cancelByUser(int $bookingID): bool
+    {
+        $query = "UPDATE `{$this->table}` 
+                  SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                  WHERE bookingID = ?";
+        return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+    }
+
+    /**
+     * Check if booking was cancelled by user
+     * 
+     * @param int $bookingID Booking ID
+     * @return bool
+     */
+    public function isCancelledByUser(int $bookingID): bool
+    {
+        $booking = $this->find($bookingID);
+        if (!$booking) {
+            return false;
+        }
+        
+        return $booking['bookingStatus'] === self::STATUS_CANCELLED && 
+               isset($booking['cancelledByUser']) && 
+               $booking['cancelledByUser'] == 1;
+    }
+
     public function complete(int $bookingID): bool
     {
         return $this->updateStatus($bookingID, self::STATUS_COMPLETED);

@@ -333,6 +333,23 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
     <script>
         const allBookingsData = <?php echo json_encode($bookingsData); ?>;
         
+        // Check if booking was cancelled by user and disable edit buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            allBookingsData.forEach(booking => {
+                if (booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1) {
+                    // Find and disable edit button for this booking
+                    const editBtn = document.querySelector(`button[data-bs-target="#editModal${booking.bookingID}"]`);
+                    if (editBtn) {
+                        editBtn.disabled = true;
+                        editBtn.classList.remove('btn-outline-secondary');
+                        editBtn.classList.add('btn-outline-secondary', 'opacity-50');
+                        editBtn.title = 'Cannot edit - Cancelled by user';
+                        editBtn.innerHTML = '<i class="bi bi-lock"></i>';
+                    }
+                }
+            });
+        });
+        
         function submitEditForm(form) {
             const formData = new FormData(form);
             // Close the modal first
