@@ -18,28 +18,201 @@ function getPaymentBadge(status) {
 }
 
 function getBookingActions(booking) {
-    let actions = `<button class="btn btn-sm btn-outline-primary me-1" onclick="viewBooking(${booking.bookingID})">
+    let actions = `<button class="btn btn-outline-primary" onclick="viewBooking(${booking.bookingID})" title="View Details">
                 <i class="bi bi-eye"></i>
             </button>`;
 
     if (booking.bookingStatus === 'pending') {
         actions += `
-                <form method="POST" class="d-inline">
-                    <input type="hidden" name="bookingID" value="${booking.bookingID}">
-                    <input type="hidden" name="bookingAction" value="confirm">
-                    <button type="submit" class="btn btn-sm btn-outline-success me-1" title="Approve">
-                        <i class="bi bi-check-lg"></i>
-                    </button>
-                </form>
-                <form method="POST" class="d-inline">
-                    <input type="hidden" name="bookingID" value="${booking.bookingID}">
-                    <input type="hidden" name="bookingAction" value="cancel">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </form>`;
+                <button type="button" class="btn btn-outline-success" title="Approve" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger" title="Reject" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')">
+                    <i class="bi bi-x-lg"></i>
+                </button>`;
+    } else if (booking.bookingStatus === 'confirmed') {
+        actions += `
+                <button class="btn btn-outline-info" onclick="updateBookingStatus(${booking.bookingID}, 'complete')" title="Mark as Completed">
+                    <i class="bi bi-flag"></i>
+                </button>`;
     }
+    
+    // Add Edit/Pencil button (opens the inline modal which is not easily replicated here without full HTML structure, 
+    // but in admin.php we don't have the inline edit modals pre-rendered for all rows usually if loaded dynamically.
+    // However, looking at manage_bookings.php, it uses a modal per row.
+    // In admin.php we are rendering rows via JS. We can't easily open a PHP-generated modal that doesn't exist.
+    // We will omit the edit button for now or implement a JS-based edit modal later if requested.
+    // If you want the exact look, the edit button is:
+    /*
+    actions += `
+            <button class="btn btn-outline-secondary" title="Edit Booking">
+                <i class="bi bi-pencil"></i>
+            </button>`;
+    */
+    
     return actions;
+}
+
+// Modal instances
+let bookingStatusModal = null;
+let bookingResultModal = null;
+
+// Initialize modals after DOM is ready
+function initBookingModals() {
+    const statusModalEl = document.getElementById('bookingStatusModal');
+    const resultModalEl = document.getElementById('bookingResultModal');
+    
+    if (statusModalEl) {
+        bookingStatusModal = new bootstrap.Modal(statusModalEl);
+    }
+    if (resultModalEl) {
+        bookingResultModal = new bootstrap.Modal(resultModalEl);
+        
+        // Reload page when result modal is closed after success
+        resultModalEl.addEventListener('hidden.bs.modal', function () {
+            const shouldReload = resultModalEl.getAttribute('data-reload') === 'true';
+            if (shouldReload) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function updateBookingStatus(bookingID, action) {
+    // Store booking info for confirmation
+    document.getElementById('bookingStatusBookingID').value = bookingID;
+    document.getElementById('bookingStatusAction').value = action;
+    
+    // Update modal appearance based on action
+    const modalHeader = document.getElementById('bookingStatusModalHeader');
+    const modalIcon = document.getElementById('bookingStatusIcon');
+    const modalMessage = document.getElementById('bookingStatusMessage');
+    const confirmBtn = document.getElementById('bookingStatusConfirmBtn');
+    
+    if (action === 'confirm') {
+        modalHeader.className = 'modal-header bg-success text-white';
+        modalIcon.className = 'bi bi-check-circle-fill text-success';
+        modalMessage.textContent = 'Are you sure you want to confirm this booking?';
+        confirmBtn.className = 'btn btn-success';
+        confirmBtn.textContent = 'Confirm Booking';
+    } else if (action === 'complete') {
+        modalHeader.className = 'modal-header bg-info text-white';
+        modalIcon.className = 'bi bi-flag-fill';
+        modalMessage.textContent = 'Are you sure you want to mark this booking as completed?';
+        confirmBtn.className = 'btn btn-info text-white';
+        confirmBtn.textContent = 'Complete Booking';
+    } else {
+        modalHeader.className = 'modal-header bg-danger text-white';
+        modalIcon.className = 'bi bi-x-circle-fill text-danger';
+        modalMessage.textContent = 'Are you sure you want to cancel this booking?';
+        confirmBtn.className = 'btn btn-danger';
+        confirmBtn.textContent = 'Cancel Booking';
+    }
+    
+    bookingStatusModal.show();
+}
+
+function confirmBookingStatusChange() {
+    const bookingID = document.getElementById('bookingStatusBookingID').value;
+    const action = document.getElementById('bookingStatusAction').value;
+    
+    // Hide confirmation modal
+    bookingStatusModal.hide();
+    
+    // Show loading state immediately
+    showBookingLoading(action);
+
+    const formData = new FormData();
+    formData.append('bookingID', bookingID);
+    formData.append('bookingAction', action);
+
+    fetch('php/booking_status.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.status);
+        }
+        return response.text();
+    })
+    .then(text => {
+        console.log('Raw response:', text);
+        try {
+            const data = JSON.parse(text);
+            showBookingResult(data.success, data.message);
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            console.error('Response text:', text);
+            showBookingResult(false, 'Error parsing server response.');
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        showBookingResult(false, 'An error occurred: ' + error.message);
+    });
+}
+
+function showBookingLoading(action) {
+    const resultModalEl = document.getElementById('bookingResultModal');
+    const modalHeader = document.getElementById('bookingResultModalHeader');
+    const modalIcon = document.getElementById('bookingResultIcon');
+    const modalMessage = document.getElementById('bookingResultMessage');
+    const modalLabel = document.getElementById('bookingResultModalLabel');
+    const okBtn = document.getElementById('bookingResultOkBtn');
+    
+    // Set loading state
+    modalHeader.className = 'modal-header bg-primary text-white';
+    modalIcon.className = '';
+    modalIcon.innerHTML = '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="visually-hidden">Loading...</span></div>';
+    modalLabel.textContent = 'Processing';
+    
+    let msg = 'Processing...';
+    if (action === 'confirm') msg = 'Confirming booking...';
+    else if (action === 'cancel') msg = 'Cancelling booking...';
+    else if (action === 'complete') msg = 'Completing booking...';
+    
+    modalMessage.textContent = msg;
+    okBtn.style.display = 'none';
+    resultModalEl.setAttribute('data-reload', 'false');
+    
+    // Prevent closing while loading
+    resultModalEl.setAttribute('data-bs-backdrop', 'static');
+    resultModalEl.setAttribute('data-bs-keyboard', 'false');
+    
+    bookingResultModal.show();
+}
+
+function showBookingResult(success, message) {
+    const resultModalEl = document.getElementById('bookingResultModal');
+    const modalHeader = document.getElementById('bookingResultModalHeader');
+    const modalIcon = document.getElementById('bookingResultIcon');
+    const modalMessage = document.getElementById('bookingResultMessage');
+    const modalLabel = document.getElementById('bookingResultModalLabel');
+    const okBtn = document.getElementById('bookingResultOkBtn');
+    
+    // Reset icon element (remove spinner)
+    modalIcon.innerHTML = '';
+    
+    if (success) {
+        modalHeader.className = 'modal-header bg-success text-white';
+        modalIcon.className = 'bi bi-check-circle-fill text-success';
+        modalLabel.textContent = 'Success';
+        resultModalEl.setAttribute('data-reload', 'true');
+    } else {
+        modalHeader.className = 'modal-header bg-danger text-white';
+        modalIcon.className = 'bi bi-x-circle-fill text-danger';
+        modalLabel.textContent = 'Error';
+        resultModalEl.setAttribute('data-reload', 'false');
+    }
+    
+    // Show OK button and allow closing
+    okBtn.style.display = 'block';
+    resultModalEl.removeAttribute('data-bs-backdrop');
+    resultModalEl.removeAttribute('data-bs-keyboard');
+    
+    modalMessage.textContent = message;
 }
 
 // Store all bookings for modals
@@ -92,25 +265,53 @@ function openDeleteModal(userID, userName) {
 // Table configurations
 const tableConfigs = {
     reservations: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => allBookingsData,
-        renderRow: (booking, index) => `
+        renderRow: (booking, index) => {
+            const checkIn = new Date(booking.checkInDate);
+            const checkOut = new Date(booking.checkOutDate);
+            const dateStr = checkIn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + 
+                          checkOut.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            return `
                     <tr>
-                        <td>${index + 1}</td>
-                        <td><strong>${booking.firstName} ${booking.lastName}</strong><br><small class="text-muted">${booking.userEmail}</small></td>
-                        <td>${booking.roomName}<br><small class="text-muted">${booking.roomType}</small></td>
-                        <td>${booking.checkInDate}</td>
-                        <td>${booking.checkOutDate}</td>
-                        <td>₱${parseFloat(booking.totalPrice).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        <td><strong>#${booking.bookingID}</strong></td>
+                        <td>
+                            <div>
+                                <strong>${booking.firstName} ${booking.lastName}</strong>
+                                <br><small class="text-muted">${booking.userEmail}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${booking.roomName}</strong>
+                                <br><small class="text-muted">${booking.roomType}</small>
+                            </div>
+                        </td>
+                        <td><small>${dateStr}</small></td>
+                        <td><strong>₱${parseFloat(booking.totalPrice).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</strong></td>
+                        <td>
+                            ${getPaymentBadge(booking.paymentStatus)}
+                            <br><small class="text-muted">
+                                ${booking.paymentMethod ? 
+                                    (booking.paymentMethod.toLowerCase() === 'paypal' ? '<i class="bi bi-paypal me-1"></i>PayPal' : booking.paymentMethod.replace('_', ' ')) : 
+                                    (booking.paymentStatus === 'paid' ? '<i class="bi bi-paypal me-1"></i>PayPal' : '-')
+                                }
+                            </small>
+                        </td>
                         <td>${getStatusBadge(booking.bookingStatus)}</td>
-                        <td>${booking.paymentMethod ? booking.paymentMethod.replace('_', ' ') + ' ' + getPaymentBadge(booking.paymentStatus) : getPaymentBadge(booking.paymentStatus)}</td>
-                        <td>${getBookingActions(booking)}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                ${getBookingActions(booking)}
+                            </div>
+                        </td>
                     </tr>
-                `
+                `;
+        }
     },
-    customers: {
+    users: {
         headers: ['#', 'Name', 'Email', 'Username', 'Phone', 'Member Since', 'Role', 'Actions'],
-        getData: () => customersData,
+        getData: () => usersData,
         renderRow: (user, index) => `
                     <tr>
                         <td>${index + 1}</td>
@@ -132,17 +333,17 @@ const tableConfigs = {
                 `
     },
     confirmed: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => confirmedBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     },
     pending: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => pendingBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     },
     completed: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => completedBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     }
@@ -192,4 +393,7 @@ function switchTable(tableType) {
         loader.classList.add('d-none');
     }, 300); // Adjust timeout as needed
 }
-document.addEventListener('DOMContentLoaded', () => switchTable('reservations'));
+document.addEventListener('DOMContentLoaded', () => {
+    initBookingModals();
+    switchTable('reservations');
+});

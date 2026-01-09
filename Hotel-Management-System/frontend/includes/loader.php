@@ -83,6 +83,19 @@
         }
     });
 
+    // Fix for stuck loader when using back button
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            const loader = document.getElementById('page-loader');
+            if (loader) {
+                loader.classList.add('hidden');
+                setTimeout(function() {
+                    loader.style.display = 'none';
+                }, 100);
+            }
+        }
+    });
+
     // Show loader on page navigation (optional - for form submissions and links)
     document.addEventListener('DOMContentLoaded', function() {
         // Show loader when navigating away
