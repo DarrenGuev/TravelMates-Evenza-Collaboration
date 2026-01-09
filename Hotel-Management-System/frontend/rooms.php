@@ -1,13 +1,8 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
-
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
-
-// Include class autoloader
 require_once CLASSES_PATH . '/autoload.php';
 
 // Initialize models
@@ -104,13 +99,6 @@ function groupFeaturesByCategory($features) {
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="<?php echo CSS_URL; ?>/style.css">
-    <style>
-        .room-card-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-    </style>
 </head>
 
 <body>
@@ -582,14 +570,19 @@ function groupFeaturesByCategory($features) {
                                                                             class="form-label mb-0">Check-in</label>
                                                                         <input type="date" name="checkInDate"
                                                                             id="checkIn<?php echo $row['roomID']; ?>"
-                                                                            class="form-control mb-1" required>
+                                                                            class="form-control mb-1" <?php echo !$userData ? 'disabled' : ''; ?> required>
                                                                     </div>
                                                                     <div class="col-6">
                                                                         <label for="checkOut<?php echo $row['roomID']; ?>"
                                                                             class="form-label mb-0">Check-out</label>
                                                                         <input type="date" name="checkOutDate"
                                                                             id="checkOut<?php echo $row['roomID']; ?>"
-                                                                            class="form-control mb-1" required>
+                                                                            class="form-control mb-1" <?php echo !$userData ? 'disabled' : ''; ?> required>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <div class="alert alert-danger py-2 mb-2" id="dateError<?php echo $row['roomID']; ?>" style="display: none;">
+                                                                            <small><i class="bi bi-exclamation-triangle me-1"></i><span id="dateErrorMessage<?php echo $row['roomID']; ?>"></span></small>
+                                                                        </div>
                                                                     </div>                                          
                                                                 </div>
                                                                 <div class="row">
@@ -600,7 +593,7 @@ function groupFeaturesByCategory($features) {
                                                                             id="guests<?php echo $row['roomID']; ?>"
                                                                             class="form-control mb-1" min="1"
                                                                             max="<?php echo (int) $row['capacity']; ?>" value="1"
-                                                                            required>
+                                                                            <?php echo !$userData ? 'disabled' : ''; ?> required>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
@@ -936,7 +929,20 @@ function groupFeaturesByCategory($features) {
                 checkIn.min = today;
                 checkOut.min = today;
 
-                checkIn.addEventListener('change', () => updateSummary(roomID, basePrice));
+                checkIn.addEventListener('change', () => {
+                    // Update checkout minimum to be at least one day after check-in
+                    if (checkIn.value) {
+                        const checkInDate = new Date(checkIn.value);
+                        checkInDate.setDate(checkInDate.getDate() + 1);
+                        checkOut.min = checkInDate.toISOString().split('T')[0];
+                        
+                        // Clear checkout if it's before the new minimum
+                        if (checkOut.value && new Date(checkOut.value) <= new Date(checkIn.value)) {
+                            checkOut.value = '';
+                        }
+                    }
+                    updateSummary(roomID, basePrice);
+                });
                 checkOut.addEventListener('change', () => updateSummary(roomID, basePrice));
                 guests.addEventListener('change', () => updateSummary(roomID, basePrice));
             }
@@ -946,11 +952,27 @@ function groupFeaturesByCategory($features) {
             const checkIn = document.getElementById('checkIn' + roomID).value;
             const checkOut = document.getElementById('checkOut' + roomID).value;
             const guests = document.getElementById('guests' + roomID).value;
+            const errorDiv = document.getElementById('dateError' + roomID);
+            const errorMsg = document.getElementById('dateErrorMessage' + roomID);
+
+            if (errorDiv) errorDiv.style.display = 'none';
 
             if (checkIn && checkOut) {
                 const checkInDate = new Date(checkIn);
                 const checkOutDate = new Date(checkOut);
                 const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+
+                if (checkOutDate <= checkInDate) {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = 'Check-out date must be after check-in date.';
+                        errorDiv.style.display = 'block';
+                    }
+                    document.getElementById('summaryDates' + roomID).textContent = '-';
+                    document.getElementById('summaryNights' + roomID).textContent = '-';
+                    document.getElementById('summaryTotal' + roomID).textContent = '0.00';
+                    document.getElementById('totalPriceInput' + roomID).value = '0';
+                    return;
+                }
 
                 if (nights > 0) {
                     const total = basePrice * nights;
@@ -960,6 +982,11 @@ function groupFeaturesByCategory($features) {
                     document.getElementById('summaryGuests' + roomID).textContent = guests;
                     document.getElementById('summaryTotal' + roomID).textContent = total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
                     document.getElementById('totalPriceInput' + roomID).value = total;
+                } else {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = 'Invalid date range. Please select valid check-in and check-out dates.';
+                        errorDiv.style.display = 'block';
+                    }
                 }
             }
         }
@@ -973,7 +1000,36 @@ function groupFeaturesByCategory($features) {
                 return;
             }
 
+            const checkIn = document.getElementById('checkIn' + roomID).value;
+            const checkOut = document.getElementById('checkOut' + roomID).value;
+            const errorDiv = document.getElementById('dateError' + roomID);
+            const errorMsg = document.getElementById('dateErrorMessage' + roomID);
+            
+            if (checkIn && checkOut) {
+                const checkInDate = new Date(checkIn);
+                const checkOutDate = new Date(checkOut);
+                
+                if (checkOutDate <= checkInDate) {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = 'Check-out date must be after check-in date. Please correct your dates before proceeding.';
+                        errorDiv.style.display = 'block';
+                    }
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+            }
+
             const total = document.getElementById('totalPriceInput' + roomID).value;
+            
+            // Validate total price
+            if (!total || parseFloat(total) <= 0) {
+                if (errorDiv && errorMsg) {
+                    errorMsg.textContent = 'Please select valid dates to calculate the total price.';
+                    errorDiv.style.display = 'block';
+                }
+                return;
+            }
+            
             document.getElementById('paymentTotal' + roomID).textContent =
                 parseFloat(total).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
