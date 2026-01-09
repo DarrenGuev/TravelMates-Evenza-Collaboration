@@ -20,8 +20,14 @@ $userModel = new User();
 // [MODULARIZED] Booking Action Logic moved to: php/booking_status.php
 // If you have forms posting to this page for validation, update their action to 'php/booking_status.php'
 
-// Fetch customers (users with role 'user')
-$customersData = $userModel->getAllCustomers();
+// Fetch all users (admins and customers)
+$customers = $userModel->getAllCustomers();
+$admins = $userModel->getAllAdmins();
+$usersData = array_merge($admins, $customers);
+// Sort by created_at DESC to maintain latest first order
+usort($usersData, function($a, $b) {
+    return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+});
 
 // Fetch all bookings with details
 $allBookingsData = $bookingModel->getAllWithDetails();
@@ -36,7 +42,7 @@ $pendingBookingsData = $bookingModel->getPendingBookings();
 $completedBookingsData = $bookingModel->getCompletedBookings();
 
 $countAllBookings = count($allBookingsData);
-$countCustomers = count($customersData);
+$countUsers = count($usersData);
 $countConfirmed = count($confirmedBookingsData);
 $countPending = count($pendingBookingsData);
 $countCompleted = count($completedBookingsData);
@@ -94,7 +100,7 @@ $countCompleted = count($completedBookingsData);
 
                 <div class="row g-4 mb-4">
                     <div class="col-6 col-md-3 col-xl">
-                        <div class="card text-bg-primary h-100">
+                        <div class="card text-bg-primary h-100 stat-card" data-table="reservations" onclick="switchTable('reservations')">
                             <div class="card-body text-center">
                                 <i class="bi bi-calendar-check display-6"></i>
                                 <h3 class="fw-bold mt-2"><?php echo $countAllBookings; ?></h3>
@@ -104,17 +110,17 @@ $countCompleted = count($completedBookingsData);
                     </div>
 
                     <div class="col-6 col-md-3 col-xl">
-                        <div class="card text-bg-warning h-100">
+                        <div class="card text-bg-warning h-100 stat-card" data-table="users" onclick="switchTable('users')">
                             <div class="card-body text-center">
                                 <i class="bi bi-people display-6"></i>
-                                <h3 class="fw-bold mt-2"><?php echo $countCustomers; ?></h3>
-                                <small>Customers</small>
+                                <h3 class="fw-bold mt-2"><?php echo $countUsers; ?></h3>
+                                <small>Users</small>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-6 col-md-3 col-xl">
-                        <div class="card text-bg-success h-100">
+                        <div class="card text-bg-success h-100 stat-card" data-table="confirmed" onclick="switchTable('confirmed')">
                             <div class="card-body text-center">
                                 <i class="bi bi-check-circle display-6"></i>
                                 <h3 class="fw-bold mt-2"><?php echo $countConfirmed; ?></h3>
@@ -124,7 +130,7 @@ $countCompleted = count($completedBookingsData);
                     </div>
 
                     <div class="col-6 col-md-3 col-xl">
-                        <div class="card text-bg-danger h-100">
+                        <div class="card text-bg-danger h-100 stat-card" data-table="pending" onclick="switchTable('pending')">
                             <div class="card-body text-center">
                                 <i class="bi bi-clock display-6"></i>
                                 <h3 class="fw-bold mt-2"><?php echo $countPending; ?></h3>
@@ -134,7 +140,7 @@ $countCompleted = count($completedBookingsData);
                     </div>
 
                     <div class="col-6 col-md-3 col-xl">
-                        <div class="card text-bg-info h-100">
+                        <div class="card text-bg-info h-100 stat-card" data-table="completed" onclick="switchTable('completed')">
                             <div class="card-body text-center">
                                 <i class="bi bi-flag display-6"></i>
                                 <h3 class="fw-bold mt-2"><?php echo $countCompleted; ?></h3>
@@ -152,7 +158,7 @@ $countCompleted = count($completedBookingsData);
                                 <a class="nav-link active" id="tab-reservations" href="#" onclick="switchTable('reservations'); return false;">Reservations</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="tab-customers" href="#" onclick="switchTable('customers'); return false;">Customers</a>
+                                <a class="nav-link" id="tab-users" href="#" onclick="switchTable('users'); return false;">Users</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="tab-confirmed" href="#" onclick="switchTable('confirmed'); return false;">Confirmed</a>
@@ -206,7 +212,7 @@ $countCompleted = count($completedBookingsData);
         crossorigin="anonymous"></script>
 
     <script>
-        const customersData = <?php echo json_encode($customersData); ?>;
+        const usersData = <?php echo json_encode($usersData); ?>;
         const allBookingsData = <?php echo json_encode($allBookingsData); ?>;
         const confirmedBookingsData = <?php echo json_encode($confirmedBookingsData); ?>;
         const pendingBookingsData = <?php echo json_encode($pendingBookingsData); ?>;

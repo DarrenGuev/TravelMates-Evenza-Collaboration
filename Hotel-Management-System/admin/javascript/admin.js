@@ -18,19 +18,38 @@ function getPaymentBadge(status) {
 }
 
 function getBookingActions(booking) {
-    let actions = `<button class="btn btn-sm btn-outline-primary me-1" onclick="viewBooking(${booking.bookingID})">
+    let actions = `<button class="btn btn-outline-primary" onclick="viewBooking(${booking.bookingID})" title="View Details">
                 <i class="bi bi-eye"></i>
             </button>`;
 
     if (booking.bookingStatus === 'pending') {
         actions += `
-                <button type="button" class="btn btn-sm btn-outline-success me-1" title="Approve" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')">
+                <button type="button" class="btn btn-outline-success" title="Approve" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')">
                     <i class="bi bi-check-lg"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-danger" title="Reject" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')">
+                <button type="button" class="btn btn-outline-danger" title="Reject" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')">
                     <i class="bi bi-x-lg"></i>
                 </button>`;
+    } else if (booking.bookingStatus === 'confirmed') {
+        actions += `
+                <button class="btn btn-outline-info" onclick="updateBookingStatus(${booking.bookingID}, 'complete')" title="Mark as Completed">
+                    <i class="bi bi-flag"></i>
+                </button>`;
     }
+    
+    // Add Edit/Pencil button (opens the inline modal which is not easily replicated here without full HTML structure, 
+    // but in admin.php we don't have the inline edit modals pre-rendered for all rows usually if loaded dynamically.
+    // However, looking at manage_bookings.php, it uses a modal per row.
+    // In admin.php we are rendering rows via JS. We can't easily open a PHP-generated modal that doesn't exist.
+    // We will omit the edit button for now or implement a JS-based edit modal later if requested.
+    // If you want the exact look, the edit button is:
+    /*
+    actions += `
+            <button class="btn btn-outline-secondary" title="Edit Booking">
+                <i class="bi bi-pencil"></i>
+            </button>`;
+    */
+    
     return actions;
 }
 
@@ -246,25 +265,53 @@ function openDeleteModal(userID, userName) {
 // Table configurations
 const tableConfigs = {
     reservations: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => allBookingsData,
-        renderRow: (booking, index) => `
+        renderRow: (booking, index) => {
+            const checkIn = new Date(booking.checkInDate);
+            const checkOut = new Date(booking.checkOutDate);
+            const dateStr = checkIn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + 
+                          checkOut.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            return `
                     <tr>
-                        <td>${index + 1}</td>
-                        <td><strong>${booking.firstName} ${booking.lastName}</strong><br><small class="text-muted">${booking.userEmail}</small></td>
-                        <td>${booking.roomName}<br><small class="text-muted">${booking.roomType}</small></td>
-                        <td>${booking.checkInDate}</td>
-                        <td>${booking.checkOutDate}</td>
-                        <td>₱${parseFloat(booking.totalPrice).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                        <td><strong>#${booking.bookingID}</strong></td>
+                        <td>
+                            <div>
+                                <strong>${booking.firstName} ${booking.lastName}</strong>
+                                <br><small class="text-muted">${booking.userEmail}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>${booking.roomName}</strong>
+                                <br><small class="text-muted">${booking.roomType}</small>
+                            </div>
+                        </td>
+                        <td><small>${dateStr}</small></td>
+                        <td><strong>₱${parseFloat(booking.totalPrice).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</strong></td>
+                        <td>
+                            ${getPaymentBadge(booking.paymentStatus)}
+                            <br><small class="text-muted">
+                                ${booking.paymentMethod ? 
+                                    (booking.paymentMethod.toLowerCase() === 'paypal' ? '<i class="bi bi-paypal me-1"></i>PayPal' : booking.paymentMethod.replace('_', ' ')) : 
+                                    (booking.paymentStatus === 'paid' ? '<i class="bi bi-paypal me-1"></i>PayPal' : '-')
+                                }
+                            </small>
+                        </td>
                         <td>${getStatusBadge(booking.bookingStatus)}</td>
-                        <td>${booking.paymentMethod ? booking.paymentMethod.replace('_', ' ') + ' ' + getPaymentBadge(booking.paymentStatus) : getPaymentBadge(booking.paymentStatus)}</td>
-                        <td>${getBookingActions(booking)}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                ${getBookingActions(booking)}
+                            </div>
+                        </td>
                     </tr>
-                `
+                `;
+        }
     },
-    customers: {
+    users: {
         headers: ['#', 'Name', 'Email', 'Username', 'Phone', 'Member Since', 'Role', 'Actions'],
-        getData: () => customersData,
+        getData: () => usersData,
         renderRow: (user, index) => `
                     <tr>
                         <td>${index + 1}</td>
@@ -286,17 +333,17 @@ const tableConfigs = {
                 `
     },
     confirmed: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => confirmedBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     },
     pending: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => pendingBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     },
     completed: {
-        headers: ['#', 'Guest', 'Room', 'Check-In', 'Check-Out', 'Total', 'Status', 'Payment', 'Actions'],
+        headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
         getData: () => completedBookingsData,
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     }
