@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sendJsonResponse(false, 'Invalid booking ID');
     }
 
-    if ($action !== 'confirm' && $action !== 'cancel') {
+    if ($action !== 'confirm' && $action !== 'cancel' && $action !== 'complete' && $action !== 'edit') {
         sendJsonResponse(false, 'Invalid action');
     }
 
@@ -104,6 +104,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         sendJsonResponse(false, 'Failed to cancel booking');
+    } elseif ($action === 'complete') {
+        if ($bookingModel->complete($bookingID)) {
+            // Send SMS notification
+            if (!empty($phoneNumber)) {
+                try {
+                    $smsService = new SmsService();
+                    $smsService->sendBookingCompletedSms($bookingID, $phoneNumber, $customerName);
+                } catch (Exception $e) {
+                    error_log('SMS Error: ' . $e->getMessage());
+                }
+            }
+            sendJsonResponse(true, 'Booking marked as completed!');
+        }
+        sendJsonResponse(false, 'Failed to complete booking');
+    } elseif ($action === 'edit') {
+        $newStatus = isset($_POST['newStatus']) ? $_POST['newStatus'] : '';
+        $newPaymentStatus = isset($_POST['newPaymentStatus']) ? $_POST['newPaymentStatus'] : '';
+
+        // Validate status values
+        $validStatuses = [Booking::STATUS_PENDING, Booking::STATUS_CONFIRMED, Booking::STATUS_CANCELLED, Booking::STATUS_COMPLETED];
+        $validPaymentStatuses = [Booking::PAYMENT_PENDING, Booking::PAYMENT_PAID, Booking::PAYMENT_REFUNDED];
+
+        if (in_array($newStatus, $validStatuses) && in_array($newPaymentStatus, $validPaymentStatuses)) {
+            $bookingModel->update($bookingID, [
+                'bookingStatus' => $newStatus,
+                'paymentStatus' => $newPaymentStatus,
+                'updatedAt' => date('Y-m-d H:i:s')
+            ]);
+            sendJsonResponse(true, 'Booking updated successfully!');
+        } else {
+            sendJsonResponse(false, 'Invalid status value!');
+        }
     }
 }
 

@@ -76,6 +76,12 @@ function updateBookingStatus(bookingID, action) {
         modalMessage.textContent = 'Are you sure you want to confirm this booking?';
         confirmBtn.className = 'btn btn-success';
         confirmBtn.textContent = 'Confirm Booking';
+    } else if (action === 'complete') {
+        modalHeader.className = 'modal-header bg-info text-white';
+        modalIcon.className = 'bi bi-flag-fill';
+        modalMessage.textContent = 'Are you sure you want to mark this booking as completed?';
+        confirmBtn.className = 'btn btn-info text-white';
+        confirmBtn.textContent = 'Complete Booking';
     } else {
         modalHeader.className = 'modal-header bg-danger text-white';
         modalIcon.className = 'bi bi-x-circle-fill text-danger';
@@ -142,7 +148,13 @@ function showBookingLoading(action) {
     modalIcon.className = '';
     modalIcon.innerHTML = '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="visually-hidden">Loading...</span></div>';
     modalLabel.textContent = 'Processing';
-    modalMessage.textContent = action === 'confirm' ? 'Confirming booking...' : 'Cancelling booking...';
+    
+    let msg = 'Processing...';
+    if (action === 'confirm') msg = 'Confirming booking...';
+    else if (action === 'cancel') msg = 'Cancelling booking...';
+    else if (action === 'complete') msg = 'Completing booking...';
+    
+    modalMessage.textContent = msg;
     okBtn.style.display = 'none';
     resultModalEl.setAttribute('data-reload', 'false');
     
