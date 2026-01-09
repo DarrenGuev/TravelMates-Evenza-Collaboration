@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Cancel the booking using appropriate method
-    if ($bookingModel->cancelByUser($bookingID, $isConfirmedBooking)) {
+    if ($bookingModel->cancelByUser($bookingID, $isConfirmedBooking, $refundReason)) {
         // Send appropriate success message
         if ($isConfirmedBooking) {
             // Try to send SMS notification to admin (optional - won't fail if SMS service unavailable)

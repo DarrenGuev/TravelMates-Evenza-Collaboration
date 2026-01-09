@@ -320,6 +320,37 @@ const tableConfigs = {
             const dateStr = checkIn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' - ' + 
                           checkOut.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             
+            // Check if this is a refund request
+            const isRefundRequest = booking.bookingStatus === 'pending' && booking.cancelledByUser == 1;
+            // Check if this is a completed refund
+            const isRefunded = booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1;
+            
+            // Generate status badge
+            let statusBadge;
+            if (isRefundRequest) {
+                statusBadge = `<button class="badge bg-warning text-dark border-0" onclick="processRefund(${booking.bookingID})" title="Click to approve refund and cancel booking" style="cursor: pointer;"><i class="bi bi-clock-history me-1"></i>Process Refund</button>`;
+            } else if (isRefunded) {
+                statusBadge = `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Refunded</span>`;
+            } else {
+                statusBadge = getStatusBadge(booking.bookingStatus);
+            }
+            
+            // Generate action buttons
+            let actionButtons = `<button class="btn btn-outline-primary" onclick="viewBooking(${booking.bookingID})" title="View Details"><i class="bi bi-eye"></i></button>`;
+            
+            if (booking.bookingStatus === 'pending') {
+                actionButtons += `
+                    <button class="btn btn-outline-success" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')" title="Approve"><i class="bi bi-check-lg"></i></button>
+                    <button class="btn btn-outline-danger" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')" title="Reject"><i class="bi bi-x-lg"></i></button>`;
+            }
+            
+            if (booking.bookingStatus === 'confirmed') {
+                actionButtons += `<button class="btn btn-outline-info" onclick="updateBookingStatus(${booking.bookingID}, 'complete')" title="Mark as Completed"><i class="bi bi-flag"></i></button>`;
+            }
+            
+            // Add edit button (will be disabled for refunded bookings via JS)
+            actionButtons += `<button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal${booking.bookingID}" title="Edit Booking" id="editBtn${booking.bookingID}"><i class="bi bi-pencil"></i></button>`;
+            
             return `
                     <tr>
                         <td><strong>#${booking.bookingID}</strong></td>
@@ -346,10 +377,66 @@ const tableConfigs = {
                                 }
                             </small>
                         </td>
-                        <td>${getStatusBadge(booking.bookingStatus)}</td>
+                        <td>${statusBadge}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                ${getBookingActions(booking)}
+                                ${actionButtons}
+                            </div>
+                            
+                            <!-- Edit Details Inline Modal -->
+                            <div class="modal fade" id="editModal${booking.bookingID}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Booking #${booking.bookingID}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form onsubmit="return submitEditForm(this)">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="bookingID" value="${booking.bookingID}">
+                                                <input type="hidden" name="bookingAction" value="edit">
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Guest</label>
+                                                    <p class="form-control-plaintext">${booking.firstName} ${booking.lastName}</p>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Room</label>
+                                                    <p class="form-control-plaintext">${booking.roomName} (${booking.roomType})</p>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="newStatus${booking.bookingID}" class="form-label fw-bold">Booking Status</label>
+                                                    <select class="form-select" id="newStatus${booking.bookingID}" name="newStatus" required>
+                                                        <option value="pending" ${booking.bookingStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                                                        <option value="confirmed" ${booking.bookingStatus === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                                        <option value="cancelled" ${booking.bookingStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                                        <option value="completed" ${booking.bookingStatus === 'completed' ? 'selected' : ''}>Completed</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="newPaymentStatus${booking.bookingID}" class="form-label fw-bold">Payment Status</label>
+                                                    <select class="form-select" id="newPaymentStatus${booking.bookingID}" name="newPaymentStatus" required>
+                                                        <option value="pending" ${booking.paymentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                                                        <option value="paid" ${booking.paymentStatus === 'paid' ? 'selected' : ''}>Paid</option>
+                                                        <option value="refunded" ${booking.paymentStatus === 'refunded' ? 'selected' : ''}>Refunded</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="alert alert-info small mb-0">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Use this to correct accidental status changes. Note: SMS notifications are not sent when editing.
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>

@@ -359,6 +359,10 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
         
         // Process refund function
         function processRefund(bookingID) {
+            // Find booking data from allBookingsData
+            const booking = allBookingsData.find(b => b.bookingID == bookingID);
+            const refundReason = booking && booking.refundReason ? booking.refundReason : 'No reason provided';
+            
             // Store booking info for confirmation
             document.getElementById('bookingStatusBookingID').value = bookingID;
             document.getElementById('bookingStatusAction').value = 'refund';
@@ -371,7 +375,12 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
             
             modalHeader.className = 'modal-header bg-warning text-dark';
             modalIcon.className = 'bi bi-cash-coin text-warning';
-            modalMessage.innerHTML = 'Process this refund request?<br><br><small class="text-muted">This will:<br>• Change booking status to <strong>CANCELLED</strong><br>• Change payment status to <strong>REFUNDED</strong></small>';
+            modalMessage.innerHTML = `Process this refund request?<br><br>
+                <div class="alert alert-warning mb-3" style="text-align: left;">
+                    <strong><i class="bi bi-chat-left-quote me-2"></i>Reason for Refund Request:</strong><br>
+                    <em>${refundReason}</em>
+                </div>
+                <small class="text-muted">This will:<br>• Change booking status to <strong>CANCELLED</strong><br>• Change payment status to <strong>REFUNDED</strong></small>`;
             confirmBtn.className = 'btn btn-warning';
             confirmBtn.textContent = 'Process Refund';
             

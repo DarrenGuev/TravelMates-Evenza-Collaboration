@@ -200,17 +200,18 @@ class Booking extends Model
      * 
      * @param int $bookingID Booking ID
      * @param bool $isConfirmedBooking Whether this is a confirmed booking requiring refund approval
+     * @param string $refundReason Optional refund reason from user
      * @return bool
      */
-    public function cancelByUser(int $bookingID, bool $isConfirmedBooking = false): bool
+    public function cancelByUser(int $bookingID, bool $isConfirmedBooking = false, string $refundReason = ''): bool
     {
         if ($isConfirmedBooking) {
             // For confirmed bookings, set to pending (awaiting refund approval)
-            // Keep payment status as-is until admin processes refund
+            // Store refund reason for admin review
             $query = "UPDATE `{$this->table}` 
-                      SET bookingStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                      SET bookingStatus = ?, cancelledByUser = 1, refundReason = ?, updatedAt = NOW() 
                       WHERE bookingID = ?";
-            return $this->executeStatement($query, 'si', [self::STATUS_PENDING, $bookingID]) !== false;
+            return $this->executeStatement($query, 'ssi', [self::STATUS_PENDING, $refundReason, $bookingID]) !== false;
         } else {
             // For pending bookings, cancel immediately
             $query = "UPDATE `{$this->table}` 
