@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['prompt'])) {
     $data = file_exists($dataFile) ? file_get_contents($dataFile) : '';
 
     // Prepare the prompt for Ollama
-    $prompt = "You are a helpful assistant for TravelMates Hotel, ready to assist guests with bookings, services, and travel information to ensure a comfortable stay.
+    $prompt = "You are a helpful assistant for TravelMates Hotel, ready to assist guests with bookings and services to ensure a comfortable stay.
 
 INSTRUCTIONS:
 1. ALWAYS respond in a friendly, conversational tone
 2. For greetings (hello, hi, hey, good morning, etc.), respond warmly and ask how you can help
 3. For questions about TravelMates, use ONLY the information provided in the dataset below
 4. Keep responses concise (2-3 sentences maximum)
-5. If asked about something not in the dataset, politely say you don't have that information only ask about travelMates hotel-related topics
+5. CRITICAL: ONLY answer questions about TravelMates Hotel (bookings, rooms, services, facilities, contact info, location, etc.). If a user asks about ANY other topic (general knowledge, other hotels, unrelated subjects, calculations, facts, etc.), politely respond: 'I'm sorry, but I can only assist with questions about TravelMates Hotel. How can I help you with your stay or booking?'
 6. Be case-insensitive when matching questions
 7. When asked for phone number, email, or location, ALWAYS use 'Our' (e.g., 'Our phone number is...', 'Our email is...', 'Our location is...').
 
@@ -61,17 +61,24 @@ YOUR RESPONSE (keep it short and friendly):";
 
 <?php if (!$is_embed): ?>
 
-    <!-- Floating Action Button (NO Bootstrap data attributes) -->
+    <div class="position-fixed d-flex align-items-center" id="chatbotCallout"
+        style="bottom:36px;right:100px;z-index:1079;transition:opacity 0.3s ease, transform 0.3s ease;">
+        <div class="bg-warning text-dark px-3 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"
+            style="font-size:14px;font-weight:500;white-space:nowrap;">
+            <span>Need an assistant?</span>
+        </div>
+        <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #ffc107;margin-left:-1px;"></div>
+    </div>
+
     <button class="btn btn-warning rounded-circle position-fixed d-flex align-items-center justify-content-center"
         id="chatbotBtn" type="button" style="width:64px;height:64px;bottom:24px;right:24px;z-index:1080;">
         <img src="<?php echo IMAGES_URL; ?>/logo/chatbot.png" alt="Chat"
             style="width:70%;height:70%;object-fit:contain;">
     </button>
 
-    <!-- Chatbot Offcanvas (slides in from right) -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="chatbotOffcanvas" aria-labelledby="chatbotOffcanvasLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="chatbotOffcanvasLabel">TM Customer Assistant</h5>
+            <h5 class="offcanvas-title" id="chatbotOffcanvasLabel">TM AI Assistant</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex p-0 overflow-auto" style="min-width:320px;max-width:420px;">
@@ -87,17 +94,66 @@ YOUR RESPONSE (keep it short and friendly):";
             opacity: 0 !important;
             pointer-events: none !important;
         }
+
+        #chatbotCallout.hidden-permanently {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        #chatbotCallout.scroll-hidden {
+            opacity: 0;
+            transform: translateX(20px);
+            pointer-events: none;
+        }
+
+        #chatbotCallout.scroll-visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        #chatbotCallout:hover {
+            cursor: pointer;
+        }
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('chatbotBtn');
+            const callout = document.getElementById('chatbotCallout');
             const offcanvasEl = document.getElementById('chatbotOffcanvas');
 
-            if (!btn || !offcanvasEl) {
+            if (!btn || !offcanvasEl || !callout) {
                 console.error('Chatbot elements not found');
                 return;
             }
+
+            let lastScrollTop = 0;
+            let scrollTimeout = null;
+
+            callout.classList.add('scroll-visible');
+
+            window.addEventListener('scroll', function() {
+                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+
+                if (currentScroll > lastScrollTop && currentScroll > 100) {
+                    callout.classList.remove('scroll-visible');
+                    callout.classList.add('scroll-hidden');
+                } else if (currentScroll < lastScrollTop) {
+                    callout.classList.remove('scroll-hidden');
+                    callout.classList.add('scroll-visible');
+                }
+
+                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+            }, {
+                passive: true
+            });
+
             function initChatbot() {
                 if (typeof bootstrap === 'undefined') {
                     setTimeout(initChatbot, 100);
@@ -106,19 +162,41 @@ YOUR RESPONSE (keep it short and friendly):";
 
                 const bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
 
-                btn.addEventListener('click', function (e) {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
 
                     console.log('Button clicked - hiding now');
 
                     btn.classList.add('hidden-permanently');
+                    callout.classList.add('hidden-permanently');
                     bsOffcanvas.show();
                 });
 
-                offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
-                    console.log('Offcanvas closed - showing button again');
+                callout.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    console.log('Callout clicked - hiding now');
+
+                    btn.classList.add('hidden-permanently');
+                    callout.classList.add('hidden-permanently');
+                    bsOffcanvas.show();
+                });
+
+                offcanvasEl.addEventListener('hidden.bs.offcanvas', function() {
+                    console.log('Offcanvas closed - showing button and callout again');
                     btn.classList.remove('hidden-permanently');
+                    callout.classList.remove('hidden-permanently');
+
+                    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                    if (currentScroll > 100) {
+                        callout.classList.add('scroll-hidden');
+                        callout.classList.remove('scroll-visible');
+                    } else {
+                        callout.classList.remove('scroll-hidden');
+                        callout.classList.add('scroll-visible');
+                    }
                 });
             }
 
@@ -143,11 +221,9 @@ YOUR RESPONSE (keep it short and friendly):";
     <body class="d-flex flex-column vh-100 overflow-hidden"
         style="font-family: 'Poppins', sans-serif; background-color: #f8f9fa;">
 
-        <!-- Chat Messages Container -->
         <div class="container-fluid flex-grow-1 overflow-auto p-3" id="chat">
             <div class="row">
                 <div class="col-12">
-                    <!-- Welcome Message -->
                     <div class="d-flex gap-3 align-items-start mb-3">
                         <div class="rounded-circle bg-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0 shadow-sm"
                             style="width: 36px; height: 36px;">
@@ -164,7 +240,6 @@ YOUR RESPONSE (keep it short and friendly):";
             </div>
         </div>
 
-        <!-- Input Container -->
         <div class="container-fluid bg-white border-top py-3 px-4">
             <div class="row">
                 <div class="col-12">
@@ -186,7 +261,6 @@ YOUR RESPONSE (keep it short and friendly):";
             </div>
         </div>
 
-        <!-- Powered By Footer -->
         <div class="container-fluid bg-white text-center py-2">
             <div class="row">
                 <div class="col-12">
@@ -213,7 +287,6 @@ YOUR RESPONSE (keep it short and friendly):";
 
                 if (!text) return;
 
-                // Add user message
                 const userMsgRow = document.createElement('div');
                 userMsgRow.className = 'row mb-3';
                 userMsgRow.innerHTML = `
@@ -232,7 +305,6 @@ YOUR RESPONSE (keep it short and friendly):";
                 sendBtn.disabled = true;
                 chat.scrollTop = chat.scrollHeight;
 
-                // Add typing indicator
                 const typingRow = document.createElement('div');
                 typingRow.className = 'row mb-3';
                 typingRow.id = 'typing_' + Date.now();
@@ -258,12 +330,12 @@ YOUR RESPONSE (keep it short and friendly):";
                 chat.scrollTop = chat.scrollHeight;
 
                 fetch("<?php echo BASE_URL; ?>/integrations/chatbot/chatbotUI.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: "prompt=" + encodeURIComponent(text)
-                })
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: "prompt=" + encodeURIComponent(text)
+                    })
                     .then(res => res.text())
                     .then(reply => {
                         // Remove typing indicator

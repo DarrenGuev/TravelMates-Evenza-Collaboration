@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
 ?>
 <!doctype html>
@@ -62,7 +61,6 @@ require_once __DIR__ . '/../config.php';
             background: linear-gradient(135deg, #ff9900 0%, #ff6600 100%);
         }
 
-        /* White Google button: solid white, black text, no hover effect */
         .btn-google-white {
             background: #ffffff !important;
             color: #000000 !important;
@@ -86,7 +84,7 @@ require_once __DIR__ . '/../config.php';
         <div class="container position-relative" style="z-index: 1;">
             <div class="row justify-content-center">
                 <div class="col-12 col-xl-10">
-                    <div class="glass border border-secondary border-opacity-25 rounded-4 shadow-lg p-4 p-lg-5">
+                    <div class="glass border border-secondary border-opacity-25 rounded-4 shadow-lg p-4 p-lg-5 my-5">
                         <div class="row align-items-stretch" style="min-height: 500px;">
                             <!-- left Side-->
                             <div
@@ -127,8 +125,6 @@ require_once __DIR__ . '/../config.php';
                                                 aria-label="Close"></button>
                                         </div>
                                     <?php endif; ?>
-
-                                    <!-- (social buttons moved below the form) -->
 
                                     <?php if (isset($_GET['success'])): ?>
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
