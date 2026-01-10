@@ -16,13 +16,13 @@ $userRole = $isLoggedIn && isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
         <div class="collapse navbar-collapse justify-content-center" id="mainNavbar">
             <div class="navbar-nav">
-                <a class="nav-link small text-body mx-3 fw-bold" href="<?php echo BASE_URL; ?>/index.php"><i
-                        class="bi bi-house-fill mx-2 fs-5"></i>HOME</a>
-                <a class="nav-link small text-body mx-3 fw-bold" href="<?php echo FRONTEND_URL; ?>/rooms.php"><i
-                        class="bi bi-door-open mx-2 fs-5"></i>ROOMS</a>
-                <a class="nav-link small text-body mx-3 fw-bold" href="<?php echo FRONTEND_URL; ?>/events.php"><i
-                        class="bi bi-calendar-event mx-2 fs-5"></i>EVENTS</a>
-                <a class="nav-link small text-body mx-3 fw-bold" href="<?php echo FRONTEND_URL; ?>/about.php"><i
+                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo BASE_URL; ?>/index.php"><i
+                        class="bi bi-house-fill me-2 fs-5"></i>HOME</a>
+                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo FRONTEND_URL; ?>/rooms.php"><i
+                        class="bi bi-door-open me-2 fs-5"></i>ROOMS</a>
+                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo FRONTEND_URL; ?>/events.php"><i
+                        class="bi bi-calendar-event me-2 fs-5"></i>EVENTS</a>
+                <a class="nav-link small text-body fw-bold" href="<?php echo FRONTEND_URL; ?>/about.php"><i
                         class="bi bi-info-circle me-2 fs-5"></i>ABOUT</a>
                 <div class="d-flex d-lg-none mt-3">
                     <?php if ($isLoggedIn){ ?>

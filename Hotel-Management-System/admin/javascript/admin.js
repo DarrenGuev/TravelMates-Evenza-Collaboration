@@ -516,8 +516,7 @@ function switchTable(tableType) {
                     `;
         }
 
-        document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active'));
-        document.querySelector(`.stat-card[data-table="${tableType}"]`)?.classList.add('active');
+
 
         document.querySelectorAll('#adminTabs .nav-link').forEach(tab => tab.classList.remove('active'));
         document.getElementById('tab-' + tableType)?.classList.add('active');

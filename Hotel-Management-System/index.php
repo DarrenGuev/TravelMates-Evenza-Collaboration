@@ -50,7 +50,7 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
                         TravelMates Hotel
                     </h1>
                     <p class="lead fs-4 mb-5 opacity-75" style="color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
-                        travelmits // aayusin pa to
+                        Your comfort is our priority
                     </p>
                     <a href="<?php echo FRONTEND_URL; ?>/rooms.php" class="btn btn-warning btn-lg">Book Now</a>
                 </div>
@@ -80,7 +80,7 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
                         TravelMates Hotel
                     </h1>
                     <p class="lead fs-4 mb-5 opacity-75" style="color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
-                        travelmits // aayusin pa to
+                        Your comfort is our priority
                     </p>
                     <a href="<?php echo FRONTEND_URL; ?>/rooms.php" class="btn btn-warning btn-lg">Book Now</a>
                 </div>
