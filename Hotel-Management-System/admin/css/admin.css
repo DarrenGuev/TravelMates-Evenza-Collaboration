@@ -25,18 +25,6 @@ body {
 .stat-card {
     border-radius: 12px;
     border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.stat-card.active {
-    border: 3px solid #212529 !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .card {

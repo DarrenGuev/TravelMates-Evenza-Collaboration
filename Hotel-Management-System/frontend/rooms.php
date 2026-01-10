@@ -421,7 +421,7 @@ function groupFeaturesByCategory($features) {
                                                         <div class="col-8">
                                                             <p class="fw-semibold mb-2">Room Details</p>
                                                             <p class="small text-secondary mb-1"><strong>Type:</strong>
-                                                                <?php echo htmlspecialchars($row['roomTypeName']); ?></p>
+                                                                <?php echo htmlspecialchars($roomTypeName); ?></p>
                                                             <p class="small text-secondary mb-1"><strong>Capacity:</strong>
                                                                 <?php echo (int) $row['capacity']; ?> Guests</p>
                                                             <p class="small text-secondary mb-1"><strong>Available:</strong>
