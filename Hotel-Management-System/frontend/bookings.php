@@ -197,7 +197,15 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                             $isUserRefundRequest = isset($booking['cancelledByUser']) && $booking['cancelledByUser'] == 1;
                                         ?>
                                             <?php if ($isUserRefundRequest): ?>
-                                                <span class="badge bg-warning text-dark text-center py-2">Waiting for refund approval</span>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-warning text-dark text-center py-2">Waiting for refund approval</span>
+                                                    <button type="button" class="btn btn-link p-0 ms-2 refund-info-btn" 
+                                                            data-bookingid="<?php echo $booking['bookingID']; ?>" 
+                                                            data-reason="<?php echo htmlspecialchars($booking['refundReason'] ?? '', ENT_QUOTES); ?>"
+                                                            title="Refund details">
+                                                        <i class="bi bi-info-circle"></i>
+                                                    </button>
+                                                </div>
                                             <?php else: ?>
                                                 <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $booking['bookingID']; ?>">
                                                     <i class="bi bi-x-circle me-1"></i>Cancel Booking
@@ -429,6 +437,31 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <!-- Refund Info Modal -->
+    <div class="modal fade" id="refundInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Refund Request Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="refundInfoMessage">Your refund request is under review by our admin team. Typical processing time is 3-5 business days.</p>
+                    <div id="refundReasonBlock" class="mt-3 d-none">
+                        <h6 class="fw-bold">Reason provided</h6>
+                        <p id="refundReasonText" class="small text-muted mb-0"></p>
+                    </div>
+                    <div class="alert alert-info mt-3 small mb-0">
+                        <i class="bi bi-clock-history me-1"></i>
+                        Admin will review your request and process the refund to your original payment method if approved.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         window.IMAGES_URL = '<?php echo IMAGES_URL; ?>';
         
@@ -465,6 +498,35 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
             return true;
         }
     </script>
+        <script>
+            // Show refund info modal when user clicks the info button next to the waiting badge
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.refund-info-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const bookingID = this.dataset.bookingid || '';
+                        const reason = this.dataset.reason || '';
+                        const modalEl = document.getElementById('refundInfoModal');
+                        const reasonBlock = document.getElementById('refundReasonBlock');
+                        const reasonText = document.getElementById('refundReasonText');
+                        const infoMessage = document.getElementById('refundInfoMessage');
+
+                        if (bookingID) {
+                            infoMessage.innerHTML = `Your refund request for booking #${bookingID} is under review by our admin team. Typical processing time is 3-5 business days.`;
+                        }
+
+                        if (reason && reason.trim().length > 0) {
+                            reasonText.textContent = reason;
+                            reasonBlock.classList.remove('d-none');
+                        } else {
+                            reasonBlock.classList.add('d-none');
+                        }
+
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    });
+                });
+            });
+        </script>
     <script src="<?php echo JS_URL; ?>/changeMode.js"></script>
 </body>
 </html>
