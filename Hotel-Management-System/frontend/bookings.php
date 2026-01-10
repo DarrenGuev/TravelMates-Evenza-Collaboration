@@ -192,10 +192,17 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                             </button>
                                         <?php endif; ?>
                                         
-                                        <?php if ($booking['bookingStatus'] === 'pending'): ?>
-                                            <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $booking['bookingID']; ?>">
-                                                <i class="bi bi-x-circle me-1"></i>Cancel Booking
-                                            </button>
+                                        <?php if ($booking['bookingStatus'] === 'pending'): 
+                                            // If user has already requested a refund, show waiting badge instead of cancel button
+                                            $isUserRefundRequest = isset($booking['cancelledByUser']) && $booking['cancelledByUser'] == 1;
+                                        ?>
+                                            <?php if ($isUserRefundRequest): ?>
+                                                <span class="badge bg-warning text-dark text-center py-2">Waiting for refund approval</span>
+                                            <?php else: ?>
+                                                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal<?php echo $booking['bookingID']; ?>">
+                                                    <i class="bi bi-x-circle me-1"></i>Cancel Booking
+                                                </button>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                         
                                         <small class="text-muted text-center">
