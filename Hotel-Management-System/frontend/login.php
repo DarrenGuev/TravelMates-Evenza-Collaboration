@@ -103,9 +103,6 @@ require_once __DIR__ . '/../config.php';
                                         unforgettable memories with us.
                                     </p>
                                 </div>
-                                <a class="navbar-brand fw-bold fs-3" href="<?php echo BASE_URL; ?>/index.php"><img
-                                        id="site-logo" src="<?php echo IMAGES_URL; ?>/logo/logoW.png"
-                                        style="width: 120px;" alt="logo"></a>
                             </div>
 
                             <!-- divider -->
@@ -153,6 +150,10 @@ require_once __DIR__ . '/../config.php';
                                             <button type="submit"
                                                 class="btn btn-glass btn-lg text-white fw-semibold rounded-3 py-3">Login</button>
                                         </div>
+                                        <div class="text-end mt-2">
+                                            <a href="<?php echo FRONTEND_URL; ?>/forgotPassword.php"
+                                                class="text-warning text-decoration-none small">Forgot Password?</a>
+                                        </div>
                                     </form>
 
                                     <div class="d-flex align-items-center my-3">
@@ -164,10 +165,10 @@ require_once __DIR__ . '/../config.php';
                                         <a href="<?php echo BASE_URL; ?>/integrations/gmail/googleLogin.php"
                                             class="btn btn-google-white w-100 d-flex align-items-center justify-content-center py-2">
                                             <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                <path d="M21.6 12.227c0-.766-.069-1.5-.198-2.227H12v4.217h5.597c-.242 1.308-.98 2.418-2.09 3.168v2.633h3.376c1.977-1.821 3.117-4.5 3.117-7.791z" fill="#4285F4"/>
-                                                <path d="M12 22c2.7 0 4.972-.9 6.63-2.445l-3.376-2.633C14.9 17.1 13.55 17.6 12 17.6c-2.26 0-4.174-1.52-4.852-3.56H3.604v2.813C5.26 19.86 8.36 22 12 22z" fill="#34A853"/>
-                                                <path d="M7.148 13.999a4.999 4.999 0 010-3.998V7.188H3.604A9.998 9.998 0 0012 2c2.7 0 4.972.9 6.63 2.445l-3.376 2.633C14.9 6.9 13.55 6.4 12 6.4c-2.26 0-4.174 1.52-4.852 3.56z" fill="#FBBC05"/>
-                                                <path d="M12 6.4c1.55 0 2.9.5 3.854 1.678L19.23 5.445C17.972 4.018 15.7 3 12 3 8.36 3 5.26 5.14 3.604 7.999l3.544 2.001C7.826 8.02 9.74 6.5 12 6.5z" fill="#EA4335"/>
+                                                <path d="M21.6 12.227c0-.766-.069-1.5-.198-2.227H12v4.217h5.597c-.242 1.308-.98 2.418-2.09 3.168v2.633h3.376c1.977-1.821 3.117-4.5 3.117-7.791z" fill="#4285F4" />
+                                                <path d="M12 22c2.7 0 4.972-.9 6.63-2.445l-3.376-2.633C14.9 17.1 13.55 17.6 12 17.6c-2.26 0-4.174-1.52-4.852-3.56H3.604v2.813C5.26 19.86 8.36 22 12 22z" fill="#34A853" />
+                                                <path d="M7.148 13.999a4.999 4.999 0 010-3.998V7.188H3.604A9.998 9.998 0 0012 2c2.7 0 4.972.9 6.63 2.445l-3.376 2.633C14.9 6.9 13.55 6.4 12 6.4c-2.26 0-4.174 1.52-4.852 3.56z" fill="#FBBC05" />
+                                                <path d="M12 6.4c1.55 0 2.9.5 3.854 1.678L19.23 5.445C17.972 4.018 15.7 3 12 3 8.36 3 5.26 5.14 3.604 7.999l3.544 2.001C7.826 8.02 9.74 6.5 12 6.5z" fill="#EA4335" />
                                             </svg>
                                             <p class="m-0 fw-normal">Continue with Google</p>
                                         </a>
@@ -194,7 +195,7 @@ require_once __DIR__ . '/../config.php';
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
 
-        togglePassword.addEventListener('click', function (e) {
+        togglePassword.addEventListener('click', function(e) {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             this.classList.toggle('bi-eye');

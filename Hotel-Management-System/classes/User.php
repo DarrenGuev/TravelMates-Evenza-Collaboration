@@ -154,4 +154,9 @@ class User extends Model
         
         return false;
     }
+
+    public function findByPhone(string $phoneNumber): ?array
+    {
+        return $this->findOneBy('phoneNumber', $phoneNumber);
+    }
 }
