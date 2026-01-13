@@ -69,7 +69,8 @@ function getRoomFeaturesArray($roomID, $roomModel = null)
 }
 
 // Helper function to group features by category
-function groupFeaturesByCategory($features) {
+function groupFeaturesByCategory($features)
+{
     $grouped = [];
     foreach ($features as $feature) {
         $category = $feature['categoryName'] ?? 'General';
@@ -128,17 +129,17 @@ function groupFeaturesByCategory($features) {
                                             <!-- Room Type -->
                                             <div class="border-bottom pb-3 mb-3">
                                                 <h6 class="fw-semibold mb-3 text-secondary">Room Type</h6>
-                                                <?php 
-                                                foreach ($roomTypesData as $type) { 
+                                                <?php
+                                                foreach ($roomTypesData as $type) {
                                                     $typeValue = strtolower($type['roomType']);
                                                     $typeId = 'type' . str_replace(' ', '', $type['roomType']) . 'Mobile';
                                                 ?>
-                                                <div class="form-check mb-2">
-                                                    <input class="form-check-input filter-checkbox" type="checkbox" 
-                                                        value="<?php echo htmlspecialchars($typeValue); ?>"
-                                                        id="<?php echo htmlspecialchars($typeId); ?>">
-                                                    <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
-                                                </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input filter-checkbox" type="checkbox"
+                                                            value="<?php echo htmlspecialchars($typeValue); ?>"
+                                                            id="<?php echo htmlspecialchars($typeId); ?>">
+                                                        <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
+                                                    </div>
                                                 <?php } ?>
                                             </div>
 
@@ -231,17 +232,17 @@ function groupFeaturesByCategory($features) {
                             <!-- Room Type -->
                             <div class="border-bottom pb-3 mb-3">
                                 <h6 class="fw-semibold mb-3 text-secondary">Room Type</h6>
-                                <?php 
-                                foreach ($roomTypesData as $type) { 
+                                <?php
+                                foreach ($roomTypesData as $type) {
                                     $typeValue = strtolower($type['roomType']);
                                     $typeId = 'type' . str_replace(' ', '', $type['roomType']);
                                 ?>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" 
-                                        value="<?php echo htmlspecialchars($typeValue); ?>" 
-                                        id="<?php echo htmlspecialchars($typeId); ?>">
-                                    <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
-                                </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox"
+                                            value="<?php echo htmlspecialchars($typeValue); ?>"
+                                            id="<?php echo htmlspecialchars($typeId); ?>">
+                                        <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
+                                    </div>
                                 <?php } ?>
                             </div>
 
@@ -337,7 +338,7 @@ function groupFeaturesByCategory($features) {
                 foreach ($roomTypesData as $roomType) {
                     $roomsData = $roomModel->getByType($roomType['roomTypeID']);
                     if (count($roomsData) > 0) {
-                        ?>
+                ?>
                         <div class="container">
                             <div class="row mt-5">
                                 <div class="col">
@@ -354,8 +355,8 @@ function groupFeaturesByCategory($features) {
                                         $features[] = $feature['featureName'];
                                     }
                                     $roomTypeName = $roomType['roomType'];
-                                    ?>
-                                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 pb-4 room-card" 
+                                ?>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 pb-4 room-card"
                                         data-room-type="<?php echo strtolower($roomTypeName); ?>"
                                         data-price="<?php echo $row['base_price']; ?>"
                                         data-capacity="<?php echo (int) $row['capacity']; ?>"
@@ -378,24 +379,29 @@ function groupFeaturesByCategory($features) {
                                                     night</p>
                                                 <div class="mx-2">
                                                     <?php if (!empty($features)) {
-                                                        foreach ($features as $featureName) { ?>
-                                                            <span
-                                                                class="badge bg-dark text-white me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
-                                                        <?php }
+                                                        $shown = 0;
+                                                        foreach ($features as $featureName) {
+                                                            if ($shown >= 3) break;
+                                                    ?>
+                                                            <span class="text-white text-muted small me-1 mb-1"><?php echo htmlspecialchars($featureName . " -"); ?></span>
+                                                        <?php
+                                                            $shown++;
+                                                        }
                                                     } else { ?>
                                                         <span class="text-muted small">No features listed</span>
                                                     <?php } ?>
+                                                    <span class= "text-muted small">and More..</span>
                                                 </div>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <button class="btn btn-warning flex-grow-1" data-bs-toggle="modal"
+                                                        data-bs-target="#bookingModal<?php echo $row['roomID']; ?>">Book
+                                                        Now</button>
+                                                    <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="modal"
+                                                        data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
+                                                        Details</button>
                                                 </div>
-                                                <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
-                                                    <div class="d-flex gap-2 flex-wrap">
-                                                        <button class="btn btn-warning flex-grow-1" data-bs-toggle="modal"
-                                                            data-bs-target="#bookingModal<?php echo $row['roomID']; ?>">Book
-                                                            Now</button>
-                                                        <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="modal"
-                                                            data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
-                                                            Details</button>
-                                                    </div>
                                             </div>
                                         </div>
                                     </div>
@@ -435,7 +441,7 @@ function groupFeaturesByCategory($features) {
                                                                     foreach ($features as $featureName) { ?>
                                                                         <span
                                                                             class="badge bg-dark me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
-                                                                    <?php }
+                                                                <?php }
                                                                 } ?>
                                                             </div>
                                                             <div class="mb-2 justify-content-evenly">
@@ -484,7 +490,7 @@ function groupFeaturesByCategory($features) {
                                                                             foreach ($features as $featureName) { ?>
                                                                                 <span
                                                                                     class="badge bg-dark me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
-                                                                            <?php }
+                                                                        <?php }
                                                                         } ?>
                                                                     </div>
                                                                     <p class="small text-secondary"><strong>Type:</strong>
@@ -585,7 +591,7 @@ function groupFeaturesByCategory($features) {
                                                                         <div class="alert alert-danger py-2 mb-2" id="dateError<?php echo $row['roomID']; ?>" style="display: none;">
                                                                             <small><i class="bi bi-exclamation-triangle me-1"></i><span id="dateErrorMessage<?php echo $row['roomID']; ?>"></span></small>
                                                                         </div>
-                                                                    </div>                                          
+                                                                    </div>
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-3">
@@ -630,9 +636,11 @@ function groupFeaturesByCategory($features) {
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="button" class="btn btn-warning"
-                                                        onclick="openPaymentModal(<?php echo $row['roomID']; ?>, <?php echo $row['base_price']; ?>)">Proceed
-                                                        to Payment</button>
+                                                    <?php if (!$userData) : ?>
+                                                        <button type="button" class="btn btn-warning" disabled title="Please log in to proceed">Proceed to Payment</button>
+                                                    <?php else : ?>
+                                                        <button type="button" class="btn btn-warning" onclick="openPaymentModal(<?php echo $row['roomID']; ?>, <?php echo $row['base_price']; ?>)">Proceed to Payment</button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -690,7 +698,7 @@ function groupFeaturesByCategory($features) {
                                 <?php } ?>
                             </div>
                         </div>
-                        <?php
+                <?php
                     }
                 }
                 ?>
@@ -712,18 +720,18 @@ function groupFeaturesByCategory($features) {
             const featureCheckboxes = document.querySelectorAll('.feature-checkbox');
             const priceRanges = document.querySelectorAll('#priceRange, #priceRangeMobile');
             const guestCapacities = document.querySelectorAll('#guestCapacity, #guestCapacityMobile');
-            
+
             // Prevent dropdown from closing when clicking on checkboxes inside
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 menu.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('form-check-input') || 
+                    if (e.target.classList.contains('form-check-input') ||
                         e.target.classList.contains('form-check-label') ||
                         e.target.closest('.form-check')) {
                         e.stopPropagation();
                     }
                 });
             });
-            
+
             priceRanges.forEach(priceRange => {
                 if (priceRange) {
                     const priceDisplay = document.createElement('div');
@@ -731,7 +739,7 @@ function groupFeaturesByCategory($features) {
                     priceDisplay.id = 'priceDisplay' + (priceRange.id.includes('Mobile') ? 'Mobile' : '');
                     priceDisplay.textContent = 'Up to ₱' + parseInt(priceRange.value).toLocaleString();
                     priceRange.parentElement.insertBefore(priceDisplay, priceRange);
-                    
+
                     priceRange.addEventListener('input', function() {
                         priceDisplay.textContent = 'Up to ₱' + parseInt(this.value).toLocaleString();
                         syncPriceRanges(this);
@@ -739,14 +747,14 @@ function groupFeaturesByCategory($features) {
                     });
                 }
             });
-            
+
             roomTypeCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     syncCheckboxes(this);
                     applyFilters();
                 });
             });
-            
+
             featureCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     syncCheckboxes(this);
@@ -754,7 +762,7 @@ function groupFeaturesByCategory($features) {
                     applyFilters();
                 });
             });
-            
+
             guestCapacities.forEach(select => {
                 if (select) {
                     select.addEventListener('change', function() {
@@ -764,31 +772,31 @@ function groupFeaturesByCategory($features) {
                 }
             });
         }
-        
+
         function updateCategoryBadges() {
             return;
         }
-        
+
         function syncCheckboxes(sourceCheckbox) {
             const value = sourceCheckbox.value;
             const isChecked = sourceCheckbox.checked;
             const isMobile = sourceCheckbox.id.includes('Mobile');
             const baseId = sourceCheckbox.id.replace('Mobile', '');
-            
+
             const targetId = isMobile ? baseId : baseId + 'Mobile';
             const targetCheckbox = document.getElementById(targetId);
-            
+
             if (targetCheckbox) {
                 targetCheckbox.checked = isChecked;
             }
         }
-        
+
         function syncPriceRanges(sourceRange) {
             const value = sourceRange.value;
             const isMobile = sourceRange.id.includes('Mobile');
             const targetId = isMobile ? 'priceRange' : 'priceRangeMobile';
             const targetRange = document.getElementById(targetId);
-            
+
             if (targetRange) {
                 targetRange.value = value;
                 const displayId = 'priceDisplay' + (isMobile ? '' : 'Mobile');
@@ -798,58 +806,58 @@ function groupFeaturesByCategory($features) {
                 }
             }
         }
-        
+
         function syncGuestCapacity(sourceSelect) {
             const value = sourceSelect.value;
             const isMobile = sourceSelect.id.includes('Mobile');
             const targetId = isMobile ? 'guestCapacity' : 'guestCapacityMobile';
             const targetSelect = document.getElementById(targetId);
-            
+
             if (targetSelect) {
                 targetSelect.value = value;
             }
         }
-        
+
         function applyFilters() {
             const selectedTypes = Array.from(document.querySelectorAll('input[id^="type"]:not([id*="Mobile"]):checked'))
                 .map(cb => cb.value.toLowerCase());
-            
+
             const selectedFeatures = Array.from(document.querySelectorAll('.feature-checkbox:not([id*="Mobile"]):checked'))
                 .map(cb => cb.value.toLowerCase());
-            
+
             const priceRange = document.getElementById('priceRange');
             const maxPrice = priceRange ? parseFloat(priceRange.value) : Infinity;
-            
+
             const guestCapacity = document.getElementById('guestCapacity');
             const minCapacity = guestCapacity ? parseInt(guestCapacity.value) || 0 : 0;
-            
+
             // Get all room cards
             const roomCards = document.querySelectorAll('.room-card');
             let visibleCount = 0;
-            
+
             roomCards.forEach(card => {
                 const cardType = card.getAttribute('data-room-type');
                 const cardPrice = parseFloat(card.getAttribute('data-price'));
                 const cardCapacity = parseInt(card.getAttribute('data-capacity'));
                 const cardFeatures = card.getAttribute('data-features').split(',').filter(f => f.trim() !== '');
-                
+
                 let show = true;
-                
+
                 // Filter by room type
                 if (selectedTypes.length > 0 && !selectedTypes.includes(cardType)) {
                     show = false;
                 }
-                
+
                 // Filter by price
                 if (cardPrice > maxPrice) {
                     show = false;
                 }
-                
+
                 // Filter by capacity
                 if (minCapacity > 0 && cardCapacity < minCapacity) {
                     show = false;
                 }
-                
+
                 // Filter by features (all selected features must be present)
                 if (selectedFeatures.length > 0) {
                     const normalizedCardFeatures = cardFeatures.map(f => f.trim().toLowerCase()).filter(Boolean);
@@ -860,7 +868,7 @@ function groupFeaturesByCategory($features) {
                         show = false;
                     }
                 }
-                
+
                 // Show/hide card
                 if (show) {
                     card.style.display = 'block';
@@ -869,11 +877,11 @@ function groupFeaturesByCategory($features) {
                     card.style.display = 'none';
                 }
             });
-            
+
             document.querySelectorAll('[id$="RoomCards"]').forEach(section => {
                 const visibleCards = section.querySelectorAll('.room-card:not([style*="display: none"])').length;
                 const container = section.closest('.container');
-                
+
                 if (visibleCards > 0) {
                     section.style.display = '';
                     if (container) container.style.display = '';
@@ -882,14 +890,14 @@ function groupFeaturesByCategory($features) {
                     if (container) container.style.display = 'none';
                 }
             });
-            
+
             if (visibleCount === 0) {
                 showNoResultsMessage();
             } else {
                 removeNoResultsMessage();
             }
         }
-        
+
         function showNoResultsMessage() {
             removeNoResultsMessage();
             const container = document.querySelector('.col-12.col-lg-9.col-xl-10');
@@ -899,23 +907,23 @@ function groupFeaturesByCategory($features) {
             message.innerHTML = '<h5>No rooms match your filters</h5><p>Try adjusting your filter criteria</p>';
             container.appendChild(message);
         }
-        
+
         function removeNoResultsMessage() {
             const existing = document.getElementById('noResultsMessage');
             if (existing) existing.remove();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             initializeFilters();
-            
+
             <?php
             foreach ($roomTypesData as $roomType) {
                 $roomsForSetup = $roomModel->getByType($roomType['roomTypeID']);
                 foreach ($roomsForSetup as $room) {
-                    ?>
+            ?>
                     setupBookingCalculation(<?php echo $room['roomID']; ?>, <?php echo $room['base_price']; ?>);
-                    <?php
+            <?php
                 }
             }
             ?>
@@ -937,7 +945,7 @@ function groupFeaturesByCategory($features) {
                         const checkInDate = new Date(checkIn.value);
                         checkInDate.setDate(checkInDate.getDate() + 1);
                         checkOut.min = checkInDate.toISOString().split('T')[0];
-                        
+
                         // Clear checkout if it's before the new minimum
                         if (checkOut.value && new Date(checkOut.value) <= new Date(checkIn.value)) {
                             checkOut.value = '';
@@ -982,7 +990,9 @@ function groupFeaturesByCategory($features) {
                         checkInDate.toLocaleDateString() + ' - ' + checkOutDate.toLocaleDateString();
                     document.getElementById('summaryNights' + roomID).textContent = nights + ' night(s)';
                     document.getElementById('summaryGuests' + roomID).textContent = guests;
-                    document.getElementById('summaryTotal' + roomID).textContent = total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                    document.getElementById('summaryTotal' + roomID).textContent = total.toLocaleString('en-PH', {
+                        minimumFractionDigits: 2
+                    });
                     document.getElementById('totalPriceInput' + roomID).value = total;
                 } else {
                     if (errorDiv && errorMsg) {
@@ -1006,23 +1016,26 @@ function groupFeaturesByCategory($features) {
             const checkOut = document.getElementById('checkOut' + roomID).value;
             const errorDiv = document.getElementById('dateError' + roomID);
             const errorMsg = document.getElementById('dateErrorMessage' + roomID);
-            
+
             if (checkIn && checkOut) {
                 const checkInDate = new Date(checkIn);
                 const checkOutDate = new Date(checkOut);
-                
+
                 if (checkOutDate <= checkInDate) {
                     if (errorDiv && errorMsg) {
                         errorMsg.textContent = 'Check-out date must be after check-in date. Please correct your dates before proceeding.';
                         errorDiv.style.display = 'block';
                     }
-                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    errorDiv.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                     return;
                 }
             }
 
             const total = document.getElementById('totalPriceInput' + roomID).value;
-            
+
             // Validate total price
             if (!total || parseFloat(total) <= 0) {
                 if (errorDiv && errorMsg) {
@@ -1031,9 +1044,11 @@ function groupFeaturesByCategory($features) {
                 }
                 return;
             }
-            
+
             document.getElementById('paymentTotal' + roomID).textContent =
-                parseFloat(total).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                parseFloat(total).toLocaleString('en-PH', {
+                    minimumFractionDigits: 2
+                });
 
             const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingModal' + roomID));
             bookingModal.hide();
@@ -1137,4 +1152,5 @@ function groupFeaturesByCategory($features) {
     </script>
 
 </body>
+
 </html>
