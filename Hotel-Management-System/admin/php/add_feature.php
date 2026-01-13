@@ -13,10 +13,15 @@ $featureModel = new Feature();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $featureName = isset($_POST['featureName']) ? trim($_POST['featureName']) : '';
-    $category = isset($_POST['category']) ? trim($_POST['category']) : 'General';
+    $categoryID = isset($_POST['categoryID']) ? (int)$_POST['categoryID'] : 0;
     
     if (empty($featureName)) {
         echo json_encode(['success' => false, 'error' => 'Feature name is required']);
+        exit;
+    }
+    
+    if ($categoryID <= 0) {
+        echo json_encode(['success' => false, 'error' => 'Valid category is required']);
         exit;
     }
     
@@ -29,20 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'error' => 'Feature already exists',
             'featureId' => $existingFeature['featureId'],
             'featureName' => $featureName,
-            'category' => $existingFeature['category']
+            'categoryID' => $existingFeature['categoryID']
         ]);
         exit;
     }
     
-    // Insert new feature with category using model
-    $result = $featureModel->addFeature($featureName, $category);
+    // Insert new feature with categoryID using model
+    $result = $featureModel->addFeature($featureName, $categoryID);
     
     if ($result['success'] && $result['id']) {
         echo json_encode([
             'success' => true,
             'featureId' => $result['id'],
             'featureName' => $featureName,
-            'category' => $category,
+            'categoryID' => $categoryID,
             'message' => 'Feature added successfully'
         ]);
     } else {

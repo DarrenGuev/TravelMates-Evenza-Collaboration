@@ -11,9 +11,9 @@
                     <input type="hidden" name="featureId" value="<?php echo (int)$row['featureId']; ?>">
                     <div class="mb-3">
                         <label class="form-label">Category</label>
-                        <select class="form-select" name="editCategory" required>
+                        <select class="form-select" name="editCategoryID" required>
                             <?php foreach ($categoryList as $cat) { ?>
-                                <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>" <?php echo ($row['category'] == $cat['categoryName']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['categoryName']); ?></option>
+                                <option value="<?php echo (int)$cat['categoryID']; ?>" <?php echo (isset($row['categoryID']) && $row['categoryID'] == $cat['categoryID']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cat['categoryName']); ?></option>
                             <?php } ?>
                         </select>
                     </div>

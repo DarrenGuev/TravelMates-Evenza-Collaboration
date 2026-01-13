@@ -19,12 +19,6 @@ class FeatureCategory extends Model
         return array_column($categories, 'categoryName');
     }
 
-    /**
-     * Add a new category
-     * 
-     * @param string $categoryName Category name
-     * @return array ['success' => bool, 'message' => string, 'id' => int|null]
-     */
     public function addCategory(string $categoryName): array
     {
         $categoryName = trim($categoryName);
@@ -48,7 +42,7 @@ class FeatureCategory extends Model
     }
 
     /**
-     * Rename a category (also updates features using this category)
+     * Rename a category
      * 
      * @param int $categoryID Category ID
      * @param string $newName New category name
@@ -82,10 +76,7 @@ class FeatureCategory extends Model
             return ['success' => false, 'message' => 'Error renaming category. Please try again.'];
         }
 
-        // update features using this category
-        $updateFeaturesQuery = "UPDATE features SET category = ? WHERE category = ?";
-        $this->executeStatement($updateFeaturesQuery, 'ss', [$newName, $oldName]);
-
+        // No need to update features table - foreign key relationship handles it automatically
         return ['success' => true, 'message' => "Category renamed from \"{$oldName}\" to \"{$newName}\" successfully!"];
     }
 
@@ -100,8 +91,8 @@ class FeatureCategory extends Model
         $categoryName = $category['categoryName'];
 
         // check if any features are using this category
-        $query = "SELECT COUNT(*) as count FROM features WHERE category = ?";
-        $result = $this->executeStatement($query, 's', [$categoryName]);
+        $query = "SELECT COUNT(*) as count FROM features WHERE categoryID = ?";
+        $result = $this->executeStatement($query, 'i', [$categoryID]);
         
         if ($result) {
             $row = $this->db->fetchOne($result);
@@ -128,7 +119,7 @@ class FeatureCategory extends Model
     {
         $query = "SELECT fc.*, COUNT(f.featureId) as featureCount 
                   FROM `{$this->table}` fc 
-                  LEFT JOIN features f ON fc.categoryName = f.category 
+                  LEFT JOIN features f ON fc.categoryID = f.categoryID 
                   GROUP BY fc.categoryID 
                   ORDER BY fc.categoryName";
         $result = $this->rawQuery($query);

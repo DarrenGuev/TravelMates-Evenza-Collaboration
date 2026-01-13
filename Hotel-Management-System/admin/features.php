@@ -13,11 +13,13 @@ $categoryModel = new FeatureCategory();
 // Handle form submissions and store messages in session
 if (isset($_POST['add_feature'])) {
     $featureName = trim($_POST['featureName']);
-    $category = trim($_POST['category']);
+    $categoryID = isset($_POST['categoryID']) ? (int)$_POST['categoryID'] : 0;
 
-    if (!empty($featureName) && !empty($category)) {
-        $result = $featureModel->addFeature($featureName, $category);
+    if (!empty($featureName) && $categoryID > 0) {
+        $result = $featureModel->addFeature($featureName, $categoryID);
         Auth::setAlert($result['success'] ? 'success' : 'danger', $result['message']);
+    } else {
+        Auth::setAlert('danger', 'Feature name and category are required');
     }
     header("Location: features.php");
     exit();
@@ -34,11 +36,13 @@ if (isset($_POST['deleteFeatureId'])) {
 if (isset($_POST['update_feature'])) {
     $featureId = (int)$_POST['featureId'];
     $featureName = trim($_POST['editFeatureName']);
-    $category = trim($_POST['editCategory']);
+    $categoryID = isset($_POST['editCategoryID']) ? (int)$_POST['editCategoryID'] : 0;
 
-    if ($featureId && !empty($featureName) && !empty($category)) {
-        $result = $featureModel->updateFeature($featureId, $featureName, $category);
+    if ($featureId && !empty($featureName) && $categoryID > 0) {
+        $result = $featureModel->updateFeature($featureId, $featureName, $categoryID);
         Auth::setAlert($result['success'] ? 'success' : 'danger', $result['message']);
+    } else {
+        Auth::setAlert('danger', 'Feature name and category are required');
     }
     header("Location: features.php");
     exit();
@@ -131,10 +135,10 @@ $categoryList = $categoryModel->getAllOrdered();
                             </li>
                             <?php 
                             // Get categories with feature counts using Feature model
-                            $allFeaturesList = $featureModel->getAll('category');
+                            $allFeaturesList = $featureModel->getAllOrdered();
                             $categoriesWithCount = [];
                             foreach ($allFeaturesList as $feat) {
-                                $cat = $feat['category'] ?? 'General';
+                                $cat = $feat['categoryName'] ?? 'General';
                                 $categoriesWithCount[$cat] = ($categoriesWithCount[$cat] ?? 0) + 1;
                             }
                             
@@ -189,9 +193,9 @@ $categoryList = $categoryModel->getAllOrdered();
                                 </thead>
                                 <tbody id="featuresTableBody">
                                     <?php foreach ($features as $row) { ?>
-                                        <tr data-category="<?php echo htmlspecialchars($row['category'] ?? 'General', ENT_QUOTES); ?>">
+                                        <tr data-category="<?php echo htmlspecialchars($row['categoryName'] ?? 'General', ENT_QUOTES); ?>">
                                             <td class="text-center"><?php echo (int)$row['featureId']; ?></td>
-                                            <td class="text-center"><span class="badge bg-info"><?php echo htmlspecialchars($row['category'] ?? 'General'); ?></span></td>
+                                            <td class="text-center"><span class="badge bg-info"><?php echo htmlspecialchars($row['categoryName'] ?? 'General'); ?></span></td>
                                             <td class="text-center"><?php echo htmlspecialchars($row['featureName']); ?></td>
                                             <td class="text-center">
                                                 <div class="btn-group btn-group-sm">

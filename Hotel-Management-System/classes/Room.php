@@ -100,11 +100,12 @@ class Room extends Model
 
     public function getFeatures(int $roomID): array
     {
-        $query = "SELECT f.featureId, f.featureName, f.category 
+        $query = "SELECT f.featureId, f.featureName, f.categoryID, fc.categoryName 
                   FROM features f 
                   INNER JOIN roomFeatures rf ON f.featureId = rf.featureID 
+                  INNER JOIN featurecategories fc ON f.categoryID = fc.categoryID 
                   WHERE rf.roomID = ? 
-                  ORDER BY f.category, f.featureName";
+                  ORDER BY fc.categoryName, f.featureName";
         $result = $this->executeStatement($query, 'i', [$roomID]);
         
         return $result ? $this->db->fetchAll($result) : [];
@@ -116,7 +117,7 @@ class Room extends Model
         $grouped = [];
         
         foreach ($features as $feature) {
-            $category = $feature['category'] ?? 'General';
+            $category = $feature['categoryName'] ?? 'General';
             if (!isset($grouped[$category])) {
                 $grouped[$category] = [];
             }

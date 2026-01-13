@@ -18,8 +18,8 @@
                     // Count features per category
                     $featureCounts = [];
                     foreach ($allFeaturesList as $feat) {
-                        $cat = $feat['category'] ?? 'General';
-                        $featureCounts[$cat] = ($featureCounts[$cat] ?? 0) + 1;
+                        $catName = $feat['categoryName'] ?? 'General';
+                        $featureCounts[$catName] = ($featureCounts[$catName] ?? 0) + 1;
                     }
                     
                     foreach ($catListForModal as $catRow) { 

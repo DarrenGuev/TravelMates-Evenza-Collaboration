@@ -10,10 +10,10 @@
                 <form method="POST">
                     <div class="mb-3">
                         <label class="form-label">Category</label>
-                        <select class="form-select" name="category" required>
+                        <select class="form-select" name="categoryID" required>
                             <option value="" selected disabled>-- Select Category --</option>
                             <?php foreach ($categoryList as $cat) { ?>
-                                <option value="<?php echo htmlspecialchars($cat['categoryName']); ?>"><?php echo htmlspecialchars($cat['categoryName']); ?></option>
+                                <option value="<?php echo (int)$cat['categoryID']; ?>"><?php echo htmlspecialchars($cat['categoryName']); ?></option>
                             <?php } ?>
                         </select>
                     </div>
