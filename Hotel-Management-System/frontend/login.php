@@ -92,7 +92,7 @@ require_once __DIR__ . '/../config.php';
                                 <div>
                                     <div class="mt-2">
                                         <a href="<?php echo BASE_URL; ?>/index.php"
-                                            class="text-white-50 small mb-0 text-decoration-underline">&lt;-- Back to
+                                            class="text-white-50 mb-0 text-decoration-none"><i class="bi bi-arrow-left-circle"></i> Back to
                                             Home Page</a>
                                     </div>
                                     <h1 class="display-4 fw-bold text-white mb-2 mt-5">Welcome</h1>
