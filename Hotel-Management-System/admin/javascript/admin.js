@@ -57,19 +57,6 @@ function getBookingActions(booking) {
                     <i class="bi bi-flag"></i>
                 </button>`;
     }
-
-    // Add Edit/Pencil button (opens the inline modal which is not easily replicated here without full HTML structure, 
-    // but in admin.php we don't have the inline edit modals pre-rendered for all rows usually if loaded dynamically.
-    // However, looking at manage_bookings.php, it uses a modal per row.
-    // In admin.php we are rendering rows via JS. We can't easily open a PHP-generated modal that doesn't exist.
-    // We will omit the edit button for now or implement a JS-based edit modal later if requested.
-    // If you want the exact look, the edit button is:
-    /*
-    actions += `
-            <button class="btn btn-outline-secondary" title="Edit Booking">
-                <i class="bi bi-pencil"></i>
-            </button>`;
-    */
     
     return actions;
 }
@@ -485,7 +472,104 @@ const tableConfigs = {
     }
 };
 
+// Pagination for admin tables
+const adminItemsPerPage = 7;
+const adminCurrentPage = {
+    reservations: 1,
+    users: 1,
+    confirmed: 1,
+    pending: 1,
+    completed: 1
+};
+
+function getAdminRows() {
+    return Array.from(document.querySelectorAll('#tableBody tr'));
+}
+
+function applyAdminPagination(tableType) {
+    const rows = getAdminRows();
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / adminItemsPerPage));
+
+    if (!adminCurrentPage[tableType] || adminCurrentPage[tableType] < 1) adminCurrentPage[tableType] = 1;
+    if (adminCurrentPage[tableType] > totalPages) adminCurrentPage[tableType] = totalPages;
+
+    const start = (adminCurrentPage[tableType] - 1) * adminItemsPerPage;
+    const end = Math.min(start + adminItemsPerPage, total);
+
+    rows.forEach((row, idx) => {
+        row.style.display = (idx >= start && idx < end) ? '' : 'none';
+    });
+
+    // Update pagination info (top and bottom)
+    const startDisplay = total > 0 ? start + 1 : 0;
+    document.getElementById('adminShowingStart').textContent = startDisplay;
+    document.getElementById('adminShowingEnd').textContent = end;
+    document.getElementById('adminTotal').textContent = total;
+
+    document.getElementById('adminShowingStartBottom').textContent = startDisplay;
+    document.getElementById('adminShowingEndBottom').textContent = end;
+    document.getElementById('adminTotalBottom').textContent = total;
+
+    // Generate pagination controls
+    const html = generateAdminPaginationHTML(totalPages, tableType);
+    document.getElementById('adminPaginationControls').innerHTML = html;
+    document.getElementById('adminPaginationControlsBottom').innerHTML = html;
+}
+
+function generateAdminPaginationHTML(totalPages, tableType) {
+    const currentPage = adminCurrentPage[tableType] || 1;
+    if (totalPages <= 1) return '';
+
+    let html = '';
+
+    // Previous
+    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="goToAdminPage('${tableType}', ${currentPage - 1}); return false;" aria-label="Previous">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>`;
+
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    if (endPage - startPage < maxVisiblePages - 1) startPage = Math.max(1, endPage - maxVisiblePages + 1);
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToAdminPage('${tableType}', 1); return false;">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" onclick="goToAdminPage('${tableType}', ${i}); return false;">${i}</a></li>`;
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToAdminPage('${tableType}', ${totalPages}); return false;">${totalPages}</a></li>`;
+    }
+
+    // Next
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="goToAdminPage('${tableType}', ${currentPage + 1}); return false;" aria-label="Next">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>`;
+
+    return html;
+}
+
+function goToAdminPage(tableType, page) {
+    const rows = getAdminRows();
+    const totalPages = Math.max(1, Math.ceil(rows.length / adminItemsPerPage));
+    if (page < 1 || page > totalPages) return;
+    adminCurrentPage[tableType] = page;
+    applyAdminPagination(tableType);
+}
+
 function switchTable(tableType) {
+    // Reset page to 1 when switching tables
+    if (adminCurrentPage.hasOwnProperty(tableType)) adminCurrentPage[tableType] = 1;
     // Show loader
     const loader = document.getElementById('table-loader');
     loader.classList.remove('d-none');
@@ -526,6 +610,13 @@ function switchTable(tableType) {
         // Hide loader
         loader.classList.remove('d-flex');
         loader.classList.add('d-none');
+        // Apply pagination for the current table
+        try {
+            applyAdminPagination(tableType);
+        } catch (e) {
+            // If pagination elements are not present on the page, ignore
+            // console.warn('Pagination not applied:', e);
+        }
     }, 300); // Adjust timeout as needed
 }
 document.addEventListener('DOMContentLoaded', () => {

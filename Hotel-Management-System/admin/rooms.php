@@ -351,7 +351,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
     <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/deleteRoomTypeModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="javascript/pagination.js"></script>
     <script src="<?php echo JS_URL; ?>/showAlert.js"></script>
     <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
     <script src="javascript/rooms.js"></script>
