@@ -247,7 +247,7 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
                                                         default => 'badge-pending'
                                                     };
                                                     ?>
-                                                    <span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst($log['status']); ?></span>
+                                                    <span class="text-dark badge <?php echo $statusClass; ?>"><?php echo ucfirst($log['status']); ?></span>
                                                 </td>
                                                 <td>
                                                     <i class="bi <?php echo $log['direction'] === 'outgoing' ? 'bi-arrow-up-right text-success' : 'bi-arrow-down-left text-primary'; ?>"></i>

@@ -35,7 +35,7 @@ require_once __DIR__ . '/../config.php';
         </div>
     </div>
 
-    <div id="about-section" class="container-fluid py-5"
+    <div id="about-section" class="container-fluid py-5 shadow-sm"
         style="background: linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)), url('../images/loginRegisterImg/img.jpg') center/cover no-repeat;">
         <div class="row justify-content-center g-4">
             <div class="col-12 col-lg-5">
