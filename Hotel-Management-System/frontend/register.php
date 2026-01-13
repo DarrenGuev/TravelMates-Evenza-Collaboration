@@ -76,7 +76,7 @@ require_once __DIR__ . '/../config.php';
                                 <div>
                                     <div class="mt-2">
                                         <a href="<?php echo BASE_URL; ?>/index.php"
-                                            class="text-white-50 small mb-0 text-decoration-underline">&lt;-- Back to
+                                            class="text-white-50 mb-0 text-decoration-none"><i class="bi bi-arrow-left-circle"></i> Back to
                                             Home Page</a>
                                     </div>
                                     <h1 class="display-4 fw-bold text-white mb-2 mt-5">Join</h1>
@@ -87,9 +87,6 @@ require_once __DIR__ . '/../config.php';
                                         Your adventure starts here.
                                     </p>
                                 </div>
-                                <a class="navbar-brand fw-bold fs-3" href="<?php echo BASE_URL; ?>/index.php"><img
-                                        id="site-logo" src="<?php echo IMAGES_URL; ?>/logo/logoW.png"
-                                        style="width: 120px;" alt="logo"></a>
                             </div>
 
                             <div class="col-auto d-none d-md-flex align-items-center px-4">
@@ -141,10 +138,13 @@ require_once __DIR__ . '/../config.php';
                                         <div class="mb-3">
                                             <input id="phone" name="phone" type="tel"
                                                 class="form-control form-control-lg form-control-glass rounded-3"
-                                                placeholder="Phone Number (7-15 digits)" pattern="[0-9]{7,15}"
-                                                title="Enter 7 to 15 digits" required>
-                                            <div class="invalid-feedback">Please enter a valid phone number (7-15
-                                                digits).</div>
+                                                placeholder="Phone Number (+country code, optional)"
+                                                pattern="^\+?[0-9]{7,12}$"
+                                                title="Enter 7 to 12 digits (optional leading +country code)"
+                                                inputmode="tel" maxlength="13"
+                                                oninput="this.value = this.value.replace(/(?!^\+)[^0-9]/g, '').replace(/(?!^)\+/g, '')"
+                                                required>
+                                            <div class="invalid-feedback">Please enter a valid phone number (7-12 digits).</div>
                                         </div>
                                         <div class="mb-3 position-relative">
                                             <input id="password" name="password" type="password"

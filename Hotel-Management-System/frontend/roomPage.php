@@ -294,10 +294,6 @@ $imagePath = htmlspecialchars($room['imagePath']);
                                 <i class="bi bi-credit-card me-2"></i>Proceed to Payment
                             </button>
                         <?php endif; ?>
-
-                        <a href="<?php echo FRONTEND_URL; ?>/rooms.php" class="btn btn-outline-secondary w-100 mt-2">
-                            <i class="bi bi-arrow-left me-2"></i>Back to Rooms
-                        </a>
                     </div>
                 </div>
             </div>

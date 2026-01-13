@@ -15,7 +15,9 @@ $activePage = $activePage ?? '';
                 <li class="nav-item">
                     <a class="nav-link<?php echo $activePage === 'events' ? ' active' : ''; ?>" href="events.php">Events</a>
                 </li>
-                
+                <li class="nav-item">
+                    <a class="nav-link<?php echo $activePage === 'hotels' ? ' active' : ''; ?>" href="hotels.php">Partner Hotel</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link<?php echo $activePage === 'about' ? ' active' : ''; ?>" href="about.php">About</a>
                 </li>
