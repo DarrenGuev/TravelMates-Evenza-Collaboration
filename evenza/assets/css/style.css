@@ -102,6 +102,15 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--accent-olive) !important;
 }
 
+/* Remove hover effect for Partner Hotel link */
+.navbar-nav .nav-link-no-hover:hover::after {
+    width: 0 !important;
+}
+
+.navbar-nav .nav-link-no-hover:hover {
+    color: var(--text-dark-gray) !important;
+}
+
 .nav-divider {
     margin: 0 1rem;
     display: flex;

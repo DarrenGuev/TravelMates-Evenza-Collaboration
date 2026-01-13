@@ -208,12 +208,7 @@ try {
             margin-left: 240px;
             width: calc(100% - 240px);
         }
-        .admin-top-nav {
-            background-color: #FFFFFF;
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid rgba(74, 93, 74, 0.08);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        }
+        /* Admin header styles moved to includes/admin_header.php */
         .stat-number { 
             font-size: 1.8rem; 
             font-weight: 700; 
@@ -422,14 +417,8 @@ try {
             }
         }
         
-        @media (max-width: 768px) {
-            .admin-top-nav {
-                padding: 0.75rem 1rem;
-                flex-wrap: wrap;
-            }
-            .admin-top-nav h4 {
-                font-size: clamp(1.1rem, 4vw, 1.5rem);
-            }
+            @media (max-width: 768px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .stat-number {
                 font-size: clamp(1.3rem, 4vw, 1.8rem);
             }
@@ -472,14 +461,7 @@ try {
             }
         }
         @media (max-width: 576px) {
-            .admin-top-nav {
-                padding: 0.5rem;
-            }
-            .admin-top-nav > div {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .stat-number {
                 font-size: 1.1rem;
             }
@@ -550,27 +532,11 @@ try {
         </div>
 
         <div class="flex-fill admin-content">
-            <div class="admin-top-nav d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 d-xl-none">
-                        <button id="adminSidebarToggle" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; padding: 0.5rem 0.75rem;">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" style="font-family: 'Playfair Display', serif;">Dashboard</h4>
-                        <div class="text-muted small">Overview of activity and performance</div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                            <i class="fas fa-user text-muted"></i>
-                        </div>
-                    </div>
-                    <a href="../../user/process/logout.php?type=admin" class="btn btn-admin-primary btn-sm">Logout</a>
-                </div>
-            </div>
+            <?php
+            $pageTitle = 'Dashboard';
+            $pageSubtitle = 'Overview of activity and performance';
+            include 'includes/admin_header.php';
+            ?>
 
             <div class="p-4" style="padding: 2rem !important;">
                 <?php if (isset($stats['error'])): ?>

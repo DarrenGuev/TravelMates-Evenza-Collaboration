@@ -112,6 +112,44 @@ if ($countStmt) {
 
 $totalPages = ceil($totalCount / $perPage);
 
+// Helper function to build URL parameters for pagination and filters
+function buildFilterUrl($page = null, $filters = []) {
+    $params = [];
+    
+    // Add page if specified
+    if ($page !== null) {
+        $params['page'] = $page;
+    }
+    
+    // Add filters
+    if (!empty($filters['package'])) {
+        $params['package'] = $filters['package'];
+    }
+    if (!empty($filters['status']) && $filters['status'] !== 'all') {
+        $params['status'] = $filters['status'];
+    }
+    if (!empty($filters['date'])) {
+        $params['date'] = $filters['date'];
+    }
+    if (!empty($filters['filter_date'])) {
+        $params['filter_date'] = $filters['filter_date'];
+    }
+    
+    // Build query string
+    if (empty($params)) {
+        return '?';
+    }
+    return '?' . http_build_query($params);
+}
+
+// Prepare filter array for URL building
+$urlFilters = [
+    'package' => $packageFilter,
+    'status' => $statusFilter,
+    'date' => $dateFilter,
+    'filter_date' => $filterDate
+];
+
 // Calculate Total Revenue from all reservations (respecting filters, ignoring pagination)
 $revenueQuery = "SELECT 
             COALESCE(SUM(r.totalAmount), 0) as totalRevenue
@@ -351,12 +389,7 @@ uksort($groupedReservations, function($a, $b) {
             margin-left: 240px;
             width: calc(100% - 240px);
         }
-        .admin-top-nav {
-            background-color: #FFFFFF;
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid rgba(74, 93, 74, 0.08);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        }
+        /* Admin header styles moved to includes/admin_header.php */
         .admin-card {
             background-color: #FFFFFF;
             border-radius: 20px;
@@ -556,11 +589,120 @@ uksort($groupedReservations, function($a, $b) {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        .toast-container {
+        /* Admin Feedback Modals */
+        .admin-feedback-modal {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        .admin-feedback-body {
+            padding: 2.5rem 2rem;
+        }
+        .admin-feedback-icon-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-feedback-icon {
+            font-size: 4rem;
+        }
+        .admin-feedback-icon.success-icon {
+            color: #0f5132;
+        }
+        .admin-feedback-icon.error-icon {
+            color: #dc3545;
+        }
+        .admin-feedback-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-charcoal);
+        }
+        .admin-feedback-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--text-dark-gray);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        .admin-feedback-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1.25rem 2rem;
+        }
+        .admin-feedback-btn-success {
+            background-color: #0f5132;
+            color: white;
+            border: none;
+            padding: 0.75rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .admin-feedback-btn-success:hover {
+            background-color: #0a3d24;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 81, 50, 0.3);
+            color: white;
+        }
+        .admin-feedback-btn-error {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.75rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .admin-feedback-btn-error:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            color: white;
+        }
+        
+        /* Loading Spinner Overlay */
+        .loading-overlay {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+        .loading-spinner-container {
+            text-align: center;
+            background-color: white;
+            padding: 2.5rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .loading-spinner {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-width: 0.35rem;
+            border-color: #0f5132;
+            border-right-color: transparent;
+            animation: spinner-border 0.75s linear infinite;
+        }
+        .loading-text {
+            margin-top: 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--text-dark-gray);
+            font-weight: 500;
+        }
+        @keyframes spinner-border {
+            to {
+                transform: rotate(360deg);
+            }
         }
         .admin-sidebar a:not(.active):hover {
             background: rgba(74, 93, 74, 0.05) !important;
@@ -617,14 +759,8 @@ uksort($groupedReservations, function($a, $b) {
                 padding: 1rem !important;
             }
         }
-        @media (max-width: 768px) {
-            .admin-top-nav {
-                padding: 0.75rem 1rem;
-                flex-wrap: wrap;
-            }
-            .admin-top-nav h4 {
-                font-size: clamp(1.1rem, 4vw, 1.5rem);
-            }
+            @media (max-width: 768px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table-responsive {
                 font-size: 0.875rem;
                 overflow-x: auto;
@@ -662,15 +798,8 @@ uksort($groupedReservations, function($a, $b) {
                 align-items: flex-start;
             }
         }
-        @media (max-width: 576px) {
-            .admin-top-nav {
-                padding: 0.5rem;
-            }
-            .admin-top-nav > div {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
+            @media (max-width: 576px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table th,
             .table td {
                 font-size: 0.75rem;
@@ -735,32 +864,16 @@ uksort($groupedReservations, function($a, $b) {
         </div>
 
         <div class="flex-fill admin-content">
-            <div class="admin-top-nav d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 d-xl-none">
-                        <button id="adminSidebarToggle" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; padding: 0.5rem 0.75rem;">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" style="font-family: 'Playfair Display', serif;">Reservations Management</h4>
-                        <div class="text-muted small">View and manage all event reservations</div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                            <i class="fas fa-user text-muted"></i>
-                        </div>
-                    </div>
-                    <a href="../../user/process/logout.php?type=admin" class="btn btn-admin-primary btn-sm">Logout</a>
-                </div>
-            </div>
+            <?php
+            $pageTitle = 'Reservations Management';
+            $pageSubtitle = 'View and manage all event reservations';
+            include 'includes/admin_header.php';
+            ?>
 
             <div class="p-4">
                 <div class="admin-card p-4 mb-4">
                     <h5 class="mb-4" style="font-family: 'Playfair Display', serif;">Filter Reservations</h5>
-                    <form method="GET" action="reservationsManagement.php" class="row g-3">
+                    <form method="GET" action="reservationsManagement.php" class="row g-3 align-items-end">
                         <div class="col-md-3">
                             <label for="packageFilter" class="form-label fw-semibold">Package Tier</label>
                             <select class="form-select" id="packageFilter" name="package" style="border-radius: 50px; padding: 0.6rem 1.25rem;">
@@ -784,13 +897,13 @@ uksort($groupedReservations, function($a, $b) {
                             <label for="dateFilter" class="form-label fw-semibold">Filter by Date</label>
                             <input type="date" class="form-control" id="dateFilter" name="date" value="<?php echo htmlspecialchars($dateFilter); ?>" style="border-radius: 50px; padding: 0.6rem 1.25rem;">
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-admin-primary me-2">
-                                <i class="fas fa-filter"></i> Apply Filters
+                        <div class="col-md-3 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-admin-primary" style="flex: 1; border-radius: 50px; padding: 0.6rem 1.25rem;">
+                                <i class="fas fa-filter me-1"></i> Apply Filters
                             </button>
-                            <?php if (!empty($packageFilter) || !empty($dateFilter) || (!empty($statusFilter) && $statusFilter !== 'all')): ?>
-                            <a href="reservationsManagement.php" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Clear
+                            <?php if (!empty($packageFilter) || !empty($dateFilter) || (!empty($statusFilter) && $statusFilter !== 'all') || !empty($filterDate)): ?>
+                            <a href="reservationsManagement.php" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 0.6rem 1.25rem; white-space: nowrap; border-color: #6c757d; color: #6c757d;">
+                                <i class="fas fa-times me-1"></i> Clear
                             </a>
                             <?php endif; ?>
                         </div>
@@ -978,7 +1091,7 @@ uksort($groupedReservations, function($a, $b) {
                     <?php if ($totalPages > 1): ?>
                     <div class="pagination-wrapper">
                         <?php if ($page > 1): ?>
-                            <a href="?page=<?php echo $page - 1; ?><?php echo !empty($filterDate) ? '&filter_date=' . htmlspecialchars($filterDate) : ''; ?><?php echo !empty($packageFilter) ? '&package=' . htmlspecialchars($packageFilter) : ''; ?>" class="pagination-btn">Prev</a>
+                            <a href="<?php echo buildFilterUrl($page - 1, $urlFilters); ?>" class="pagination-btn">Prev</a>
                         <?php else: ?>
                             <span class="pagination-btn" style="opacity: 0.5; cursor: not-allowed;">Prev</span>
                         <?php endif; ?>
@@ -988,25 +1101,25 @@ uksort($groupedReservations, function($a, $b) {
                         $endPage = min($totalPages, $page + 2);
                         
                         if ($startPage > 1): ?>
-                            <a href="?page=1<?php echo !empty($filterDate) ? '&filter_date=' . htmlspecialchars($filterDate) : ''; ?><?php echo !empty($packageFilter) ? '&package=' . htmlspecialchars($packageFilter) : ''; ?>" class="pagination-btn">1</a>
+                            <a href="<?php echo buildFilterUrl(1, $urlFilters); ?>" class="pagination-btn">1</a>
                             <?php if ($startPage > 2): ?>
                                 <span class="pagination-btn" style="border: none; cursor: default;">...</span>
                             <?php endif; ?>
                         <?php endif; ?>
                         
                         <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                            <a href="?page=<?php echo $i; ?><?php echo !empty($filterDate) ? '&filter_date=' . htmlspecialchars($filterDate) : ''; ?><?php echo !empty($packageFilter) ? '&package=' . htmlspecialchars($packageFilter) : ''; ?>" class="pagination-btn <?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                            <a href="<?php echo buildFilterUrl($i, $urlFilters); ?>" class="pagination-btn <?php echo $i == $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
                         <?php endfor; ?>
                         
                         <?php if ($endPage < $totalPages): ?>
                             <?php if ($endPage < $totalPages - 1): ?>
                                 <span class="pagination-btn" style="border: none; cursor: default;">...</span>
                             <?php endif; ?>
-                            <a href="?page=<?php echo $totalPages; ?><?php echo !empty($filterDate) ? '&filter_date=' . htmlspecialchars($filterDate) : ''; ?><?php echo !empty($packageFilter) ? '&package=' . htmlspecialchars($packageFilter) : ''; ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
+                            <a href="<?php echo buildFilterUrl($totalPages, $urlFilters); ?>" class="pagination-btn"><?php echo $totalPages; ?></a>
                         <?php endif; ?>
                         
                         <?php if ($page < $totalPages): ?>
-                            <a href="?page=<?php echo $page + 1; ?><?php echo !empty($filterDate) ? '&filter_date=' . htmlspecialchars($filterDate) : ''; ?><?php echo !empty($packageFilter) ? '&package=' . htmlspecialchars($packageFilter) : ''; ?>" class="pagination-btn">Next</a>
+                            <a href="<?php echo buildFilterUrl($page + 1, $urlFilters); ?>" class="pagination-btn">Next</a>
                         <?php else: ?>
                             <span class="pagination-btn" style="opacity: 0.5; cursor: not-allowed;">Next</span>
                         <?php endif; ?>
@@ -1018,16 +1131,49 @@ uksort($groupedReservations, function($a, $b) {
         </div>
     </div>
 
-    <div class="toast-container">
-        <div id="feedbackToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="fas fa-info-circle me-2"></i>
-                <strong class="me-auto">Notification</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content admin-feedback-modal">
+                <div class="modal-body admin-feedback-body text-center">
+                    <div class="admin-feedback-icon-wrapper mb-4">
+                        <i class="fas fa-check-circle admin-feedback-icon success-icon"></i>
+                    </div>
+                    <h5 class="admin-feedback-title" id="successModalTitle">Success</h5>
+                    <p class="admin-feedback-message" id="successModalMessage"></p>
+                </div>
+                <div class="modal-footer admin-feedback-footer justify-content-center">
+                    <button type="button" class="btn admin-feedback-btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
-            <div class="toast-body" id="toastMessage">
-                <!-- Message will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content admin-feedback-modal">
+                <div class="modal-body admin-feedback-body text-center">
+                    <div class="admin-feedback-icon-wrapper mb-4">
+                        <i class="fas fa-exclamation-circle admin-feedback-icon error-icon"></i>
+                    </div>
+                    <h5 class="admin-feedback-title" id="errorModalTitle">Update Failed</h5>
+                    <p class="admin-feedback-message" id="errorModalMessage"></p>
+                </div>
+                <div class="modal-footer admin-feedback-footer justify-content-center">
+                    <button type="button" class="btn admin-feedback-btn-error" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner-container">
+            <div class="spinner-border loading-spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="loading-text">Updating reservation status...</p>
         </div>
     </div>
 
@@ -1076,29 +1222,115 @@ uksort($groupedReservations, function($a, $b) {
             });
         });
 
-        // Show feedback toast
-        function showFeedback(message, type = 'info') {
-            const toast = document.getElementById('feedbackToast');
-            const toastMessage = document.getElementById('toastMessage');
-            const toastHeader = toast.querySelector('.toast-header');
-            
-            toastMessage.textContent = message;
-            
-            // Update icon based on type
-            const icon = toastHeader.querySelector('i');
-            if (type === 'success') {
-                icon.className = 'fas fa-check-circle me-2 text-success';
-            } else if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle me-2 text-danger';
-            } else {
-                icon.className = 'fas fa-info-circle me-2';
+        // Show loading spinner overlay
+        function showLoadingSpinner() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
-            
-            const bsToast = new bootstrap.Toast(toast, {
-                autohide: true,
-                delay: 4000
-            });
-            bsToast.show();
+        }
+        
+        // Hide loading spinner overlay
+        function hideLoadingSpinner() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Show feedback modal
+        function showFeedback(message, type = 'success', title = null) {
+            if (type === 'success') {
+                const modal = document.getElementById('successModal');
+                const modalMessage = document.getElementById('successModalMessage');
+                const modalTitle = document.getElementById('successModalTitle');
+                
+                modalMessage.textContent = message;
+                if (title) {
+                    modalTitle.textContent = title;
+                } else {
+                    modalTitle.textContent = 'Success';
+                }
+                
+                const bsModal = new bootstrap.Modal(modal, {
+                    backdrop: true,
+                    keyboard: true
+                });
+                bsModal.show();
+                
+                // Auto-hide timer with hover pause functionality
+                let autoHideTimer = null;
+                let remainingTime = 10000; // 10 seconds (10000ms) - at least 5 seconds as requested
+                let startTime = Date.now();
+                let isPaused = false;
+                
+                function startTimer() {
+                    if (autoHideTimer) {
+                        clearTimeout(autoHideTimer);
+                    }
+                    startTime = Date.now();
+                    autoHideTimer = setTimeout(function() {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }, remainingTime);
+                }
+                
+                function pauseTimer() {
+                    if (autoHideTimer && !isPaused) {
+                        clearTimeout(autoHideTimer);
+                        const elapsed = Date.now() - startTime;
+                        remainingTime = Math.max(0, remainingTime - elapsed);
+                        isPaused = true;
+                    }
+                }
+                
+                function resumeTimer() {
+                    if (isPaused && remainingTime > 0) {
+                        isPaused = false;
+                        startTimer();
+                    }
+                }
+                
+                // Start the timer
+                startTimer();
+                
+                // Pause on hover, resume on mouse leave
+                modal.addEventListener('mouseenter', pauseTimer);
+                modal.addEventListener('mouseleave', resumeTimer);
+                
+                // Clean up on modal hide
+                modal.addEventListener('hidden.bs.modal', function() {
+                    if (autoHideTimer) {
+                        clearTimeout(autoHideTimer);
+                    }
+                    modal.removeEventListener('mouseenter', pauseTimer);
+                    modal.removeEventListener('mouseleave', resumeTimer);
+                });
+            } else if (type === 'error') {
+                const modal = document.getElementById('errorModal');
+                const modalMessage = document.getElementById('errorModalMessage');
+                const modalTitle = document.getElementById('errorModalTitle');
+                
+                modalMessage.textContent = message;
+                if (title) {
+                    modalTitle.textContent = title;
+                } else {
+                    modalTitle.textContent = 'Update Failed';
+                }
+                
+                const bsModal = new bootstrap.Modal(modal, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                bsModal.show();
+            } else {
+                // For 'info' type messages (like "Updating reservation status..."), show as success with info title
+                showFeedback(message, 'success', title || 'Information');
+            }
         }
 
         // Update reservation status
@@ -1107,7 +1339,11 @@ uksort($groupedReservations, function($a, $b) {
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('filter_date', dateKey);
             urlParams.set('page', '1'); // Reset to first page when filtering
-            window.location.href = '?' + urlParams.toString();
+            
+            // Use history.pushState for better browser navigation
+            const newUrl = '?' + urlParams.toString();
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            window.location.href = newUrl;
         }
 
         function updateReservationStatus(reservationId, newStatus) {
@@ -1118,8 +1354,8 @@ uksort($groupedReservations, function($a, $b) {
                 btn.style.opacity = '0.6';
             });
             
-            // Show processing feedback
-            showFeedback('Updating reservation status...', 'info');
+            // Show loading spinner overlay
+            showLoadingSpinner();
             
             // Make AJAX call to update status in database
             fetch('/evenza/admin/process/update/updateReservationStatus.php', {
@@ -1144,10 +1380,12 @@ uksort($groupedReservations, function($a, $b) {
                 return response.json();
             })
             .then(data => {
+                // Hide loading spinner first
+                hideLoadingSpinner();
+                
                 if (data.success) {
                     // Capitalize first letter for display
                     const displayStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-                    showFeedback('Reservation status updated to ' + displayStatus + ' successfully!', 'success');
                     
                     // Update button states immediately (case-insensitive comparison)
                     allButtons.forEach(btn => {
@@ -1162,6 +1400,9 @@ uksort($groupedReservations, function($a, $b) {
                         }
                     });
                     
+                    // Show success modal after spinner is hidden
+                    showFeedback('Reservation status updated to ' + displayStatus + ' successfully!', 'success');
+                    
                     // Reload after a short delay to reflect server-side changes
                     setTimeout(function() {
                         location.reload();
@@ -1172,15 +1413,20 @@ uksort($groupedReservations, function($a, $b) {
                         btn.disabled = false;
                         btn.style.opacity = '1';
                     });
+                    // Show error modal after spinner is hidden
                     showFeedback('Error updating status: ' + (data.message || 'Unknown error'), 'error');
                 }
             })
             .catch(error => {
+                // Hide loading spinner on error
+                hideLoadingSpinner();
+                
                 // Re-enable buttons on error
                 allButtons.forEach(btn => {
                     btn.disabled = false;
                     btn.style.opacity = '1';
                 });
+                // Show error modal after spinner is hidden
                 showFeedback('Error updating status: ' + error.message, 'error');
             });
         }

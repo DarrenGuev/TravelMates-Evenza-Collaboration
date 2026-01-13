@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validate email
     if (!email) {
-      showError(emailEl, document.getElementById('emailError'), 'Please enter your email address');
+      showError(emailEl, document.getElementById('emailError'), 'Email is required');
       hasErrors = true;
       errorMessages.push('Email Address');
     } else {
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validate password
     if (!password) {
-      showError(passwordEl, document.getElementById('passwordError'), 'Please enter your password');
+      showError(passwordEl, document.getElementById('passwordError'), 'Password is required');
       hasErrors = true;
       errorMessages.push('Password');
     } else {
@@ -92,18 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (hasErrors) {
       e.preventDefault();
-      
-      // Show error modal
-      const errorModal = document.getElementById('loginErrorModal');
-      const errorMessageEl = document.getElementById('loginErrorModalMessage');
-      if (errorModal && errorMessageEl) {
-        const message = errorMessages.length > 0 
-          ? `Please complete the following required fields: ${errorMessages.join(', ')}.`
-          : 'Please fill in all required fields before submitting.';
-        errorMessageEl.textContent = message;
-        const bsModal = new bootstrap.Modal(errorModal);
-        bsModal.show();
-      }
       
       // Scroll to first error and focus
       if (emailEl && emailEl.classList.contains('is-invalid')) {

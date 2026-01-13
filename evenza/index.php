@@ -104,7 +104,7 @@ require_once 'core/connect.php';
                         <a class="nav-link" href="user/pages/events.php">Events</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="user/pages/hotels.php">Partner Hotels</a>
+                        <a class="nav-link nav-link-no-hover" href="user/pages/hotels.php">Partner Hotel</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="user/pages/about.php">About</a>
