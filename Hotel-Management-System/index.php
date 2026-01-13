@@ -114,7 +114,7 @@ if ($feedbackResult && $feedbackResult->num_rows > 0) {
             >>></a>
     </div>
 
-    <div class="body bg-body-tertiary pb-5">
+    <div class="body bg-body-tertiary pb-5 shadow">
         <div class="container mb-5">
             <div class="row align-items-center py-2">
                 <div class="col-12 text-black text-md-start">

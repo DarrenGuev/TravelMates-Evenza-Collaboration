@@ -65,7 +65,7 @@ YOUR RESPONSE (keep it short and friendly):";
         style="bottom:36px;right:100px;z-index:1079;transition:opacity 0.3s ease, transform 0.3s ease;">
         <div class="bg-warning text-dark px-3 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"
             style="font-size:14px;font-weight:500;white-space:nowrap;">
-            <span>Need an assistant?</span>
+            <span>Need an assistance?</span>
         </div>
         <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #ffc107;margin-left:-1px;"></div>
     </div>
@@ -161,6 +161,45 @@ YOUR RESPONSE (keep it short and friendly):";
                 }
 
                 const bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+
+                let chatbotStateBeforeModal = {
+                    btnVisible: true,
+                    calloutVisible: true,
+                    calloutScrollState: ''
+                };
+
+                document.addEventListener('show.bs.modal', function() {
+                    chatbotStateBeforeModal.btnVisible = !btn.classList.contains('hidden-permanently');
+                    chatbotStateBeforeModal.calloutVisible = !callout.classList.contains('hidden-permanently');
+                    
+                    if (callout.classList.contains('scroll-hidden')) {
+                        chatbotStateBeforeModal.calloutScrollState = 'scroll-hidden';
+                    } else if (callout.classList.contains('scroll-visible')) {
+                        chatbotStateBeforeModal.calloutScrollState = 'scroll-visible';
+                    } else {
+                        chatbotStateBeforeModal.calloutScrollState = '';
+                    }
+
+                    btn.classList.add('hidden-permanently');
+                    callout.classList.add('hidden-permanently');
+                });
+
+                document.addEventListener('hide.bs.modal', function() {
+                    if (chatbotStateBeforeModal.btnVisible) {
+                        btn.classList.remove('hidden-permanently');
+                    }
+                    if (chatbotStateBeforeModal.calloutVisible) {
+                        callout.classList.remove('hidden-permanently');
+                        
+                        if (chatbotStateBeforeModal.calloutScrollState === 'scroll-hidden') {
+                            callout.classList.add('scroll-hidden');
+                            callout.classList.remove('scroll-visible');
+                        } else if (chatbotStateBeforeModal.calloutScrollState === 'scroll-visible') {
+                            callout.classList.add('scroll-visible');
+                            callout.classList.remove('scroll-hidden');
+                        }
+                    }
+                });
 
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();

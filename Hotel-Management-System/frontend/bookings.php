@@ -89,7 +89,7 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                     
                     $statusBadgeClass = match($booking['bookingStatus']) {
                         'confirmed' => 'bg-success',
-                        'pending' => 'bg-warning text-dark',
+                        'pending' => 'bg-warning',
                         'cancelled' => 'bg-danger',
                         'completed' => 'bg-info',
                         default => 'bg-secondary'
@@ -117,7 +117,7 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="card-title fw-bold mb-0"><?php echo htmlspecialchars($booking['roomName']); ?></h5>
-                                        <span class="badge <?php echo $statusBadgeClass; ?> fs-6">
+                                        <span class="btn btn <?php echo $statusBadgeClass; ?> display-none pe-none ms-2 border-0 fs-5">
                                             <?php echo ucfirst($booking['bookingStatus']); ?>
                                         </span>
                                     </div>
