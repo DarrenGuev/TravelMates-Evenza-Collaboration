@@ -80,7 +80,7 @@ try {
                 'currency' => 'USD',
                 'formatted' => '$' . number_format($room['base_price'] ?? 0, 2)
             ],
-            'image' => !empty($room['roomImg']) ? $baseUrl . '/admin/assets/' . $room['roomImg'] : null,
+            'image' => !empty($room['imagePath']) ? $baseUrl . '/admin/assets/' . $room['imagePath'] : null,
             'features' => $featuresList,
             'description' => $room['description'] ?? null,
             'available' => (int)($room['quantity'] ?? 0) > 0,
