@@ -187,10 +187,27 @@ class Booking extends Model
 
     public function cancel(int $bookingID): bool
     {
+        // Get booking details before cancelling
+        $booking = $this->find($bookingID);
+        if (!$booking) {
+            return false;
+        }
+        
+        // Check if booking was completed (if so, we need to restore room quantity)
+        $wasCompleted = isset($booking['bookingStatus']) && $booking['bookingStatus'] === self::STATUS_COMPLETED;
+        
         $query = "UPDATE `{$this->table}` 
                   SET bookingStatus = ?, paymentStatus = ?, updatedAt = NOW() 
                   WHERE bookingID = ?";
-        return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+        $success = $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+        
+        // If booking was completed and cancellation was successful, increase room quantity back
+        if ($success && $wasCompleted && isset($booking['roomID'])) {
+            $roomModel = new Room();
+            $roomModel->increaseQuantity($booking['roomID']);
+        }
+        
+        return $success;
     }
 
     /**
@@ -256,7 +273,22 @@ class Booking extends Model
 
     public function complete(int $bookingID): bool
     {
-        return $this->updateStatus($bookingID, self::STATUS_COMPLETED);
+        // Get booking details before completing
+        $booking = $this->find($bookingID);
+        if (!$booking) {
+            return false;
+        }
+        
+        // Update booking status to completed
+        $success = $this->updateStatus($bookingID, self::STATUS_COMPLETED);
+        
+        // If successful, decrease room quantity
+        if ($success && isset($booking['roomID'])) {
+            $roomModel = new Room();
+            $roomModel->decreaseQuantity($booking['roomID']);
+        }
+        
+        return $success;
     }
 
     public function getBookingForNotification(int $bookingID): ?array

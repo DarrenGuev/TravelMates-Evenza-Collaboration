@@ -144,4 +144,46 @@ class Room extends Model
     {
         return $this->countBy('roomTypeId', $roomTypeId);
     }
+
+    /**
+     * Decrease room quantity by 1
+     * Used when a booking is completed
+     * 
+     * @param int $roomID Room ID
+     * @return bool True if successful, false if quantity is already 0 or room not found
+     */
+    public function decreaseQuantity(int $roomID): bool
+    {
+        $room = $this->find($roomID);
+        
+        if (!$room || $room['quantity'] <= 0) {
+            return false;
+        }
+        
+        $newQuantity = $room['quantity'] - 1;
+        
+        $query = "UPDATE `{$this->table}` SET quantity = ? WHERE roomID = ?";
+        return $this->executeStatement($query, 'ii', [$newQuantity, $roomID]) !== false;
+    }
+
+    /**
+     * Increase room quantity by 1
+     * Used when a completed booking is cancelled
+     * 
+     * @param int $roomID Room ID
+     * @return bool True if successful, false if room not found
+     */
+    public function increaseQuantity(int $roomID): bool
+    {
+        $room = $this->find($roomID);
+        
+        if (!$room) {
+            return false;
+        }
+        
+        $newQuantity = $room['quantity'] + 1;
+        
+        $query = "UPDATE `{$this->table}` SET quantity = ? WHERE roomID = ?";
+        return $this->executeStatement($query, 'ii', [$newQuantity, $roomID]) !== false;
+    }
 }
