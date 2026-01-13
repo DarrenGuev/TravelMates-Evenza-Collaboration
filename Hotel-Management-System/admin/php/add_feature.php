@@ -10,10 +10,25 @@ require_once __DIR__ . '/../../classes/autoload.php';
 header('Content-Type: application/json');
 
 $featureModel = new Feature();
+$categoryModel = new FeatureCategory();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $featureName = isset($_POST['featureName']) ? trim($_POST['featureName']) : '';
-    $categoryID = isset($_POST['categoryID']) ? (int)$_POST['categoryID'] : 0;
+    //this will support both categoryID (integer) and category (name string)
+    $categoryID = 0;
+    $categoryName = '';
+    
+    if (isset($_POST['categoryID']) && (int)$_POST['categoryID'] > 0) {
+        $categoryID = (int)$_POST['categoryID'];
+        $category = $categoryModel->find($categoryID);
+        $categoryName = $category ? $category['categoryName'] : '';
+    } elseif (isset($_POST['category']) && !empty(trim($_POST['category']))) {
+        $categoryName = trim($_POST['category']);
+        $category = $categoryModel->findByName($categoryName);
+        if ($category) {
+            $categoryID = (int)$category['categoryID'];
+        }
+    }
     
     if (empty($featureName)) {
         echo json_encode(['success' => false, 'error' => 'Feature name is required']);
@@ -25,16 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    // Check if feature already exists
-    $existingFeature = $featureModel->findByName($featureName);
+    $existingFeature = $featureModel->findByName($featureName); ///this will check if feature already exists
     
     if ($existingFeature) {
+        $existingCategory = $categoryModel->find($existingFeature['categoryID']);
+        $existingCategoryName = $existingCategory ? $existingCategory['categoryName'] : 'General';
+        
         echo json_encode([
             'success' => false, 
             'error' => 'Feature already exists',
             'featureId' => $existingFeature['featureId'],
             'featureName' => $featureName,
-            'categoryID' => $existingFeature['categoryID']
+            'categoryID' => $existingFeature['categoryID'],
+            'category' => $existingCategoryName
         ]);
         exit;
     }
@@ -48,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'featureId' => $result['id'],
             'featureName' => $featureName,
             'categoryID' => $categoryID,
+            'category' => $categoryName,
             'message' => 'Feature added successfully'
         ]);
     } else {
