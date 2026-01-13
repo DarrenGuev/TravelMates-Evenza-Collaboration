@@ -33,9 +33,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <i class="bi bi-envelope me-2"></i>Email
         </a>
         <hr class="text-white-50 mx-3">
-        <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php">
-            <i class="bi bi-display me-2"></i>View Site
-        </a>
         <a class="nav-link text-danger" href="<?php echo FRONTEND_URL; ?>/php/logout.php">
             <i class="bi bi-box-arrow-right me-2"></i>Logout
         </a>
@@ -79,9 +76,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <i class="bi bi-envelope me-2"></i>Email
             </a>
             <hr class="text-white-50">
-            <a class="nav-link text-white" href="<?php echo BASE_URL; ?>/index.php">
-                <i class="bi bi-display me-2"></i>View Site
-            </a>
             <a class="nav-link text-danger" href="<?php echo FRONTEND_URL; ?>/php/logout.php">
                 <i class="bi bi-box-arrow-right me-2"></i>Logout
             </a>

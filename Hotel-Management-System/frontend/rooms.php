@@ -133,12 +133,13 @@ function groupFeaturesByCategory($features)
                                                 foreach ($roomTypesData as $type) {
                                                     $typeValue = strtolower($type['roomType']);
                                                     $typeId = 'type' . str_replace(' ', '', $type['roomType']) . 'Mobile';
-                                                ?>
+                                                    ?>
                                                     <div class="form-check mb-2">
                                                         <input class="form-check-input filter-checkbox" type="checkbox"
                                                             value="<?php echo htmlspecialchars($typeValue); ?>"
                                                             id="<?php echo htmlspecialchars($typeId); ?>">
-                                                        <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
+                                                        <label class="form-check-label small"
+                                                            for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
                                                     </div>
                                                 <?php } ?>
                                             </div>
@@ -166,11 +167,12 @@ function groupFeaturesByCategory($features)
                                                         $catKey = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '', $category));
                                                         $headingId = "featuresMobileHeading{$i}_{$catKey}";
                                                         $collapseId = "featuresMobileCollapse{$i}_{$catKey}";
-                                                    ?>
+                                                        ?>
                                                         <div class="accordion-item">
-                                                            <h2 class="accordion-header" id="<?php echo htmlspecialchars($headingId); ?>">
-                                                                <button class="accordion-button collapsed py-2" type="button"
-                                                                    data-bs-toggle="collapse"
+                                                            <h2 class="accordion-header"
+                                                                id="<?php echo htmlspecialchars($headingId); ?>">
+                                                                <button class="accordion-button collapsed py-2"
+                                                                    type="button" data-bs-toggle="collapse"
                                                                     data-bs-target="#<?php echo htmlspecialchars($collapseId); ?>"
                                                                     aria-expanded="false"
                                                                     aria-controls="<?php echo htmlspecialchars($collapseId); ?>">
@@ -187,9 +189,11 @@ function groupFeaturesByCategory($features)
                                                                             <?php foreach ($features as $feature) {
                                                                                 $featureId = 'feature' . preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '', $feature)) . 'Mobile';
                                                                                 $featureValue = strtolower($feature);
-                                                                            ?>
+                                                                                ?>
                                                                                 <div class="form-check">
-                                                                                    <input class="form-check-input filter-checkbox feature-checkbox" type="checkbox"
+                                                                                    <input
+                                                                                        class="form-check-input filter-checkbox feature-checkbox"
+                                                                                        type="checkbox"
                                                                                         value="<?php echo htmlspecialchars($featureValue); ?>"
                                                                                         id="<?php echo htmlspecialchars($featureId); ?>">
                                                                                     <label class="form-check-label small"
@@ -200,7 +204,8 @@ function groupFeaturesByCategory($features)
                                                                             <?php } ?>
                                                                         </div>
                                                                     <?php } else { ?>
-                                                                        <div class="text-muted small">No features available</div>
+                                                                        <div class="text-muted small">No features available
+                                                                        </div>
                                                                     <?php } ?>
                                                                 </div>
                                                             </div>
@@ -236,12 +241,13 @@ function groupFeaturesByCategory($features)
                                 foreach ($roomTypesData as $type) {
                                     $typeValue = strtolower($type['roomType']);
                                     $typeId = 'type' . str_replace(' ', '', $type['roomType']);
-                                ?>
+                                    ?>
                                     <div class="form-check mb-2">
                                         <input class="form-check-input" type="checkbox"
                                             value="<?php echo htmlspecialchars($typeValue); ?>"
                                             id="<?php echo htmlspecialchars($typeId); ?>">
-                                        <label class="form-check-label small" for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
+                                        <label class="form-check-label small"
+                                            for="<?php echo htmlspecialchars($typeId); ?>"><?php echo htmlspecialchars($type['roomType']); ?></label>
                                     </div>
                                 <?php } ?>
                             </div>
@@ -269,7 +275,7 @@ function groupFeaturesByCategory($features)
                                         $catKey = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '', $category));
                                         $headingId = "featuresDesktopHeading{$i}_{$catKey}";
                                         $collapseId = "featuresDesktopCollapse{$i}_{$catKey}";
-                                    ?>
+                                        ?>
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="<?php echo htmlspecialchars($headingId); ?>">
                                                 <button class="accordion-button collapsed py-2" type="button"
@@ -290,7 +296,7 @@ function groupFeaturesByCategory($features)
                                                             <?php foreach ($features as $feature) {
                                                                 $featureId = 'feature' . preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '', $feature));
                                                                 $featureValue = strtolower($feature);
-                                                            ?>
+                                                                ?>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input feature-checkbox" type="checkbox"
                                                                         value="<?php echo htmlspecialchars($featureValue); ?>"
@@ -338,7 +344,7 @@ function groupFeaturesByCategory($features)
                 foreach ($roomTypesData as $roomType) {
                     $roomsData = $roomModel->getByType($roomType['roomTypeID']);
                     if (count($roomsData) > 0) {
-                ?>
+                        ?>
                         <div class="container">
                             <div class="row mt-5">
                                 <div class="col">
@@ -355,14 +361,15 @@ function groupFeaturesByCategory($features)
                                         $features[] = $feature['featureName'];
                                     }
                                     $roomTypeName = $roomType['roomType'];
-                                ?>
+                                    ?>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 pb-4 room-card"
                                         data-room-type="<?php echo strtolower($roomTypeName); ?>"
                                         data-price="<?php echo $row['base_price']; ?>"
                                         data-capacity="<?php echo (int) $row['capacity']; ?>"
                                         data-features="<?php echo strtolower(implode(',', $features)); ?>">
                                         <div class="card h-100 bg-transparent shadow rounded-3">
-                                            <div class="ratio ratio-4x3 overflow-hidden rounded-top-3 position-relative gallery-item">
+                                            <div
+                                                class="ratio ratio-4x3 overflow-hidden rounded-top-3 position-relative gallery-item">
                                                 <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
                                                     class="card-img-top img-fluid"
                                                     alt="<?php echo htmlspecialchars($row['roomName']); ?>">
@@ -381,21 +388,24 @@ function groupFeaturesByCategory($features)
                                                     <?php if (!empty($features)) {
                                                         $shown = 0;
                                                         foreach ($features as $featureName) {
-                                                            if ($shown >= 3) break;
-                                                    ?>
-                                                            <span class="text-white text-muted small me-1 mb-1"><?php echo htmlspecialchars($featureName . " -"); ?></span>
-                                                        <?php
+                                                            if ($shown >= 3)
+                                                                break;
+                                                            ?>
+                                                            <span
+                                                                class="text-white text-muted small me-1 mb-1"><?php echo htmlspecialchars($featureName . " -"); ?></span>
+                                                            <?php
                                                             $shown++;
                                                         }
                                                     } else { ?>
                                                         <span class="text-muted small">No features listed</span>
                                                     <?php } ?>
-                                                    <span class= "text-muted small">and More..</span>
+                                                    <span class="text-muted small">and More..</span>
                                                 </div>
                                             </div>
                                             <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
                                                 <div class="d-flex gap-2 flex-wrap">
-                                                    <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>" class="btn btn-warning flex-grow-1">Book Now</a>
+                                                    <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>"
+                                                        class="btn btn-warning flex-grow-1">Book Now</a>
                                                     <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="modal"
                                                         data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
                                                         Details</button>
@@ -405,7 +415,7 @@ function groupFeaturesByCategory($features)
                                     </div>
 
                                     <div class="modal fade" id="roomDetailModal<?php echo $row['roomID']; ?>" tabindex="-1">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title"><?php echo htmlspecialchars($row['roomName']); ?></h5>
@@ -413,43 +423,45 @@ function groupFeaturesByCategory($features)
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="row">
-                                                        <div class="col-12 justify-content-center text-center">
-                                                            <div class="position-relative gallery-item d-inline-block rounded-3 overflow-hidden mb-3">
+                                                        <div class="col-12 col-md-6 justify-content-center text-center">
+                                                            <div class="d-flex align-items-center gallery-item d-inline-block rounded-3 overflow-hidden">
                                                                 <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
                                                                     alt="<?php echo htmlspecialchars($row['roomName']); ?>"
-                                                                    class="img-fluid rounded-3">
+                                                                    class="img-fluid rounded-3"
+                                                                    style="width: 100%; height: 300px; object-fit: cover;">
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-8">
-                                                            <p class="fw-semibold mb-2">Room Details</p>
-                                                            <p class="small text-secondary mb-1"><strong>Type:</strong>
-                                                                <?php echo htmlspecialchars($roomTypeName); ?></p>
-                                                            <p class="small text-secondary mb-1"><strong>Capacity:</strong>
-                                                                <?php echo (int) $row['capacity']; ?> Guests</p>
-                                                            <p class="small text-secondary mb-1"><strong>Available:</strong>
-                                                                <?php echo (int) $row['quantity']; ?> Rooms</p>
-                                                            <p class="small text-secondary mb-1"><strong>Price:</strong>
-                                                                ₱<?php echo number_format($row['base_price'], 2); ?> / night</p>
-                                                        </div>
-                                                        <div class="col-4 align-items-center d-flex">
-                                                            <div class="mb-2 justify-content-evenly">
-                                                                <?php if (!empty($features)) {
-                                                                    foreach ($features as $featureName) { ?>
-                                                                        <span
-                                                                            class="badge bg-dark me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
-                                                                <?php }
-                                                                } ?>
-                                                            </div>
-                                                            <div class="mb-2 justify-content-evenly">
-
-                                                            </div>
+                                                        <div class="col-12 col-md-6 justify-content-center d-flex flex-column">
+                                                            
+                                                                <div class="row">
+                                                                    <p class="fw-semibold mb-2">Room Details</p>
+                                                                    <p class="small mb-1"><strong>Type:</strong>
+                                                                        <?php echo htmlspecialchars($roomTypeName); ?></p>
+                                                                    <p class="small mb-1"><strong>Capacity:</strong>
+                                                                        <?php echo (int) $row['capacity']; ?> Guests</p>
+                                                                    <p class="small mb-1"><strong>Available:</strong>
+                                                                        <?php echo (int) $row['quantity']; ?> Rooms</p>
+                                                                    <p class="small mb-1"><strong>Price:</strong>
+                                                                        ₱<?php echo number_format($row['base_price'], 2); ?> / night
+                                                                    </p>
+                                                                </div>
+                                                                <div class="row align-items-center d-flex flex-row">
+                                                                    <div class="mb-2 justify-content-evenly">
+                                                                        <?php if (!empty($features)) {
+                                                                            foreach ($features as $featureName) { ?>
+                                                                                <span
+                                                                                    class="badge bg-dark mb-1"><?php echo htmlspecialchars($featureName); ?></span>
+                                                                            <?php }
+                                                                        } ?>
+                                                                    </div>
+                                                                </div>
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>" class="btn btn-warning">Book Now</a>
+                                                    <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>"
+                                                        class="btn btn-warning">Book Now</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -458,7 +470,7 @@ function groupFeaturesByCategory($features)
                                 <?php } ?>
                             </div>
                         </div>
-                <?php
+                        <?php
                     }
                 }
                 ?>
@@ -483,7 +495,7 @@ function groupFeaturesByCategory($features)
 
             // Prevent dropdown from closing when clicking on checkboxes inside
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                menu.addEventListener('click', function(e) {
+                menu.addEventListener('click', function (e) {
                     if (e.target.classList.contains('form-check-input') ||
                         e.target.classList.contains('form-check-label') ||
                         e.target.closest('.form-check')) {
@@ -500,7 +512,7 @@ function groupFeaturesByCategory($features)
                     priceDisplay.textContent = 'Up to ₱' + parseInt(priceRange.value).toLocaleString();
                     priceRange.parentElement.insertBefore(priceDisplay, priceRange);
 
-                    priceRange.addEventListener('input', function() {
+                    priceRange.addEventListener('input', function () {
                         priceDisplay.textContent = 'Up to ₱' + parseInt(this.value).toLocaleString();
                         syncPriceRanges(this);
                         applyFilters();
@@ -509,14 +521,14 @@ function groupFeaturesByCategory($features)
             });
 
             roomTypeCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
+                checkbox.addEventListener('change', function () {
                     syncCheckboxes(this);
                     applyFilters();
                 });
             });
 
             featureCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
+                checkbox.addEventListener('change', function () {
                     syncCheckboxes(this);
                     updateCategoryBadges();
                     applyFilters();
@@ -525,7 +537,7 @@ function groupFeaturesByCategory($features)
 
             guestCapacities.forEach(select => {
                 if (select) {
-                    select.addEventListener('change', function() {
+                    select.addEventListener('change', function () {
                         syncGuestCapacity(this);
                         applyFilters();
                     });
@@ -673,7 +685,7 @@ function groupFeaturesByCategory($features)
             if (existing) existing.remove();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initializeFilters();
         });
     </script>

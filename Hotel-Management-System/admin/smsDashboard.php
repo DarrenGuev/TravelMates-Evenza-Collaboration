@@ -261,10 +261,7 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
                                                 </td>
                                             </tr>
 
-                                            <?php 
-                                            // INCLUDED MODAL inside the loop
-                                            include ADMIN_INCLUDES_PATH . '/modals/smsModals/viewLogModal.php'; 
-                                            ?>
+                                            <?php // Modal markup is included after the logs card to ensure it is not inside a container hidden on small screens ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </tbody>
@@ -357,6 +354,11 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
     </div>
 
     <!-- Modals included from external file -->
+    <?php if (!empty($logs)): ?>
+        <?php foreach ($logs as $log): ?>
+            <?php include ADMIN_INCLUDES_PATH . '/modals/smsModals/viewLogModal.php'; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
     <?php include ADMIN_INCLUDES_PATH . '/modals/smsModals/sendSmsModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

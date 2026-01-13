@@ -1,10 +1,10 @@
 <!-- View Log Modal -->
-<div class="modal fade" id="viewLogModal<?php echo $log['id']; ?>" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="viewLogModal<?php echo $log['id']; ?>" tabindex="-1" aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">SMS Details #<?php echo $log['id']; ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -18,7 +18,16 @@
                 <div class="row">
                     <div class="col-6">
                         <label class="form-label fw-bold">Status</label>
-                        <p class="mb-0"><span class="badge <?php echo $statusClass; ?>"><?php echo ucfirst($log['status']); ?></span></p>
+                        <?php
+                        // Compute status class locally to avoid depending on external scope
+                        $statusClassLocal = match ($log['status']) {
+                            'sent' => 'badge-sent',
+                            'failed' => 'badge-failed',
+                            'received' => 'badge-received',
+                            default => 'badge-pending'
+                        };
+                        ?>
+                        <p class="mb-0"><span class="badge <?php echo $statusClassLocal; ?>"><?php echo ucfirst($log['status']); ?></span></p>
                     </div>
                     <div class="col-6">
                         <label class="form-label fw-bold">Direction</label>
