@@ -36,7 +36,7 @@ require_once __DIR__ . '/../core/connect.php';
  */
 function getEventImageUrl($imagePath) {
     $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/evenza';
+    $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/TravelMates-Evenza-Collaboration/evenza';
     
     if (empty($imagePath)) {
         return $baseUrl . '/assets/images/event_images/placeholder.jpg';
@@ -175,7 +175,7 @@ try {
     
     // Get base URL for links
     $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/evenza';
+    $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/TravelMates-Evenza-Collaboration/evenza';
     
     // Fetch single event by ID
     if ($eventId !== null) {
