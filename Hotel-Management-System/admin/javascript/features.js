@@ -97,88 +97,17 @@ function applyPagination() {
     }
 
     // Update pagination info (top and bottom)
-    updatePaginationInfo(totalFeatures > 0 ? startIndex + 1 : 0, endIndex, totalFeatures);
+    AdminPagination.updatePaginationInfo(startIndex + 1, endIndex, totalFeatures, {
+        topStartId: 'showingStart',
+        topEndId: 'showingEnd',
+        topTotalId: 'totalFeatures',
+        bottomStartId: 'showingStartBottom',
+        bottomEndId: 'showingEndBottom',
+        bottomTotalId: 'totalFeaturesBottom'
+    });
 
     // Generate pagination controls
-    generatePaginationControls(totalPages);
-}
-
-function updatePaginationInfo(start, end, total) {
-    // Top pagination info
-    document.getElementById('showingStart').textContent = start;
-    document.getElementById('showingEnd').textContent = end;
-    document.getElementById('totalFeatures').textContent = total;
-
-    // Bottom pagination info
-    document.getElementById('showingStartBottom').textContent = start;
-    document.getElementById('showingEndBottom').textContent = end;
-    document.getElementById('totalFeaturesBottom').textContent = total;
-}
-
-function generatePaginationControls(totalPages) {
-    const paginationHTML = generatePaginationHTML(totalPages);
-    document.getElementById('paginationControls').innerHTML = paginationHTML;
-    document.getElementById('paginationControlsBottom').innerHTML = paginationHTML;
-}
-
-function generatePaginationHTML(totalPages) {
-    if (totalPages <= 1) {
-        return '';
-    }
-
-    let html = '';
-
-    // Previous button
-    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;" aria-label="Previous">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>`;
-
-    // Page numbers
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage < maxVisiblePages - 1) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    // First page and ellipsis
-    if (startPage > 1) {
-        html += `<li class="page-item">
-                    <a class="page-link" href="#" onclick="goToPage(1); return false;">1</a>
-                </li>`;
-        if (startPage > 2) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-    }
-
-    // Page numbers
-    for (let i = startPage; i <= endPage; i++) {
-        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
-                </li>`;
-    }
-
-    // Last page and ellipsis
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
-        html += `<li class="page-item">
-                    <a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a>
-                </li>`;
-    }
-
-    // Next button
-    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;" aria-label="Next">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>`;
-
-    return html;
+    AdminPagination.generatePaginationControls(totalPages, currentPage, 'paginationControls', 'paginationControlsBottom', 'goToPage');
 }
 
 function goToPage(page) {

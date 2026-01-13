@@ -288,7 +288,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                         <td class="text-center"><span class="badge bg-info"><?php echo $row['roomTypeName'] ?></span></td>
                                         <td class="text-center"><?php echo $row['roomName'] ?></td>
                                         <td class="text-center"><?php echo $row['capacity'] ?> guests</td>
-                                        <td class="text-center">
+                                        <td class="text-start justify-content-evenly">
                                             <?php if (!empty($roomFeatureNames)) {
                                                 foreach ($roomFeatureNames as $featureName) { ?>
                                                     <span class="badge bg-secondary me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
@@ -351,7 +351,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
     <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/deleteRoomTypeModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="javascript/pagination.js"></script>
     <script src="<?php echo JS_URL; ?>/showAlert.js"></script>
     <script src="<?php echo JS_URL; ?>/autoDismiss.js"></script>
     <script src="javascript/rooms.js"></script>

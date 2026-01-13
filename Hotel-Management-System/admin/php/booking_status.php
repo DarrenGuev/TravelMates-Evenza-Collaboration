@@ -138,11 +138,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $validPaymentStatuses = [Booking::PAYMENT_PENDING, Booking::PAYMENT_PAID, Booking::PAYMENT_REFUNDED];
 
         if (in_array($newStatus, $validStatuses) && in_array($newPaymentStatus, $validPaymentStatuses)) {
+            // Get current booking status before update
+            $currentBooking = $bookingModel->find($bookingID);
+            $oldStatus = $currentBooking['bookingStatus'] ?? '';
+            
+            // Update booking
             $bookingModel->update($bookingID, [
                 'bookingStatus' => $newStatus,
                 'paymentStatus' => $newPaymentStatus,
                 'updatedAt' => date('Y-m-d H:i:s')
             ]);
+            
+            // Handle room quantity changes based on status transitions
+            $roomID = $currentBooking['roomID'] ?? null;
+            if ($roomID) {
+                $roomModel = new Room();
+                
+                // If changing TO completed (and was not completed before)
+                if ($newStatus === Booking::STATUS_COMPLETED && $oldStatus !== Booking::STATUS_COMPLETED) {
+                    $roomModel->decreaseQuantity($roomID);
+                }
+                // If changing FROM completed to something else
+                elseif ($oldStatus === Booking::STATUS_COMPLETED && $newStatus !== Booking::STATUS_COMPLETED) {
+                    $roomModel->increaseQuantity($roomID);
+                }
+            }
+            
             sendJsonResponse(true, 'Booking updated successfully!');
         } else {
             sendJsonResponse(false, 'Invalid status value!');

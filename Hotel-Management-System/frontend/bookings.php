@@ -182,7 +182,7 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                         <h4 class="fw-bold text-warning mb-0">₱<?php echo number_format($booking['totalPrice'], 2); ?></h4>
                                     </div>
                                     
-                                    <div class="d-grid gap-2">
+                                    <div class="d-grid gap-2 justify-content-center">
                                         <?php if ($booking['bookingStatus'] === 'confirmed'): ?>
                                             <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#receiptModal<?php echo $booking['bookingID']; ?>">
                                                 <i class="bi bi-receipt me-1"></i>View Receipt
