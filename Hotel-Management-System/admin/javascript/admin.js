@@ -57,7 +57,7 @@ function getBookingActions(booking) {
                     <i class="bi bi-flag"></i>
                 </button>`;
     }
-    
+
     // Add Edit/Pencil button (opens the inline modal which is not easily replicated here without full HTML structure, 
     // but in admin.php we don't have the inline edit modals pre-rendered for all rows usually if loaded dynamically.
     // However, looking at manage_bookings.php, it uses a modal per row.
@@ -532,3 +532,136 @@ document.addEventListener('DOMContentLoaded', () => {
     initBookingModals();
     switchTable('reservations');
 });
+
+// Process refund function
+        function processRefund(bookingID) {
+            // Find booking data from allBookingsData
+            const booking = allBookingsData.find(b => b.bookingID == bookingID);
+            const refundReason = booking && booking.refundReason ? booking.refundReason : 'No reason provided';
+            
+            document.getElementById('bookingStatusBookingID').value = bookingID;
+            document.getElementById('bookingStatusAction').value = 'refund';
+
+            const modalHeader = document.getElementById('bookingStatusModalHeader');
+            const modalIcon = document.getElementById('bookingStatusIcon');
+            const modalMessage = document.getElementById('bookingStatusMessage');
+            const confirmBtn = document.getElementById('bookingStatusConfirmBtn');
+
+            modalHeader.className = 'modal-header bg-warning text-dark';
+            modalIcon.className = 'bi bi-cash-coin text-warning';
+            modalMessage.innerHTML = `Process this refund request?<br><br>
+                <div class="alert alert-warning mb-3" style="text-align: left;">
+                    <strong><i class="bi bi-chat-left-quote me-2"></i>Reason for Refund Request:</strong><br>
+                    <em>${refundReason}</em>
+                </div>
+                <small class="text-muted">This will:<br>• Change booking status to <strong>CANCELLED</strong><br>• Change payment status to <strong>REFUNDED</strong></small>`;
+            confirmBtn.className = 'btn btn-warning';
+            confirmBtn.textContent = 'Process Refund';
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookingStatusModal')) ||
+                new bootstrap.Modal(document.getElementById('bookingStatusModal'));
+            modal.show();
+        }
+
+        // Override confirmBookingStatusChange to handle refund action
+        confirmBookingStatusChange = function() {
+            const bookingID = document.getElementById('bookingStatusBookingID').value;
+            const action = document.getElementById('bookingStatusAction').value;
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookingStatusModal'));
+            if (modal) modal.hide();
+
+            showBookingLoading(action === 'refund' ? 'refund' : action);
+
+            const formData = new FormData();
+            formData.append('bookingID', bookingID);
+
+            if (action === 'refund') {
+                formData.append('bookingAction', 'edit');
+                formData.append('newStatus', 'cancelled');
+                formData.append('newPaymentStatus', 'refunded');
+            } else {
+                formData.append('bookingAction', action);
+            }
+
+            fetch('php/booking_status.php', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Raw response:', text);
+                    try {
+                        const data = JSON.parse(text);
+                        showBookingResult(data.success, data.message);
+                        if (data.success) {
+                            const resultModalEl = document.getElementById('bookingResultModal');
+                            if (resultModalEl) resultModalEl.setAttribute('data-reload', 'true');
+                        }
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        showBookingResult(false, 'Error parsing server response.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showBookingResult(false, 'An error occurred: ' + error.message);
+                });
+        };
+
+        // submitEditForm function for inline modals
+        function submitEditForm(form) {
+            const formData = new FormData(form);
+            const modalEl = form.closest('.modal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            showBookingLoading('edit');
+
+            fetch('php/booking_status.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    showBookingResult(data.success, data.message);
+                    if (data.success) {
+                        const resultModalEl = document.getElementById('bookingResultModal');
+                        if (resultModalEl) resultModalEl.setAttribute('data-reload', 'true');
+                    }
+                })
+                .catch(err => {
+                    showBookingResult(false, 'Error: ' + err.message);
+                });
+            return false;
+        }
+
+        // Disable edit buttons for refunded bookings after table renders
+        const originalSwitchTable = switchTable;
+        switchTable = function(tableType) {
+            originalSwitchTable(tableType);
+
+            // After table renders, disable edit buttons for refunded bookings
+            if (tableType === 'reservations' || tableType === 'confirmed' || tableType === 'pending' || tableType === 'completed') {
+                setTimeout(() => {
+                    allBookingsData.forEach(booking => {
+                        if (booking.bookingStatus === 'cancelled' && booking.cancelledByUser == 1) {
+                            const editBtn = document.getElementById(`editBtn${booking.bookingID}`);
+                            if (editBtn) {
+                                editBtn.disabled = true;
+                                editBtn.classList.add('opacity-50');
+                                editBtn.title = 'Cannot edit - Refunded by user';
+                                editBtn.innerHTML = '<i class="bi bi-lock"></i>';
+                            }
+                        }
+                    });
+                }, 350);
+            }
+        };
