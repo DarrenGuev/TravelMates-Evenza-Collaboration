@@ -328,7 +328,7 @@ const tableConfigs = {
             // Generate status badge
             let statusBadge;
             if (isRefundRequest) {
-                statusBadge = `<button class="badge bg-warning text-dark border-0" onclick="processRefund(${booking.bookingID})" title="Click to approve refund and cancel booking" style="cursor: pointer;"><i class="bi bi-clock-history me-1"></i>Process Refund</button>`;
+                statusBadge = `<span class="badge bg-warning text-dark" title="User has requested a refund"><i class="bi bi-clock-history me-1"></i>Refund Requested</span>`;
             } else if (isRefunded) {
                 statusBadge = `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Refunded</span>`;
             } else {
@@ -338,7 +338,9 @@ const tableConfigs = {
             // Generate action buttons
             let actionButtons = `<button class="btn btn-outline-primary" onclick="viewBooking(${booking.bookingID})" title="View Details"><i class="bi bi-eye"></i></button>`;
             
-            if (booking.bookingStatus === 'pending') {
+            if (isRefundRequest) {
+                actionButtons += `<button class="btn btn-outline-warning" onclick="processRefund(${booking.bookingID})" title="Process Refund"><i class="bi bi-cash-coin"></i></button>`;
+            } else if (booking.bookingStatus === 'pending') {
                 actionButtons += `
                     <button class="btn btn-outline-success" onclick="updateBookingStatus(${booking.bookingID}, 'confirm')" title="Approve"><i class="bi bi-check-lg"></i></button>
                     <button class="btn btn-outline-danger" onclick="updateBookingStatus(${booking.bookingID}, 'cancel')" title="Reject"><i class="bi bi-x-lg"></i></button>`;

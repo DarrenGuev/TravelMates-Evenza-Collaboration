@@ -213,11 +213,23 @@ class Booking extends Model
                       WHERE bookingID = ?";
             return $this->executeStatement($query, 'ssi', [self::STATUS_PENDING, $refundReason, $bookingID]) !== false;
         } else {
-            // For pending bookings, cancel immediately
-            $query = "UPDATE `{$this->table}` 
-                      SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
-                      WHERE bookingID = ?";
-            return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+            // For pending bookings, we need to distinguish between paid and unpaid payments.
+            // If payment was already paid, create a refund request and set to pending (awaiting admin approval)
+            // (do NOT mark payment as refunded yet). For unpaid/pending payments, cancel immediately and mark refunded.
+            $booking = $this->find($bookingID);
+            if ($booking && isset($booking['paymentStatus']) && $booking['paymentStatus'] === self::PAYMENT_PAID) {
+                // Mark as pending refund request so admins can approve and process the refund
+                $query = "UPDATE `{$this->table}` 
+                          SET bookingStatus = ?, cancelledByUser = 1, refundReason = ?, updatedAt = NOW() 
+                          WHERE bookingID = ?";
+                return $this->executeStatement($query, 'ssi', [self::STATUS_PENDING, $refundReason, $bookingID]) !== false;
+            } else {
+                // For unpaid bookings, cancel immediately and mark payment as refunded
+                $query = "UPDATE `{$this->table}` 
+                          SET bookingStatus = ?, paymentStatus = ?, cancelledByUser = 1, updatedAt = NOW() 
+                          WHERE bookingID = ?";
+                return $this->executeStatement($query, 'ssi', [self::STATUS_CANCELLED, self::PAYMENT_REFUNDED, $bookingID]) !== false;
+            }
         }
     }
 

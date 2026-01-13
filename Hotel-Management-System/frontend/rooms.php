@@ -45,10 +45,10 @@ foreach ($categoriesData as $cat) {
 }
 
 // Load features and attach them to categories (show all features, even if not yet used by a room)
-$allFeatures = $featureModel->getAll('category, featureName');
+$allFeatures = $featureModel->getAllOrdered();
 
 foreach ($allFeatures as $row) {
-    $category = $row['category'] ?? 'General';
+    $category = $row['categoryName'] ?? 'General';
     $featureName = $row['featureName'];
 
     if (!isset($featuresByCategory[$category])) {
@@ -73,7 +73,7 @@ function groupFeaturesByCategory($features)
 {
     $grouped = [];
     foreach ($features as $feature) {
-        $category = $feature['category'] ?? 'General';
+        $category = $feature['categoryName'] ?? 'General';
         if (!isset($grouped[$category])) {
             $grouped[$category] = [];
         }

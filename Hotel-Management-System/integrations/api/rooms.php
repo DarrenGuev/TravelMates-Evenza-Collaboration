@@ -58,9 +58,10 @@ try {
         $features = $roomModel->getFeatures((int)$room['roomID']);
         $featuresList = array_map(function($feature) {
             return [
-                'id' => (int)($feature['featureID'] ?? $feature['id'] ?? 0),
+                'id' => (int)($feature['featureId'] ?? $feature['featureID'] ?? 0),
                 'name' => $feature['featureName'] ?? $feature['name'] ?? '',
-                'category' => $feature['category'] ?? null
+                'categoryID' => (int)($feature['categoryID'] ?? 0),
+                'categoryName' => $feature['categoryName'] ?? null
             ];
         }, $features);
         

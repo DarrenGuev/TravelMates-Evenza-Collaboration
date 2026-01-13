@@ -10,7 +10,10 @@ class Feature extends Model
 
     public function getAllOrdered(): array
     {
-        $query = "SELECT * FROM `{$this->table}` ORDER BY category, featureId";
+        $query = "SELECT f.*, fc.categoryName 
+                  FROM `{$this->table}` f 
+                  JOIN featurecategories fc ON f.categoryID = fc.categoryID 
+                  ORDER BY fc.categoryName, f.featureId";
         $result = $this->rawQuery($query);
         return $result ? $this->db->fetchAll($result) : [];
     }
@@ -21,7 +24,7 @@ class Feature extends Model
         $grouped = [];
         
         foreach ($features as $feature) {
-            $category = $feature['category'] ?? 'General';
+            $category = $feature['categoryName'] ?? 'General';
             if (!isset($grouped[$category])) {
                 $grouped[$category] = [];
             }
@@ -35,18 +38,24 @@ class Feature extends Model
     {
         return $this->findBy('featureName', $featureName);
     }
-    public function addFeature(string $featureName, string $category): array
+    
+    public function addFeature(string $featureName, int $categoryID): array
     {
         $featureName = trim($featureName);
-        $category = trim($category);
         
-        if (empty($featureName) || empty($category)) {
-            return ['success' => false, 'message' => 'Feature name and category are required', 'id' => null];
+        if (empty($featureName) || $categoryID <= 0) {
+            return ['success' => false, 'message' => 'Feature name and valid category are required', 'id' => null];
+        }
+
+        // Validate categoryID exists
+        $categoryModel = new FeatureCategory();
+        if (!$categoryModel->find($categoryID)) {
+            return ['success' => false, 'message' => 'Invalid category selected', 'id' => null];
         }
 
         $id = $this->insert([
             'featureName' => $featureName,
-            'category' => $category
+            'categoryID' => $categoryID
         ]);
         
         if ($id) {
@@ -56,16 +65,21 @@ class Feature extends Model
         return ['success' => false, 'message' => 'Error adding feature.', 'id' => null];
     }
 
-    public function updateFeature(int $featureId, string $featureName, string $category): array
+    public function updateFeature(int $featureId, string $featureName, int $categoryID): array
     {
         $featureName = trim($featureName);
-        $category = trim($category);
         
-        if (empty($featureName) || empty($category)) {
-            return ['success' => false, 'message' => 'Feature name and category are required'];
+        if (empty($featureName) || $categoryID <= 0) {
+            return ['success' => false, 'message' => 'Feature name and valid category are required'];
         }
 
-        if ($this->update($featureId, ['featureName' => $featureName, 'category' => $category])) {
+        // Validate categoryID exists
+        $categoryModel = new FeatureCategory();
+        if (!$categoryModel->find($categoryID)) {
+            return ['success' => false, 'message' => 'Invalid category selected'];
+        }
+
+        if ($this->update($featureId, ['featureName' => $featureName, 'categoryID' => $categoryID])) {
             return ['success' => true, 'message' => 'Feature updated successfully!'];
         }
         
@@ -84,25 +98,30 @@ class Feature extends Model
         return ['success' => false, 'message' => 'Error deleting feature.'];
     }
 
-    public function getByCategory(string $category): array
+    public function getByCategory(int $categoryID): array
     {
-        $query = "SELECT * FROM `{$this->table}` WHERE `category` = ? ORDER BY featureName";
-        $result = $this->executeStatement($query, 's', [$category]);
+        $query = "SELECT f.*, fc.categoryName 
+                  FROM `{$this->table}` f 
+                  JOIN featurecategories fc ON f.categoryID = fc.categoryID 
+                  WHERE f.categoryID = ? 
+                  ORDER BY f.featureName";
+        $result = $this->executeStatement($query, 'i', [$categoryID]);
         return $result ? $this->db->fetchAll($result) : [];
     }
 
-    public function countByCategory(string $category): int
+    public function countByCategory(int $categoryID): int
     {
-        return $this->countBy('category', $category);
+        return $this->countBy('categoryID', $categoryID);
     }
 
     public function getAllWithRoomCount(): array
     {
-        $query = "SELECT f.*, COUNT(rf.roomID) as roomCount 
+        $query = "SELECT f.*, fc.categoryName, COUNT(rf.roomID) as roomCount 
                   FROM `{$this->table}` f 
+                  JOIN featurecategories fc ON f.categoryID = fc.categoryID 
                   LEFT JOIN roomFeatures rf ON f.featureId = rf.featureID 
                   GROUP BY f.featureId 
-                  ORDER BY f.category, f.featureId";
+                  ORDER BY fc.categoryName, f.featureId";
         $result = $this->rawQuery($query);
         return $result ? $this->db->fetchAll($result) : [];
     }

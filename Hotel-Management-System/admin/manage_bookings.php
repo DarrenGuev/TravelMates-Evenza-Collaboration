@@ -228,12 +228,9 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
                                                 </td>
                                                 <td>
                                                     <?php if ($isRefundRequest): ?>
-                                                        <button class="badge bg-warning text-dark border-0" 
-                                                                onclick="processRefund(<?php echo $booking['bookingID']; ?>)"
-                                                                title="Click to approve refund and cancel booking"
-                                                                style="cursor: pointer;">
-                                                            <i class="bi bi-clock-history me-1"></i>Process Refund
-                                                        </button>
+                                                        <span class="badge bg-warning text-dark" title="User has requested a refund">
+                                                            <i class="bi bi-clock-history me-1"></i>Refund Requested
+                                                        </span>
                                                     <?php elseif ($isRefunded): ?>
                                                         <span class="badge bg-danger">
                                                             <i class="bi bi-x-circle me-1"></i>Refunded
@@ -249,7 +246,11 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
                                                         <button class="btn btn-outline-primary" onclick="viewBooking(<?php echo $booking['bookingID']; ?>)" title="View Details">
                                                             <i class="bi bi-eye"></i>
                                                         </button>
-                                                        <?php if ($booking['bookingStatus'] === 'pending'): ?>
+                                                        <?php if ($isRefundRequest): ?>
+                                                            <button class="btn btn-outline-warning" onclick="processRefund(<?php echo $booking['bookingID']; ?>)" title="Process Refund">
+                                                                <i class="bi bi-cash-coin"></i>
+                                                            </button>
+                                                        <?php elseif ($booking['bookingStatus'] === 'pending'): ?>
                                                             <button class="btn btn-outline-success" onclick="updateBookingStatus(<?php echo $booking['bookingID']; ?>, 'confirm')" title="Approve">
                                                                 <i class="bi bi-check-lg"></i>
                                                             </button>
