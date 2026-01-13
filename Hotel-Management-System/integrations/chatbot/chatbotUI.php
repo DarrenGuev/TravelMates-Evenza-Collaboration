@@ -65,7 +65,7 @@ YOUR RESPONSE (keep it short and friendly):";
         style="bottom:36px;right:100px;z-index:1079;transition:opacity 0.3s ease, transform 0.3s ease;">
         <div class="bg-warning text-dark px-3 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2"
             style="font-size:14px;font-weight:500;white-space:nowrap;">
-            <span>Need an assistant?</span>
+            <span>Need an assistance?</span>
         </div>
         <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #ffc107;margin-left:-1px;"></div>
     </div>
