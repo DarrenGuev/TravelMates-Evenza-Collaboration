@@ -120,12 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="row justify-content-center">
                 <div class="col-lg-5">
                     <div class="luxury-card p-5">
-                        <?php if ($error): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <?php echo htmlspecialchars($error); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
                         <form id="loginForm" method="post" action="" novalidate>
                             <div class="form-group mb-4">
                                 <label for="email" class="form-label">Email Address <span class="required-asterisk">*</span></label>
@@ -160,8 +154,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <?php include __DIR__ . '/includes/footer.php'; ?>
+    
+    <!-- Success Modal -->
+    <div class="modal fade" id="customSuccessModal" tabindex="-1" aria-labelledby="customSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-alert-modal">
+                <div class="modal-body custom-alert-body text-center">
+                    <div class="custom-alert-icon-wrapper mb-4">
+                        <i class="fas fa-check-circle custom-alert-icon success-icon"></i>
+                    </div>
+                    <h5 class="custom-alert-title" id="customSuccessModalTitle">Action Successful</h5>
+                    <p class="custom-alert-message" id="customSuccessModalMessage"></p>
+                </div>
+                <div class="modal-footer custom-alert-footer justify-content-center">
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="customErrorModal" tabindex="-1" aria-labelledby="customErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content custom-alert-modal">
+                <div class="modal-body custom-alert-body text-center">
+                    <div class="custom-alert-icon-wrapper mb-4">
+                        <i class="fas fa-times-circle custom-alert-icon error-icon"></i>
+                    </div>
+                    <h5 class="custom-alert-title" id="customErrorModalTitle">Error</h5>
+                    <p class="custom-alert-message" id="customErrorModalMessage"></p>
+                </div>
+                <div class="modal-footer custom-alert-footer justify-content-center">
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/modal-utils.js"></script>
     <script src="../../assets/js/login.js"></script>
+    <script>
+        // Show error modal if there's an error from PHP
+        <?php if ($error): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            showCustomModal('<?php echo addslashes($error); ?>', 'error', 'Login Failed');
+        });
+        <?php endif; ?>
+    </script>
     <style>
         .register-link {
             color: #6B7F5A;

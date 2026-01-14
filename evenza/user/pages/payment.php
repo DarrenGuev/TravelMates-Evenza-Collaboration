@@ -220,6 +220,7 @@ $paymentStatus = isset($_GET['status']) ? $_GET['status'] : 'pending';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/modal-utils.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=<?php echo getPayPalClientId(); ?>&currency=<?php echo PAYPAL_CURRENCY; ?>&intent=capture"></script>
     <script src="../../assets/js/payment.js?v=<?php echo time(); ?>"></script>
 </body>

@@ -424,7 +424,7 @@ mysqli_free_result($statsResult);
                         </a>
                         <a href="reservationsManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-clipboard-list"></i></span>
-                            <span style="font-weight: 500;">Reservations</span>
+                            <span style="font-weight: 500;">Reservations Management</span>
                         </a>
                         <a href="userManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-users"></i></span> 

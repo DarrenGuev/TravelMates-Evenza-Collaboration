@@ -512,7 +512,7 @@ try {
                         </a>
                         <a href="reservationsManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-clipboard-list"></i></span> 
-                            <span style="font-weight: 500;">Reservations</span>
+                            <span style="font-weight: 500;">Reservations Management</span>
                         </a>
                         <a href="userManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-users"></i></span> 
@@ -552,7 +552,7 @@ try {
                 ?>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-6 col-lg col-md-4">
+                    <div class="col-6 col-lg-3 col-md-6">
                         <div class="admin-card p-4 h-100">
                             <div class="d-flex flex-column">
                                 <div class="stat-label mb-2">Total Revenue</div>
@@ -563,7 +563,7 @@ try {
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg col-md-4">
+                    <div class="col-6 col-lg-3 col-md-6">
                         <div class="admin-card p-4 h-100">
                             <div class="d-flex flex-column">
                                 <div class="stat-label mb-2">Total Packages Reserved</div>
@@ -572,16 +572,7 @@ try {
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg col-md-4">
-                        <div class="admin-card p-4 h-100">
-                            <div class="d-flex flex-column">
-                                <div class="stat-label mb-2">Active Events</div>
-                                <div class="stat-number" id="activeEvents"><?php echo isset($stats['activeEvents']) ? $stats['activeEvents'] : '0'; ?></div>
-                                <div class="text-muted small mt-2">Events accepting reservations</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg col-md-4">
+                    <div class="col-6 col-lg-3 col-md-6">
                         <div class="admin-card p-4 h-100">
                             <div class="d-flex flex-column">
                                 <div class="stat-label mb-2">New User Sign-ups</div>
@@ -590,7 +581,7 @@ try {
                             </div>
                         </div>
                     </div>
-                    <div class="col-6 col-lg col-md-4">
+                    <div class="col-6 col-lg-3 col-md-6">
                         <div class="admin-card p-4 h-100">
                             <div class="d-flex flex-column">
                                 <div class="stat-label mb-2">Average Rating</div>
