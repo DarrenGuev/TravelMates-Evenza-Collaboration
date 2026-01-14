@@ -3,7 +3,7 @@ function getStatusBadge(status) {
         'pending': '<span class="badge bg-warning text-dark">Pending</span>',
         'confirmed': '<span class="badge bg-success">Confirmed</span>',
         'cancelled': '<span class="badge bg-danger">Cancelled</span>',
-        'completed': '<span class="badge bg-success">Confirmed</span>'
+        'completed': '<span class="badge bg-info">Completed</span>'
     };
     return badges[status] || '<span class="badge bg-secondary">' + status + '</span>';
 }
@@ -454,7 +454,7 @@ const tableConfigs = {
     },
     confirmed: {
         headers: ['ID', 'Guest', 'Room', 'Dates', 'Total', 'Payment', 'Status', 'Actions'],
-        getData: () => confirmedBookingsData,
+        getData: () => allBookingsData.filter(b => b.bookingStatus === 'confirmed'),
         renderRow: (booking, index) => tableConfigs.reservations.renderRow(booking, index)
     },
     pending: {

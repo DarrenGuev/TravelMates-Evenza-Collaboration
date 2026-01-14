@@ -234,7 +234,7 @@ $countCompleted = $bookingModel->countBy('bookingStatus', Booking::STATUS_COMPLE
                                                         </span>
                                                     <?php elseif ($isRefunded): ?>
                                                         <span class="badge bg-danger">
-                                                            <i class="bi bi-x-circle me-1"></i>Refunded
+                                                            <i class="bi bi-x-circle me-1"></i>Cancelled
                                                         </span>
                                                     <?php else: ?>
                                                         <span class="badge <?php echo $statusBadgeClass; ?>">
