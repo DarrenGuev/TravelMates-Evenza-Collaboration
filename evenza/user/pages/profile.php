@@ -226,29 +226,32 @@ if ($stmt) {
     </div>
 
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content luxury-card">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header" style="border-bottom: 1px solid rgba(107, 127, 90, 0.1); padding: 1.5rem 2rem;">
+                    <h5 class="modal-title" id="editProfileModalLabel" style="font-family: 'Playfair Display', serif; font-weight: 600; font-size: 1.5rem; color: var(--text-charcoal); margin: 0;">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="opacity: 0.6;"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding: 2rem;">
                     <form id="editProfileForm">
-                        <div class="mb-3">
-                            <label for="editName" class="form-label">Name</label>
-                            <input type="text" class="form-control luxury-input" id="editName" value="<?php echo htmlspecialchars($userData['name']); ?>">
+                        <div class="mb-4">
+                            <label for="editName" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Name</label>
+                            <input type="text" class="form-control luxury-input" id="editName" value="<?php echo htmlspecialchars($userData['name']); ?>" style="border-radius: 10px;">
+                            <div class="error-message" id="editNameError"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="editEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control luxury-input" id="editEmail" value="<?php echo htmlspecialchars($userData['email']); ?>">
+                        <div class="mb-4">
+                            <label for="editEmail" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Email</label>
+                            <input type="email" class="form-control luxury-input" id="editEmail" value="<?php echo htmlspecialchars($userData['email']); ?>" style="border-radius: 10px;">
+                            <div class="error-message" id="editEmailError"></div>
                         </div>
-                        <div class="mb-3">
-                            <label for="editMobile" class="form-label">Mobile Number</label>
-                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>">
+                        <div class="mb-4">
+                            <label for="editMobile" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Mobile Number</label>
+                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>" style="border-radius: 10px;">
+                            <div class="error-message" id="editMobileError"></div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="border-top: 1px solid rgba(107, 127, 90, 0.1); padding: 1.5rem 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
                     <button type="button" class="btn btn-outline-luxury" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary-luxury" onclick="saveProfile()">Save Changes</button>
                 </div>
@@ -404,7 +407,7 @@ if ($stmt) {
                     <p class="custom-alert-message" id="successModalMessage"></p>
                 </div>
                 <div class="modal-footer custom-alert-footer justify-content-center">
-                    <button type="button" class="btn custom-alert-btn-primary" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -422,7 +425,7 @@ if ($stmt) {
                     <p class="custom-alert-message" id="errorModalMessage"></p>
                 </div>
                 <div class="modal-footer custom-alert-footer justify-content-center">
-                    <button type="button" class="btn custom-alert-btn-primary" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -431,6 +434,7 @@ if ($stmt) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=<?php echo getPayPalClientId(); ?>&currency=<?php echo PAYPAL_CURRENCY; ?>&intent=capture"></script>
     <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/modal-utils.js"></script>
     <script src="../../assets/js/profile.js"></script>
 </body>
 </html>

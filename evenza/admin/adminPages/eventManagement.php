@@ -692,7 +692,7 @@ if (!empty($searchQuery)) {
                         </a>
                         <a href="reservationsManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-clipboard-list"></i></span> 
-                            <span style="font-weight: 500;">Reservations</span>
+                            <span style="font-weight: 500;">Reservations Management</span>
                         </a>
                         <a href="userManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-users"></i></span> 
@@ -872,7 +872,7 @@ if (!empty($searchQuery)) {
                     <p class="admin-feedback-message" id="successModalMessage"></p>
                 </div>
                 <div class="modal-footer admin-feedback-footer justify-content-center">
-                    <button type="button" class="btn admin-feedback-btn-success" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -884,13 +884,13 @@ if (!empty($searchQuery)) {
             <div class="modal-content admin-feedback-modal">
                 <div class="modal-body admin-feedback-body text-center">
                     <div class="admin-feedback-icon-wrapper mb-4">
-                        <i class="fas fa-exclamation-circle admin-feedback-icon error-icon"></i>
+                        <i class="fas fa-times-circle admin-feedback-icon error-icon"></i>
                     </div>
                     <h5 class="admin-feedback-title" id="errorModalTitle">Update Failed</h5>
                     <p class="admin-feedback-message" id="errorModalMessage"></p>
                 </div>
                 <div class="modal-footer admin-feedback-footer justify-content-center">
-                    <button type="button" class="btn admin-feedback-btn-error" data-bs-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary-luxury px-4" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -1259,57 +1259,6 @@ if (!empty($searchQuery)) {
                     keyboard: true
                 });
                 bsModal.show();
-                
-                // Auto-hide timer with hover pause functionality
-                let autoHideTimer = null;
-                let remainingTime = 10000; // 10 seconds (10000ms) - at least 5 seconds as requested
-                let startTime = Date.now();
-                let isPaused = false;
-                
-                function startTimer() {
-                    if (autoHideTimer) {
-                        clearTimeout(autoHideTimer);
-                    }
-                    startTime = Date.now();
-                    autoHideTimer = setTimeout(function() {
-                        const modalInstance = bootstrap.Modal.getInstance(modal);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                    }, remainingTime);
-                }
-                
-                function pauseTimer() {
-                    if (autoHideTimer && !isPaused) {
-                        clearTimeout(autoHideTimer);
-                        const elapsed = Date.now() - startTime;
-                        remainingTime = Math.max(0, remainingTime - elapsed);
-                        isPaused = true;
-                    }
-                }
-                
-                function resumeTimer() {
-                    if (isPaused && remainingTime > 0) {
-                        isPaused = false;
-                        startTimer();
-                    }
-                }
-                
-                // Start the timer
-                startTimer();
-                
-                // Pause on hover, resume on mouse leave
-                modal.addEventListener('mouseenter', pauseTimer);
-                modal.addEventListener('mouseleave', resumeTimer);
-                
-                // Clean up on modal hide
-                modal.addEventListener('hidden.bs.modal', function() {
-                    if (autoHideTimer) {
-                        clearTimeout(autoHideTimer);
-                    }
-                    modal.removeEventListener('mouseenter', pauseTimer);
-                    modal.removeEventListener('mouseleave', resumeTimer);
-                });
             } else if (type === 'error') {
                 const modal = document.getElementById('errorModal');
                 const modalMessage = document.getElementById('errorModalMessage');

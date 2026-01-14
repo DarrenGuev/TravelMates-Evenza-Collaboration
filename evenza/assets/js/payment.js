@@ -221,7 +221,11 @@ function showPaymentError(message) {
             statusContainer.className = 'mt-4';
             paymentSection.parentNode.insertBefore(statusContainer, paymentSection.nextSibling);
         } else {
-            alert(message);
+            if (typeof showCustomModal === 'function') {
+                showCustomModal(message, 'error', 'Payment Error');
+            } else {
+                alert(message);
+            }
             return;
         }
     }

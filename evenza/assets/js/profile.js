@@ -109,7 +109,11 @@
                     }
                 })
                 .catch(error => {
-                    alert('Payment failed: ' + error.message);
+                    if (typeof showCustomModal === 'function') {
+                        showCustomModal('Payment failed: ' + error.message, 'error', 'Payment Error');
+                    } else {
+                        alert('Payment failed: ' + error.message);
+                    }
                 });
             },
             onCancel: function() {
@@ -117,7 +121,11 @@
             },
             onError: function(err) {
                 console.error('PayPal error:', err);
-                alert('An error occurred with PayPal. Please try again.');
+                if (typeof showCustomModal === 'function') {
+                    showCustomModal('An error occurred with PayPal. Please try again.', 'error', 'Payment Error');
+                } else {
+                    alert('An error occurred with PayPal. Please try again.');
+                }
             }
         }).render('#paypal-button-container-modal')
         .then(() => {
@@ -245,7 +253,11 @@
 
     function showCancelConfirmation() {
         if (!currentReservation) {
-            alert('No reservation selected');
+            if (typeof showCustomModal === 'function') {
+                showCustomModal('No reservation selected', 'error', 'Error');
+            } else {
+                alert('No reservation selected');
+            }
             return;
         }
         const cancelModal = new bootstrap.Modal(document.getElementById('cancelReservationModal'));
@@ -254,7 +266,11 @@
 
     function confirmCancelReservation() {
         if (!currentReservation) {
-            alert('No reservation selected');
+            if (typeof showCustomModal === 'function') {
+                showCustomModal('No reservation selected', 'error', 'Error');
+            } else {
+                alert('No reservation selected');
+            }
             return;
         }
 
@@ -344,24 +360,100 @@
     // -------------------------------
     // Profile editing (existing)
     // -------------------------------
+    // Helper function to show field error
+    function showFieldError(fieldId, errorMessageId, message) {
+        const field = document.getElementById(fieldId);
+        const errorEl = document.getElementById(errorMessageId);
+        
+        if (field) {
+            field.classList.add('is-invalid');
+        }
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+    }
+
+    // Helper function to clear field error
+    function clearFieldError(fieldId, errorMessageId) {
+        const field = document.getElementById(fieldId);
+        const errorEl = document.getElementById(errorMessageId);
+        
+        if (field) {
+            field.classList.remove('is-invalid');
+        }
+        if (errorEl) {
+            errorEl.textContent = '';
+            errorEl.classList.remove('show');
+        }
+    }
+
+    // Clear errors when user starts typing
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameField = document.getElementById('editName');
+        const emailField = document.getElementById('editEmail');
+        const mobileField = document.getElementById('editMobile');
+        
+        if (nameField) {
+            nameField.addEventListener('input', function() {
+                clearFieldError('editName', 'editNameError');
+            });
+        }
+        if (emailField) {
+            emailField.addEventListener('input', function() {
+                clearFieldError('editEmail', 'editEmailError');
+            });
+        }
+        if (mobileField) {
+            mobileField.addEventListener('input', function() {
+                clearFieldError('editMobile', 'editMobileError');
+            });
+        }
+    });
+
     window.saveProfile = function() {
+        // Clear all previous errors
+        clearFieldError('editName', 'editNameError');
+        clearFieldError('editEmail', 'editEmailError');
+        clearFieldError('editMobile', 'editMobileError');
+
         const name = document.getElementById('editName').value.trim();
         const email = document.getElementById('editEmail').value.trim();
         const mobile = document.getElementById('editMobile').value.trim();
 
-        if (!name || !email || !mobile) {
-            alert('Please fill in all fields.');
-            return;
+        let hasErrors = false;
+
+        if (!name) {
+            showFieldError('editName', 'editNameError', 'Name is required');
+            hasErrors = true;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
+        if (!email) {
+            showFieldError('editEmail', 'editEmailError', 'Email is required');
+            hasErrors = true;
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showFieldError('editEmail', 'editEmailError', 'Please enter a valid email address');
+                hasErrors = true;
+            }
         }
 
-        if (mobile.length < 7) {
-            alert('Please enter a valid mobile number.');
+        if (!mobile) {
+            showFieldError('editMobile', 'editMobileError', 'Mobile number is required');
+            hasErrors = true;
+        } else if (mobile.length < 7) {
+            showFieldError('editMobile', 'editMobileError', 'Please enter a valid mobile number');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            // Scroll to first error field
+            const firstErrorField = document.querySelector('#editProfileForm .is-invalid');
+            if (firstErrorField) {
+                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstErrorField.focus();
+            }
             return;
         }
 
@@ -391,17 +483,31 @@
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
                 if (modal) modal.hide();
                 
-                alert('Profile updated successfully!');
-                
-                window.location.reload();
+                if (typeof showCustomModal === 'function') {
+                    showCustomModal('Profile updated successfully!', 'success', 'Profile Updated');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert('Profile updated successfully!');
+                    window.location.reload();
+                }
             } else {
-                alert(data.message || 'Failed to update profile.');
+                if (typeof showCustomModal === 'function') {
+                    showCustomModal(data.message || 'Failed to update profile.', 'error', 'Update Failed');
+                } else {
+                    alert(data.message || 'Failed to update profile.');
+                }
                 if (saveBtn) saveBtn.disabled = false;
             }
         })
         .catch(err => {
             console.error('Profile update error:', err);
-            alert('An error occurred while saving your profile. Please try again.');
+            if (typeof showCustomModal === 'function') {
+                showCustomModal('An error occurred while saving your profile. Please try again.', 'error', 'Error');
+            } else {
+                alert('An error occurred while saving your profile. Please try again.');
+            }
             if (saveBtn) saveBtn.disabled = false;
         });
     };

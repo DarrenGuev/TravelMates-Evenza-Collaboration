@@ -844,7 +844,7 @@ uksort($groupedReservations, function($a, $b) {
                         </a>
                         <a href="reservationsManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3 active" style="background: linear-gradient(135deg, rgba(90, 107, 79, 0.15) 0%, rgba(90, 107, 79, 0.08) 100%); color: #5A6B4F; font-weight: 600; text-decoration: none; border-left: 3px solid #5A6B4F;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-clipboard-list"></i></span> 
-                            <span>Reservations</span>
+                            <span>Reservations Management</span>
                         </a>
                         <a href="userManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-users"></i></span> 
@@ -1259,57 +1259,6 @@ uksort($groupedReservations, function($a, $b) {
                     keyboard: true
                 });
                 bsModal.show();
-                
-                // Auto-hide timer with hover pause functionality
-                let autoHideTimer = null;
-                let remainingTime = 10000; // 10 seconds (10000ms) - at least 5 seconds as requested
-                let startTime = Date.now();
-                let isPaused = false;
-                
-                function startTimer() {
-                    if (autoHideTimer) {
-                        clearTimeout(autoHideTimer);
-                    }
-                    startTime = Date.now();
-                    autoHideTimer = setTimeout(function() {
-                        const modalInstance = bootstrap.Modal.getInstance(modal);
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
-                    }, remainingTime);
-                }
-                
-                function pauseTimer() {
-                    if (autoHideTimer && !isPaused) {
-                        clearTimeout(autoHideTimer);
-                        const elapsed = Date.now() - startTime;
-                        remainingTime = Math.max(0, remainingTime - elapsed);
-                        isPaused = true;
-                    }
-                }
-                
-                function resumeTimer() {
-                    if (isPaused && remainingTime > 0) {
-                        isPaused = false;
-                        startTimer();
-                    }
-                }
-                
-                // Start the timer
-                startTimer();
-                
-                // Pause on hover, resume on mouse leave
-                modal.addEventListener('mouseenter', pauseTimer);
-                modal.addEventListener('mouseleave', resumeTimer);
-                
-                // Clean up on modal hide
-                modal.addEventListener('hidden.bs.modal', function() {
-                    if (autoHideTimer) {
-                        clearTimeout(autoHideTimer);
-                    }
-                    modal.removeEventListener('mouseenter', pauseTimer);
-                    modal.removeEventListener('mouseleave', resumeTimer);
-                });
             } else if (type === 'error') {
                 const modal = document.getElementById('errorModal');
                 const modalMessage = document.getElementById('errorModalMessage');

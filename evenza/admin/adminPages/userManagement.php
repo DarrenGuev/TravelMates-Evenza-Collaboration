@@ -235,7 +235,7 @@ if (!empty($params)) {
         }
         .search-input {
             border: 1px solid rgba(74, 93, 74, 0.2);
-            border-radius: 10px;
+            border-radius: 50px;
             padding: 0.6rem 1.25rem;
             font-size: 0.9rem;
             transition: all 0.3s ease;
@@ -510,7 +510,7 @@ if (!empty($params)) {
                         </a>
                         <a href="reservationsManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3" style="transition: all 0.3s ease; color: rgba(26, 26, 26, 0.7); text-decoration: none; border-left: 3px solid transparent;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-clipboard-list"></i></span> 
-                            <span style="font-weight: 500;">Reservations</span>
+                            <span style="font-weight: 500;">Reservations Management</span>
                         </a>
                         <a href="userManagement.php" class="d-flex align-items-center py-3 px-3 rounded-3 active" style="background: linear-gradient(135deg, rgba(90, 107, 79, 0.15) 0%, rgba(90, 107, 79, 0.08) 100%); color: #5A6B4F; font-weight: 600; text-decoration: none; border-left: 3px solid #5A6B4F;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-users"></i></span> 
@@ -547,7 +547,7 @@ if (!empty($params)) {
                             <label class="form-label fw-semibold" style="color: #1A1A1A;">Search</label>
                             <div class="position-relative">
                                 <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d; z-index: 10;"></i>
-                                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by name or email..." value="<?php echo htmlspecialchars($searchQuery ?? ''); ?>" style="padding-left: 45px; border-radius: 10px;">
+                                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search by name or email..." value="<?php echo htmlspecialchars($searchQuery ?? ''); ?>" style="padding-left: 45px; border-radius: 50px;">
                             </div>
                         </div>
                         
