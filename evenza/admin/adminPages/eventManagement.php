@@ -108,12 +108,7 @@ if (!empty($searchQuery)) {
             margin-left: 240px;
             width: calc(100% - 240px);
         }
-        .admin-top-nav {
-            background-color: #FFFFFF;
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid rgba(74, 93, 74, 0.08);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        }
+        /* Admin header styles moved to includes/admin_header.php */
         .admin-card {
             background-color: #FFFFFF;
             border-radius: 20px;
@@ -205,6 +200,7 @@ if (!empty($searchQuery)) {
         .event-thumbnail {
             width: 70px;
             height: 70px;
+            max-width: 80px;
             object-fit: cover;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -238,6 +234,16 @@ if (!empty($searchQuery)) {
             font-weight: 500;
             transition: all 0.3s ease;
             white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .btn-package-inclusions {
+                font-size: 0.75rem;
+                padding: 0.35rem 0.75rem;
+            }
+            .btn-package-inclusions i {
+                margin-right: 0.25rem !important;
+            }
         }
         
         .btn-package-inclusions:hover {
@@ -299,11 +305,78 @@ if (!empty($searchQuery)) {
             color: #ef4444;
             transform: translateY(-1px);
         }
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
+        /* Admin Feedback Modals */
+        .admin-feedback-modal {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        .admin-feedback-body {
+            padding: 2.5rem 2rem;
+        }
+        .admin-feedback-icon-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .admin-feedback-icon {
+            font-size: 4rem;
+        }
+        .admin-feedback-icon.success-icon {
+            color: #0f5132;
+        }
+        .admin-feedback-icon.error-icon {
+            color: #dc3545;
+        }
+        .admin-feedback-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-charcoal);
+        }
+        .admin-feedback-message {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--text-dark-gray);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        .admin-feedback-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1.25rem 2rem;
+        }
+        .admin-feedback-btn-success {
+            background-color: #0f5132;
+            color: white;
+            border: none;
+            padding: 0.75rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .admin-feedback-btn-success:hover {
+            background-color: #0a3d24;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 81, 50, 0.3);
+            color: white;
+        }
+        .admin-feedback-btn-error {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.75rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .admin-feedback-btn-error:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            color: white;
         }
         #confirmDeleteBtn:hover {
             background-color: #c82333 !important;
@@ -370,33 +443,39 @@ if (!empty($searchQuery)) {
                 padding: 1rem !important;
             }
         }
-        @media (max-width: 768px) {
-            .admin-top-nav {
-                padding: 0.75rem 1rem;
-                flex-wrap: wrap;
-            }
-            .admin-top-nav h4 {
-                font-size: clamp(1.1rem, 4vw, 1.5rem);
-            }
+            @media (max-width: 768px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table-responsive {
                 font-size: 0.875rem;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 display: block;
                 width: 100%;
+                -ms-overflow-style: -ms-autohiding-scrollbar;
             }
             .table-responsive table {
-                min-width: 800px;
+                min-width: 600px;
                 width: 100%;
+                margin-bottom: 0;
             }
             .table th,
             .table td {
-                padding: 0.75rem 0.5rem;
-                white-space: nowrap;
+                padding: 1rem 0.75rem;
+                vertical-align: middle;
             }
-            .table img {
-                width: 40px;
-                height: 40px;
+            .table th:first-child,
+            .table td:first-child {
+                padding-left: 1rem;
+            }
+            .table th:last-child,
+            .table td:last-child {
+                padding-right: 1rem;
+            }
+            .event-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+                max-width: 80px !important;
+                min-width: 50px;
             }
             /* Ensure touch targets are large enough */
             .btn-admin-primary,
@@ -415,19 +494,26 @@ if (!empty($searchQuery)) {
                 align-items: center;
             }
         }
-        @media (max-width: 576px) {
-            .admin-top-nav {
-                padding: 0.5rem;
-            }
-            .admin-top-nav > div {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
+            @media (max-width: 576px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table th,
             .table td {
                 font-size: 0.75rem;
-                padding: 0.4rem;
+                padding: 0.75rem 0.5rem;
+            }
+            .table th:first-child,
+            .table td:first-child {
+                padding-left: 0.75rem;
+            }
+            .table th:last-child,
+            .table td:last-child {
+                padding-right: 0.75rem;
+            }
+            .event-thumbnail {
+                width: 50px !important;
+                height: 50px !important;
+                max-width: 80px !important;
+                min-width: 40px;
             }
             .table th:nth-child(1),
             .table td:nth-child(1) {
@@ -486,28 +572,11 @@ if (!empty($searchQuery)) {
 
         <!-- Content -->
         <div class="flex-fill admin-content">
-            <!-- Top Navigation Bar -->
-            <div class="admin-top-nav d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 d-xl-none">
-                        <button id="adminSidebarToggle" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; padding: 0.5rem 0.75rem;">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" style="font-family: 'Playfair Display', serif;">Event Management</h4>
-                        <div class="text-muted small">Manage all events and their details</div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                            <i class="fas fa-user text-muted"></i>
-                        </div>
-                    </div>
-                    <a href="../../user/process/logout.php?type=admin" class="btn btn-admin-primary btn-sm">Logout</a>
-                </div>
-            </div>
+            <?php
+            $pageTitle = 'Event Management';
+            $pageSubtitle = 'Manage all events and their details';
+            include 'includes/admin_header.php';
+            ?>
 
             <div class="p-4" style="padding: 2rem !important;">
                 <!-- Controls Section -->
@@ -563,8 +632,8 @@ if (!empty($searchQuery)) {
                                 <tr>
                                     <th>Image</th>
                                     <th>Title</th>
-                                    <th>Category</th>
-                                    <th>Venue</th>
+                                    <th class="d-none d-md-table-cell">Category</th>
+                                    <th class="d-none d-lg-table-cell">Venue</th>
                                     <th>PACKAGES</th>
                                     <th class="text-center" style="width: 120px;">Actions</th>
                                 </tr>
@@ -605,18 +674,19 @@ if (!empty($searchQuery)) {
                                     <td style="width: 90px;">
                                         <img src="<?php echo htmlspecialchars($imageSrc); ?>" 
                                              alt="<?php echo htmlspecialchars($event['name'] ?? $event['title']); ?>" 
-                                             class="event-thumbnail"
+                                             class="event-thumbnail img-fluid"
+                                             style="max-width: 80px; width: 70px; height: 70px;"
                                              onerror="this.src='../../assets/images/event_images/businessInnovation.jpg'">
                                     </td>
                                     <td style="min-width: 200px;">
                                         <div class="fw-semibold"><?php echo htmlspecialchars($event['name'] ?? $event['title']); ?></div>
                                     </td>
-                                    <td>
+                                    <td class="d-none d-md-table-cell">
                                         <span class="badge" style="background: linear-gradient(135deg, rgba(74, 93, 74, 0.1) 0%, rgba(74, 93, 74, 0.05) 100%); color: #4A5D4A; padding: 0.5rem 1rem; border-radius: 50px; font-weight: 500;">
                                             <?php echo htmlspecialchars(!empty($event['category']) ? $event['category'] : 'Uncategorized'); ?>
                                         </span>
                                     </td>
-                                    <td style="min-width: 250px;">
+                                    <td class="d-none d-lg-table-cell" style="min-width: 250px;">
                                         <div class="text-muted small"><?php echo htmlspecialchars($event['venue']); ?></div>
                                     </td>
                                     <td>
@@ -649,16 +719,38 @@ if (!empty($searchQuery)) {
         </div>
     </div>
 
-    <!-- Toast Container for Feedback Messages -->
-    <div class="toast-container">
-        <div id="feedbackToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="fas fa-info-circle me-2"></i>
-                <strong class="me-auto">Notification</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content admin-feedback-modal">
+                <div class="modal-body admin-feedback-body text-center">
+                    <div class="admin-feedback-icon-wrapper mb-4">
+                        <i class="fas fa-check-circle admin-feedback-icon success-icon"></i>
+                    </div>
+                    <h5 class="admin-feedback-title" id="successModalTitle">Success</h5>
+                    <p class="admin-feedback-message" id="successModalMessage"></p>
+                </div>
+                <div class="modal-footer admin-feedback-footer justify-content-center">
+                    <button type="button" class="btn admin-feedback-btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
-            <div class="toast-body" id="toastMessage">
-                <!-- Message will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content admin-feedback-modal">
+                <div class="modal-body admin-feedback-body text-center">
+                    <div class="admin-feedback-icon-wrapper mb-4">
+                        <i class="fas fa-exclamation-circle admin-feedback-icon error-icon"></i>
+                    </div>
+                    <h5 class="admin-feedback-title" id="errorModalTitle">Update Failed</h5>
+                    <p class="admin-feedback-message" id="errorModalMessage"></p>
+                </div>
+                <div class="modal-footer admin-feedback-footer justify-content-center">
+                    <button type="button" class="btn admin-feedback-btn-error" data-bs-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
@@ -956,29 +1048,97 @@ if (!empty($searchQuery)) {
             });
         });
 
-        // Show feedback toast
-        function showFeedback(message, type = 'info') {
-            const toast = document.getElementById('feedbackToast');
-            const toastMessage = document.getElementById('toastMessage');
-            const toastHeader = toast.querySelector('.toast-header');
-            
-            toastMessage.textContent = message;
-            
-            // Update icon based on type
-            const icon = toastHeader.querySelector('i');
+        // Show feedback modal
+        function showFeedback(message, type = 'success', title = null) {
             if (type === 'success') {
-                icon.className = 'fas fa-check-circle me-2 text-success';
+                const modal = document.getElementById('successModal');
+                const modalMessage = document.getElementById('successModalMessage');
+                const modalTitle = document.getElementById('successModalTitle');
+                
+                modalMessage.textContent = message;
+                if (title) {
+                    modalTitle.textContent = title;
+                } else {
+                    modalTitle.textContent = 'Success';
+                }
+                
+                const bsModal = new bootstrap.Modal(modal, {
+                    backdrop: true,
+                    keyboard: true
+                });
+                bsModal.show();
+                
+                // Auto-hide timer with hover pause functionality
+                let autoHideTimer = null;
+                let remainingTime = 10000; // 10 seconds (10000ms) - at least 5 seconds as requested
+                let startTime = Date.now();
+                let isPaused = false;
+                
+                function startTimer() {
+                    if (autoHideTimer) {
+                        clearTimeout(autoHideTimer);
+                    }
+                    startTime = Date.now();
+                    autoHideTimer = setTimeout(function() {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }, remainingTime);
+                }
+                
+                function pauseTimer() {
+                    if (autoHideTimer && !isPaused) {
+                        clearTimeout(autoHideTimer);
+                        const elapsed = Date.now() - startTime;
+                        remainingTime = Math.max(0, remainingTime - elapsed);
+                        isPaused = true;
+                    }
+                }
+                
+                function resumeTimer() {
+                    if (isPaused && remainingTime > 0) {
+                        isPaused = false;
+                        startTimer();
+                    }
+                }
+                
+                // Start the timer
+                startTimer();
+                
+                // Pause on hover, resume on mouse leave
+                modal.addEventListener('mouseenter', pauseTimer);
+                modal.addEventListener('mouseleave', resumeTimer);
+                
+                // Clean up on modal hide
+                modal.addEventListener('hidden.bs.modal', function() {
+                    if (autoHideTimer) {
+                        clearTimeout(autoHideTimer);
+                    }
+                    modal.removeEventListener('mouseenter', pauseTimer);
+                    modal.removeEventListener('mouseleave', resumeTimer);
+                });
             } else if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle me-2 text-danger';
+                const modal = document.getElementById('errorModal');
+                const modalMessage = document.getElementById('errorModalMessage');
+                const modalTitle = document.getElementById('errorModalTitle');
+                
+                modalMessage.textContent = message;
+                if (title) {
+                    modalTitle.textContent = title;
+                } else {
+                    modalTitle.textContent = 'Update Failed';
+                }
+                
+                const bsModal = new bootstrap.Modal(modal, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                bsModal.show();
             } else {
-                icon.className = 'fas fa-info-circle me-2';
+                // Default to success for info messages
+                showFeedback(message, 'success', title || 'Information');
             }
-            
-            const bsToast = new bootstrap.Toast(toast, {
-                autohide: true,
-                delay: 4000
-            });
-            bsToast.show();
         }
 
         let isEditEventMode = false;
@@ -1091,9 +1251,10 @@ if (!empty($searchQuery)) {
                 .then(data => {
                     if (data.success) {
                         showFeedback('Event "' + pendingDeleteEventName + '" has been deleted successfully.', 'success');
+                        // Wait for modal to be visible before reloading - give user time to read
                         setTimeout(function() {
                             window.location.reload();
-                        }, 1000);
+                        }, 12000); // 12 seconds to allow modal to be visible
                     } else {
                         showFeedback(data.message || 'An error occurred while deleting the event.', 'error');
                     }
@@ -1167,9 +1328,10 @@ if (!empty($searchQuery)) {
                     if (modal) {
                         modal.hide();
                     }
+                    // Wait for success modal to be visible before reloading - give user time to read
                     setTimeout(function() {
                         window.location.reload();
-                    }, 1000);
+                    }, 12000); // 12 seconds to allow modal to be visible
                 } else {
                     showFeedback(data.message || 'An error occurred while saving the event.', 'error');
                 }
@@ -1273,7 +1435,7 @@ if (!empty($searchQuery)) {
                         modal.hide();
                     }
                     // Force a hard reload to ensure fresh data from server
-                    // Use location.reload() with forceReload flag for better cache clearing
+                    // Wait for success modal to be visible before reloading - give user time to read
                     setTimeout(function() {
                         // Clear any cache and reload with timestamp
                         if (window.location.search) {
@@ -1281,7 +1443,7 @@ if (!empty($searchQuery)) {
                         } else {
                             window.location.href = window.location.pathname + '?t=' + new Date().getTime();
                         }
-                    }, 500);
+                    }, 12000); // 12 seconds to allow modal to be visible
                 } else {
                     showFeedback(data.message || 'An error occurred while updating the event.', 'error');
                 }

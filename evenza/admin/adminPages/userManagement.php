@@ -135,12 +135,7 @@ if (!empty($params)) {
             width: calc(100% - 240px);
             overflow-x: hidden;
         }
-        .admin-top-nav {
-            background-color: #FFFFFF;
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid rgba(74, 93, 74, 0.08);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        }
+        /* Admin header styles moved to includes/admin_header.php */
         .admin-card {
             background-color: #FFFFFF;
             border-radius: 20px;
@@ -252,8 +247,8 @@ if (!empty($params)) {
             outline: none;
         }
         .role-filter-select {
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            border: 1px solid rgba(74, 93, 74, 0.2);
+            border-radius: 50px;
             padding: 0.6rem 1.25rem;
             padding-right: 2.5rem;
             font-size: 0.9rem;
@@ -282,6 +277,7 @@ if (!empty($params)) {
         }
         .role-filter-wrapper {
             position: relative;
+            flex: 1;
         }
          .role-filter-wrapper .fa-chevron-down {
              position: absolute;
@@ -435,14 +431,8 @@ if (!empty($params)) {
                 min-width: 100% !important;
             }
         }
-        @media (max-width: 768px) {
-            .admin-top-nav {
-                padding: 0.75rem 1rem;
-                flex-wrap: wrap;
-            }
-            .admin-top-nav h4 {
-                font-size: clamp(1.1rem, 4vw, 1.5rem);
-            }
+            @media (max-width: 768px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table-responsive {
                 font-size: 0.875rem;
                 overflow-x: auto;
@@ -476,15 +466,8 @@ if (!empty($params)) {
                 align-items: center;
             }
         }
-        @media (max-width: 576px) {
-            .admin-top-nav {
-                padding: 0.5rem;
-            }
-            .admin-top-nav > div {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
+            @media (max-width: 576px) {
+            /* Admin header responsive styles moved to includes/admin_header.php */
             .table th,
             .table td {
                 font-size: 0.75rem;
@@ -548,28 +531,11 @@ if (!empty($params)) {
 
         <!-- Content -->
         <div class="flex-fill admin-content">
-            <!-- Top Navigation Bar -->
-            <div class="admin-top-nav d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 d-xl-none">
-                        <button id="adminSidebarToggle" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; padding: 0.5rem 0.75rem;">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" style="font-family: 'Playfair Display', serif;">Users</h4>
-                        <div class="text-muted small">View user accounts and information</div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                            <i class="fas fa-user text-muted"></i>
-                        </div>
-                    </div>
-                    <a href="../../user/process/logout.php?type=admin" class="btn btn-admin-primary btn-sm">Logout</a>
-                </div>
-            </div>
+            <?php
+            $pageTitle = 'Users';
+            $pageSubtitle = 'View user accounts and information';
+            include 'includes/admin_header.php';
+            ?>
 
             <div class="p-4" style="padding: 2rem !important; width: 100%; overflow-x: hidden; box-sizing: border-box;">
                 <!-- Controls Section -->
@@ -588,13 +554,20 @@ if (!empty($params)) {
                         <!-- Role Filter -->
                         <div style="min-width: 200px;">
                             <label for="roleFilter" class="form-label fw-semibold" style="color: #1A1A1A;">Filter by Role</label>
-                            <div class="role-filter-wrapper">
-                                <select id="roleFilter" class="form-select role-filter-select">
-                                    <option value="all" <?php echo (empty($roleFilter) || $roleFilter === 'all') ? 'selected' : ''; ?>>All Roles</option>
-                                    <option value="admin" <?php echo ($roleFilter === 'admin') ? 'selected' : ''; ?>>Admin</option>
-                                    <option value="user" <?php echo ($roleFilter === 'user' || $roleFilter === 'client') ? 'selected' : ''; ?>>User</option>
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="role-filter-wrapper flex-fill">
+                                    <select id="roleFilter" class="form-select role-filter-select">
+                                        <option value="all" <?php echo (empty($roleFilter) || $roleFilter === 'all') ? 'selected' : ''; ?>>All Roles</option>
+                                        <option value="admin" <?php echo ($roleFilter === 'admin') ? 'selected' : ''; ?>>Admin</option>
+                                        <option value="user" <?php echo ($roleFilter === 'user' || $roleFilter === 'client') ? 'selected' : ''; ?>>User</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <?php if (!empty($roleFilter) && $roleFilter !== 'all'): ?>
+                                <a href="userManagement.php" class="btn btn-outline-secondary btn-clear-role" style="border-radius: 50px; padding: 0.6rem 1.25rem; white-space: nowrap; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 0.9rem; height: 42px; border: 1px solid rgba(74, 93, 74, 0.2); color: #6c757d; flex-shrink: 0; transition: all 0.3s ease;">
+                                    <i class="fas fa-times me-1"></i> Clear
+                                </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

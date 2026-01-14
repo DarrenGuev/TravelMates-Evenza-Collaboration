@@ -159,24 +159,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <!-- Error Modal for Form Validation -->
-    <div class="modal fade" id="loginErrorModal" tabindex="-1" aria-labelledby="loginErrorModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content custom-alert-modal">
-                <div class="modal-body custom-alert-body text-center">
-                    <div class="custom-alert-icon-wrapper mb-4">
-                        <i class="fas fa-exclamation-circle custom-alert-icon error-icon"></i>
-                    </div>
-                    <h5 class="custom-alert-title">Form Incomplete</h5>
-                    <p class="custom-alert-message" id="loginErrorModalMessage">Please fill in all required fields before submitting.</p>
-                </div>
-                <div class="modal-footer custom-alert-footer justify-content-center">
-                    <button type="button" class="btn custom-alert-btn-primary" data-bs-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <?php include __DIR__ . '/includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/login.js"></script>
