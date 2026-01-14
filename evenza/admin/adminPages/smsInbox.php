@@ -333,9 +333,6 @@ $totalPages = ceil($totalCount / $perPage);
                         <a href="smsInbox.php" class="d-flex align-items-center py-3 px-3 rounded-3 active" style="background: linear-gradient(135deg, rgba(90, 107, 79, 0.15) 0%, rgba(90, 107, 79, 0.08) 100%); color: #5A6B4F; font-weight: 600; text-decoration: none; border-left: 3px solid #5A6B4F;">
                             <span class="me-3" style="width: 24px; text-align: center;"><i class="fas fa-sms"></i></span> 
                             <span>SMS Inbox</span>
-                            <?php if ($unreadCount > 0): ?>
-                                <span class="unread-badge"><?php echo $unreadCount; ?></span>
-                            <?php endif; ?>
                         </a>
                     </div>
                 </div>
@@ -497,7 +494,7 @@ $totalPages = ceil($totalCount / $perPage);
         });
 
         function markAsRead(smsId) {
-            fetch('/evenza/admin/process/sms/markSMSRead.php', {
+            fetch('/TravelMates-Evenza-Collaboration/evenza/admin/process/sms/markSMSRead.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
