@@ -22,13 +22,11 @@
     z-index: -1;
 }
 
-.nav-link:hover::before,
-.nav-link.active::before {
+.nav-link:hover::before {
     clip-path: circle(100% at center);
 }
 
-.nav-link:hover,
-.nav-link.active {
+.nav-link:hover {
     color: #ffffff !important;
 }
 
