@@ -159,4 +159,16 @@ class User extends Model
     {
         return $this->findOneBy('phoneNumber', $phoneNumber);
     }
+
+    public function findByUsernameAndPhone(string $username, string $phoneNumber): ?array
+    {
+        $query = "SELECT * FROM `{$this->table}` WHERE `username` = ? AND `phoneNumber` = ?";
+        $result = $this->executeStatement($query, 'ss', [$username, $phoneNumber]);
+        
+        if ($result && $result->num_rows === 1) {
+            return $this->db->fetchOne($result);
+        }
+        
+        return null;
+    }
 }

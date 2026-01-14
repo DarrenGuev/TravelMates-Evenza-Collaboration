@@ -94,10 +94,13 @@ body {
 }
 
 @keyframes bounceChevron {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
         opacity: 0.3;
     }
+
     50% {
         transform: translateY(10px);
         opacity: 1;
@@ -132,4 +135,190 @@ html {
     margin-bottom: 0;
     opacity: 0.9;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/*forgot password dito */
+.forgot-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.forgot-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/TravelMates-Evenza-Collaboration/Hotel-Management-System/images/loginRegisterImg/img.jpg') center center/cover no-repeat;
+    filter: blur(5px);
+    z-index: 0;
+}
+
+.form-control-glass {
+    background: rgba(226, 226, 226, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.form-control-glass::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 153, 0, 0.5) !important;
+    box-shadow: 0 0 15px rgba(255, 153, 0, 0.2) !important;
+}
+
+.btn-glass {
+    background: linear-gradient(135deg, #ff9900 0%, #ff6600 100%);
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.otp-input {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+}
+
+.step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    background: #ff9900;
+    box-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
+}
+
+.step-dot.completed {
+    background: #28a745;
+}
+
+.timer-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.resend-btn {
+    color: #ff9900;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.resend-btn:disabled {
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+/*login */
+.login-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/TravelMates-Evenza-Collaboration/Hotel-Management-System/images/loginRegisterImg/img.jpg') center center/cover no-repeat;
+    filter: blur(5px);
+    z-index: 0;
+}
+
+.divider-vertical {
+    width: 5px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.form-control-glass {
+    background: rgba(226, 226, 226, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.form-control-glass::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-control-glass:focus {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 153, 0, 0.5) !important;
+    box-shadow: 0 0 15px rgba(255, 153, 0, 0.2) !important;
+}
+
+.btn-glass {
+    background: linear-gradient(135deg, #ff9900 0%, #ff6600 100%);
+}
+
+.btn-google-white {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: none !important;
+}
+
+.btn-google-white:active {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/*userReviews */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 2rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating label:hover,
+.star-rating label:hover~label,
+.star-rating input:checked~label {
+    color: #ffc107;
+}
+
+.star-rating label:before {
+    content: '★';
 }

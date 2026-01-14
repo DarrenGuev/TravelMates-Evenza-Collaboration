@@ -89,9 +89,6 @@ $bookings = array_slice($pendingAndConfirmedBookings, 0, 50);
                                 <p class="text-muted mb-0">Manage SMS notifications and view message logs</p>
                             </div>
                             <div class="d-flex flex-wrap gap-2">
-                                <a href="<?php echo BASE_URL; ?>/integrations/sms/test_connection.php" class="btn btn-outline-secondary btn-sm">
-                                    <i class="bi bi-gear me-1"></i>Test Connection
-                                </a>
                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#sendSmsModal">
                                     <i class="bi bi-send me-1"></i>Send SMS
                                 </button>

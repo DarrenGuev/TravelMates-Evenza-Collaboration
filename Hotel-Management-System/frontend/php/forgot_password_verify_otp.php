@@ -4,6 +4,11 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+if (!isset($input['username']) || empty(trim($input['username']))) {
+    echo json_encode(['success' => false, 'message' => 'Username is required.']);
+    exit;
+}
+
 if (!isset($input['phoneNumber']) || empty(trim($input['phoneNumber']))) {
     echo json_encode(['success' => false, 'message' => 'Phone number is required.']);
     exit;
@@ -14,6 +19,7 @@ if (!isset($input['otpCode']) || empty(trim($input['otpCode']))) {
     exit;
 }
 
+$username = trim($input['username']);
 $phoneNumber = trim($input['phoneNumber']);
 $otpCode = trim($input['otpCode']);
 
@@ -24,9 +30,16 @@ if (!preg_match('/^[0-9]{6}$/', $otpCode)) {
 
 //check if OTP session data exists
 if (!isset($_SESSION['forgot_password_otp']) || 
+    !isset($_SESSION['forgot_password_username']) ||
     !isset($_SESSION['forgot_password_phone']) || 
     !isset($_SESSION['forgot_password_otp_expiry'])) {
     echo json_encode(['success' => false, 'message' => 'Session expired. Please request a new verification code.']);
+    exit;
+}
+
+//verify username matches session
+if ($_SESSION['forgot_password_username'] !== $username) {
+    echo json_encode(['success' => false, 'message' => 'Username mismatch. Please start over.']);
     exit;
 }
 

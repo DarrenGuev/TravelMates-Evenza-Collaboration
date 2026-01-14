@@ -1,19 +1,9 @@
 <?php
-/**
- * Email Dashboard - Admin Panel
- * 
- * Provides interface for viewing inbox, composing emails, and replying to user messages.
- */
-
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
-
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
 
-// Check if user is admin
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../frontend/login.php?error=Access denied");
     exit();
@@ -26,7 +16,6 @@ $emailService = new EmailService();
 $stats = $emailService->getStatistics();
 $configStatus = get_gmail_config_status();
 
-// Handle manual actions
 $alertMessage = null;
 $alertType = null;
 
@@ -86,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// Fetch emails from database for display
 $filters = [];
 if (!empty($_GET['direction'])) {
     $filters['direction'] = $_GET['direction'];

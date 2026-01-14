@@ -311,7 +311,7 @@ require_once 'core/connect.php';
                     <div class="luxury-card hotel-card p-5">
                         <h3 class="hotel-name mb-3">TravelMates Hotel</h3>
                         <p class="hotel-description mb-4">
-                            TravelMates is a web-based booking system designed to automate and simplify hotel operations, particularly room reservations. The system allows customers to view available rooms, make bookings online, and receive booking confirmations, while enabling hotel staff and administrators to manage reservations efficiently.
+                            TravelMates is a web-based Hotel-Management-System system designed to automate and simplify hotel operations, particularly room reservations. The system allows customers to view available rooms, make bookings online, and receive booking confirmations, while enabling hotel staff and administrators to manage reservations efficiently.
                         </p>
                         <div class="hotel-highlights mb-4">
                             <span class="highlight-badge">5-Star Luxury</span>

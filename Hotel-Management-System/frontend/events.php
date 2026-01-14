@@ -268,9 +268,6 @@ require_once __DIR__ . '/../config.php';
                         <p class="text-secondary fst-italic small mb-2">
                             ${escapeHtml(event.category)} Event
                         </p>
-                        <p class="text-muted small mb-3">
-                            <i class="bi bi-geo-alt-fill me-1"></i>${escapeHtml(event.venue)}
-                        </p>
                         <div class="fst-italic">
                             <span class="text-muted small">${escapeHtml(shortDesc)}</span>
                         </div>
