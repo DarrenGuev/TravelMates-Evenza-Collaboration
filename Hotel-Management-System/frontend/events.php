@@ -274,8 +274,8 @@ require_once __DIR__ . '/../config.php';
                     </div>
                     <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
                         <div class="d-flex gap-2 flex-wrap">
-                            <a href="${event.links.reserve}" class="btn btn-warning flex-grow-1">Reserve Now</a>
-                            <a href="${event.links.view}" class="btn btn-outline-secondary flex-grow-1">
+                            <a href="${event.links.reserve}" class="btn btn-warning flex-grow-1" target="_blank" rel="noopener noreferrer">Reserve Now</a>
+                            <a href="${event.links.view}" class="btn btn-outline-secondary flex-grow-1" target="_blank" rel="noopener noreferrer">
                                 View Full Details
                             </a>
                         </div>
