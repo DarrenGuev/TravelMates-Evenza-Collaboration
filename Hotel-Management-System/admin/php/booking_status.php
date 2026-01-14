@@ -13,15 +13,8 @@ require_once DBCONNECT_PATH . '/connect.php';
 // Include class autoloader
 require_once CLASSES_PATH . '/autoload.php';
 
-// Helper function to send JSON response
-function sendJsonResponse($success, $message) {
-    // Clear any output that might have been generated
-    if (ob_get_length()) ob_clean();
-    
-    header('Content-Type: application/json');
-    echo json_encode(['success' => $success, 'message' => $message]);
-    exit();
-}
+// Include shared HTTP helper functions (sendJsonResponse, etc.)
+require_once __DIR__ . '/../../frontend/includes/http_helpers.php';
 
 // Check if user is admin - handle AJAX requests differently
 if (!Auth::isAdmin()) {
@@ -47,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sendJsonResponse(false, 'Invalid booking ID');
     }
 
-    if ($action !== 'confirm' && $action !== 'cancel' && $action !== 'complete' && $action !== 'edit') {
+    if ($action !== 'confirm' && $action !== 'cancel' && $action !== 'complete' && $action !== 'edit' && $action !== 'refund') {
         sendJsonResponse(false, 'Invalid action');
     }
 
@@ -101,7 +94,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         sendJsonResponse(false, 'Failed to confirm booking');
     } elseif ($action === 'cancel') {
+        // Preserve current payment status to avoid automatic refunds on admin cancel
+        $prevPaymentStatus = $bookingDetails['paymentStatus'] ?? '';
+        $wasPaid = ($prevPaymentStatus === Booking::PAYMENT_PAID);
+
         if ($bookingModel->cancel($bookingID)) {
+            // Restore payment status to PAID if it was paid before cancel
+            if ($wasPaid) {
+                try {
+                    $bookingModel->update($bookingID, [
+                        'paymentStatus' => Booking::PAYMENT_PAID,
+                        'updatedAt' => date('Y-m-d H:i:s')
+                    ]);
+                } catch (Exception $e) {
+                    error_log('Failed to restore payment status for Booking #' . $bookingID . ': ' . $e->getMessage());
+                }
+            }
+
             // Send SMS notification
             if (!empty($phoneNumber)) {
                 try {
@@ -169,7 +178,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             sendJsonResponse(false, 'Invalid status value!');
         }
     }
+
+    // Admin processes an approved refund request: mark booking cancelled and payment refunded
+    elseif ($action === 'refund') {
+        // Ensure this is a refund request (pending + cancelledByUser flag) or force-processing
+        $isRefundRequest = $bookingDetails['bookingStatus'] === Booking::STATUS_PENDING &&
+                           isset($bookingDetails['cancelledByUser']) && $bookingDetails['cancelledByUser'] == 1;
+
+        // Proceed with refund processing
+        if ($bookingModel->cancel($bookingID)) {
+            // Send SMS notification
+            if (!empty($phoneNumber)) {
+                try {
+                    $smsService = new SmsService();
+                    $smsService->sendBookingCancelledSms($bookingID, $phoneNumber, $customerName);
+                } catch (Exception $e) {
+                    error_log('SMS Error: ' . $e->getMessage());
+                }
+            }
+
+            // Optionally send email
+            try {
+                $emailService = new EmailService();
+                $bookingData = $bookingModel->getByIdWithDetails($bookingID);
+
+                if ($bookingData && !empty($bookingData['email'])) {
+                    $bookingData['customerName'] = trim($bookingData['firstName'] . ' ' . $bookingData['lastName']);
+                    $emailResult = $emailService->sendBookingReceipt($bookingData);
+                    if (!$emailResult['success']) {
+                        error_log('Email Receipt Error for Booking #' . $bookingID . ': ' . ($emailResult['error'] ?? 'Unknown error'));
+                    }
+                }
+            } catch (Exception $e) {
+                error_log('Email Service Error: ' . $e->getMessage());
+            }
+
+            sendJsonResponse(true, 'Refund processed and booking cancelled successfully!');
+        }
+
+        sendJsonResponse(false, 'Failed to process refund');
+    }
 }
 
 // If not POST request
 sendJsonResponse(false, 'Invalid request method');
+?>
