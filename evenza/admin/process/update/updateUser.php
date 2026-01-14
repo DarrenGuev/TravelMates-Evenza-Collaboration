@@ -39,18 +39,23 @@ if (empty($fullName) || empty($email)) {
 }
 
 if ($userId > 0) {
+    // Split fullName into firstName and lastName
+    $nameParts = explode(' ', $fullName, 2);
+    $firstName = $nameParts[0];
+    $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+    
     if (!empty($password)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $query = "UPDATE users SET fullName = ?, email = ?, phone = ?, password = ?, role = ? WHERE userid = ?";
+        $query = "UPDATE users SET firstName = ?, lastName = ?, fullName = ?, email = ?, phone = ?, password = ?, role = ? WHERE userid = ?";
         $stmt = mysqli_prepare($conn, $query);
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "sssssi", $fullName, $email, $phone, $hashedPassword, $role, $userId);
+            mysqli_stmt_bind_param($stmt, "sssssssi", $firstName, $lastName, $fullName, $email, $phone, $hashedPassword, $role, $userId);
         }
     } else {
-        $query = "UPDATE users SET fullName = ?, email = ?, phone = ?, role = ? WHERE userid = ?";
+        $query = "UPDATE users SET firstName = ?, lastName = ?, fullName = ?, email = ?, phone = ?, role = ? WHERE userid = ?";
         $stmt = mysqli_prepare($conn, $query);
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ssssi", $fullName, $email, $phone, $role, $userId);
+            mysqli_stmt_bind_param($stmt, "ssssssi", $firstName, $lastName, $fullName, $email, $phone, $role, $userId);
         }
     }
 } else {
