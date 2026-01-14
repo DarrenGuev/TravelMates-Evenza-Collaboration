@@ -176,9 +176,24 @@ if (!empty($searchQuery)) {
         
         .table {
             margin-bottom: 0;
+            background-color: transparent !important;
+        }
+        /* Ensure image column is never hidden */
+        .table th:first-child,
+        .table td:first-child {
+            display: table-cell !important;
+            visibility: visible !important;
+            background-color: #FFFFFF !important;
+            box-shadow: none !important;
         }
         .table thead {
-            background: linear-gradient(135deg, rgba(74, 93, 74, 0.05) 0%, rgba(74, 93, 74, 0.02) 100%);
+            background-color: #FFFFFF !important;
+        }
+        .table thead th {
+            background-color: #FFFFFF !important;
+        }
+        .table thead th:first-child {
+            background-color: #FFFFFF !important;
         }
         .table th {
             font-weight: 600;
@@ -193,9 +208,17 @@ if (!empty($searchQuery)) {
             vertical-align: middle;
             padding: 18px 1rem;
             border-bottom: 1px solid rgba(74, 93, 74, 0.08);
+            background-color: #FFFFFF !important;
         }
         .table tbody tr {
             background-color: transparent;
+        }
+        /* Override external CSS hover effect - all cells stay white */
+        .table tbody tr:hover td {
+            background-color: #FFFFFF !important;
+        }
+        .table tbody tr:hover td:first-child {
+            background-color: #FFFFFF !important;
         }
         .event-thumbnail {
             width: 70px;
@@ -203,7 +226,12 @@ if (!empty($searchQuery)) {
             max-width: 80px;
             object-fit: cover;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
+        }
+        /* Ensure white shadow on image column cells or images to match other columns */
+        .table td:first-child img,
+        .table td:first-child .event-thumbnail {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
         }
         .status-badge {
             padding: 0.4rem 1rem;
@@ -458,6 +486,37 @@ if (!empty($searchQuery)) {
                 width: 100%;
                 margin-bottom: 0;
             }
+            .table-responsive {
+                scroll-behavior: smooth;
+                /* Prevent auto-scrolling to focused elements */
+                scroll-padding-left: 0;
+                /* Ensure scroll starts at left */
+                direction: ltr;
+                /* Force initial scroll position to 0 */
+                scroll-snap-type: x mandatory;
+            }
+            /* Ensure first column (image) is always visible */
+            .table-responsive table {
+                scroll-snap-align: start;
+            }
+            /* Force table to start at scroll position 0 */
+            .table-responsive:not(:focus-within) {
+                scroll-left: 0;
+            }
+            .table-responsive::-webkit-scrollbar {
+                height: 8px;
+            }
+            .table-responsive::-webkit-scrollbar-track {
+                background: rgba(74, 93, 74, 0.05);
+                border-radius: 4px;
+            }
+            .table-responsive::-webkit-scrollbar-thumb {
+                background: rgba(74, 93, 74, 0.2);
+                border-radius: 4px;
+            }
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: rgba(74, 93, 74, 0.3);
+            }
             .table th,
             .table td {
                 padding: 1rem 0.75rem;
@@ -466,16 +525,59 @@ if (!empty($searchQuery)) {
             .table th:first-child,
             .table td:first-child {
                 padding-left: 1rem;
+                min-width: 90px !important;
+                width: 90px !important;
+                /* Ensure column is always visible */
+                visibility: visible !important;
+                display: table-cell !important;
+                background-color: #FFFFFF !important;
+                box-shadow: none !important;
+            }
+            .table thead {
+                background-color: #FFFFFF !important;
+            }
+            .table thead th {
+                background-color: #FFFFFF !important;
+            }
+            .table thead th:first-child {
+                background-color: #FFFFFF !important;
+                box-shadow: none !important;
+            }
+            .table tbody tr {
+                background-color: transparent;
+            }
+            .table tbody tr td:first-child {
+                background-color: #FFFFFF !important;
+            }
+            /* Ensure all table cells have the same white background */
+            .table td {
+                background-color: #FFFFFF !important;
+            }
+            /* Override external CSS hover effect - all cells stay white */
+            .table tbody tr:hover td {
+                background-color: #FFFFFF !important;
+            }
+            .table tbody tr:hover td:first-child {
+                background-color: #FFFFFF !important;
             }
             .table th:last-child,
             .table td:last-child {
                 padding-right: 1rem;
+            }
+            .table td[style*="min-width: 200px"] {
+                min-width: 150px !important;
             }
             .event-thumbnail {
                 width: 60px !important;
                 height: 60px !important;
                 max-width: 80px !important;
                 min-width: 50px;
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
+            }
+            /* Ensure white shadow on image column cells or images to match other columns */
+            .table td:first-child img,
+            .table td:first-child .event-thumbnail {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
             }
             /* Ensure touch targets are large enough */
             .btn-admin-primary,
@@ -496,6 +598,9 @@ if (!empty($searchQuery)) {
         }
             @media (max-width: 576px) {
             /* Admin header responsive styles moved to includes/admin_header.php */
+            .table-responsive table {
+                min-width: 400px;
+            }
             .table th,
             .table td {
                 font-size: 0.75rem;
@@ -503,21 +608,57 @@ if (!empty($searchQuery)) {
             }
             .table th:first-child,
             .table td:first-child {
-                padding-left: 0.75rem;
+                padding: 0.75rem 0.5rem 0.75rem 0.75rem !important;
+                min-width: 70px !important;
+                width: 70px !important;
+                /* Ensure column is always visible */
+                visibility: visible !important;
+                display: table-cell !important;
+                background-color: #FFFFFF !important;
+                box-shadow: none !important;
+            }
+            .table thead {
+                background-color: #FFFFFF !important;
+            }
+            .table thead th {
+                background-color: #FFFFFF !important;
+            }
+            .table thead th:first-child {
+                background-color: #FFFFFF !important;
+                box-shadow: none !important;
+            }
+            .table tbody tr td:first-child {
+                background-color: #FFFFFF !important;
+            }
+            /* Ensure all table cells have the same white background */
+            .table td {
+                background-color: #FFFFFF !important;
+            }
+            /* Override external CSS hover effect - all cells stay white */
+            .table tbody tr:hover td {
+                background-color: #FFFFFF !important;
+            }
+            .table tbody tr:hover td:first-child {
+                background-color: #FFFFFF !important;
             }
             .table th:last-child,
             .table td:last-child {
                 padding-right: 0.75rem;
+            }
+            .table td[style*="min-width: 200px"] {
+                min-width: 120px !important;
             }
             .event-thumbnail {
                 width: 50px !important;
                 height: 50px !important;
                 max-width: 80px !important;
                 min-width: 40px;
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
             }
-            .table th:nth-child(1),
-            .table td:nth-child(1) {
-                display: none;
+            /* Ensure white shadow on image column cells or images to match other columns */
+            .table td:first-child img,
+            .table td:first-child .event-thumbnail {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;
             }
             .search-input {
                 font-size: 0.875rem;
@@ -630,10 +771,10 @@ if (!empty($searchQuery)) {
                         <table class="table align-middle">
                             <thead>
                                 <tr>
-                                    <th>Image</th>
+                                    <th style="width: 90px; min-width: 70px;">Image</th>
                                     <th>Title</th>
-                                    <th class="d-none d-md-table-cell">Category</th>
-                                    <th class="d-none d-lg-table-cell">Venue</th>
+                                    <th>Category</th>
+                                    <th>Venue</th>
                                     <th>PACKAGES</th>
                                     <th class="text-center" style="width: 120px;">Actions</th>
                                 </tr>
@@ -671,22 +812,22 @@ if (!empty($searchQuery)) {
                                     }
                                 ?>
                                 <tr>
-                                    <td style="width: 90px;">
+                                    <td style="width: 90px; min-width: 70px;">
                                         <img src="<?php echo htmlspecialchars($imageSrc); ?>" 
                                              alt="<?php echo htmlspecialchars($event['name'] ?? $event['title']); ?>" 
                                              class="event-thumbnail img-fluid"
-                                             style="max-width: 80px; width: 70px; height: 70px;"
+                                             style="max-width: 80px; width: 70px; height: 70px; box-shadow: 0 0 0 0 rgba(255, 255, 255, 1) !important;"
                                              onerror="this.src='../../assets/images/event_images/businessInnovation.jpg'">
                                     </td>
                                     <td style="min-width: 200px;">
                                         <div class="fw-semibold"><?php echo htmlspecialchars($event['name'] ?? $event['title']); ?></div>
                                     </td>
-                                    <td class="d-none d-md-table-cell">
+                                    <td>
                                         <span class="badge" style="background: linear-gradient(135deg, rgba(74, 93, 74, 0.1) 0%, rgba(74, 93, 74, 0.05) 100%); color: #4A5D4A; padding: 0.5rem 1rem; border-radius: 50px; font-weight: 500;">
                                             <?php echo htmlspecialchars(!empty($event['category']) ? $event['category'] : 'Uncategorized'); ?>
                                         </span>
                                     </td>
-                                    <td class="d-none d-lg-table-cell" style="min-width: 250px;">
+                                    <td style="min-width: 250px;">
                                         <div class="text-muted small"><?php echo htmlspecialchars($event['venue']); ?></div>
                                     </td>
                                     <td>
@@ -1005,6 +1146,57 @@ if (!empty($searchQuery)) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Ensure image column is visible on mobile - reset scroll position
+        function resetTableScroll() {
+            const tableResponsive = document.querySelector('.table-responsive');
+            if (tableResponsive) {
+                // Force scroll to left (show image column first)
+                tableResponsive.scrollLeft = 0;
+                
+                // Use requestAnimationFrame to ensure DOM is painted
+                requestAnimationFrame(function() {
+                    tableResponsive.scrollLeft = 0;
+                    // Double-check after a small delay
+                    setTimeout(function() {
+                        tableResponsive.scrollLeft = 0;
+                    }, 100);
+                });
+            }
+        }
+        
+        // Reset scroll on page load - multiple times to ensure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            resetTableScroll();
+            // Reset again after a short delay to catch any layout shifts
+            setTimeout(resetTableScroll, 50);
+            setTimeout(resetTableScroll, 200);
+        });
+        
+        // Reset on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                resetTableScroll();
+            }
+        });
+        
+        // Reset after page is fully loaded
+        window.addEventListener('load', function() {
+            resetTableScroll();
+        });
+        
+        // Use MutationObserver to reset scroll if table content changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableResponsive = document.querySelector('.table-responsive');
+            if (tableResponsive && window.MutationObserver) {
+                const observer = new MutationObserver(function() {
+                    if (window.innerWidth <= 768) {
+                        resetTableScroll();
+                    }
+                });
+                observer.observe(tableResponsive, { childList: true, subtree: true });
+            }
+        });
+        
         // Sidebar toggle for mobile
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('adminSidebarToggle');
