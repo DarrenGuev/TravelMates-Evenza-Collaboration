@@ -10,8 +10,18 @@ $data = json_decode($rawData, true);
 
 $timestamp = date("Y-m-d H:i:s");
 
-$logFile = __DIR__ . "/sms_log.txt";
-file_put_contents($logFile, "[$timestamp] " . $rawData . PHP_EOL, FILE_APPEND);
+// Ensure log file path is correct - log to user/process/sms_log.txt
+$logFile = __DIR__ . DIRECTORY_SEPARATOR . "sms_log.txt";
+// Create directory if it doesn't exist
+$logDir = dirname($logFile);
+if (!is_dir($logDir)) {
+    mkdir($logDir, 0755, true);
+}
+// Write initial log entry
+$logResult = file_put_contents($logFile, "[$timestamp] " . $rawData . PHP_EOL, FILE_APPEND | LOCK_EX);
+if ($logResult === false) {
+    error_log("Failed to write to SMS log file: " . $logFile);
+}
 
 // Process and store SMS in database
 // SMS Forwarder sends: {"from":"+639701319849", "text":"message", ...}
@@ -58,23 +68,23 @@ if ($from && $body) {
                 $result = mysqli_stmt_execute($stmt);
                 
                 if ($result) {
-                    file_put_contents($logFile, "[$timestamp] SMS STORED: From=" . $phoneNumberForDB . ", Message=" . substr($body, 0, 50) . PHP_EOL, FILE_APPEND);
+                    file_put_contents($logFile, "[$timestamp] SMS STORED: From=" . $phoneNumberForDB . ", Message=" . substr($body, 0, 50) . PHP_EOL, FILE_APPEND | LOCK_EX);
                 } else {
-                    file_put_contents($logFile, "[$timestamp] DB ERROR: " . mysqli_error($conn) . PHP_EOL, FILE_APPEND);
+                    file_put_contents($logFile, "[$timestamp] DB ERROR: " . mysqli_error($conn) . PHP_EOL, FILE_APPEND | LOCK_EX);
                 }
                 
                 mysqli_stmt_close($stmt);
             } else {
-                file_put_contents($logFile, "[$timestamp] DB PREPARE ERROR: " . mysqli_error($conn) . PHP_EOL, FILE_APPEND);
+                file_put_contents($logFile, "[$timestamp] DB PREPARE ERROR: " . mysqli_error($conn) . PHP_EOL, FILE_APPEND | LOCK_EX);
             }
         } else {
-            file_put_contents($logFile, "[$timestamp] DB CONNECTION ERROR: No database connection" . PHP_EOL, FILE_APPEND);
+            file_put_contents($logFile, "[$timestamp] DB CONNECTION ERROR: No database connection" . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
     } catch (Exception $e) {
-        file_put_contents($logFile, "[$timestamp] EXCEPTION: " . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        file_put_contents($logFile, "[$timestamp] EXCEPTION: " . $e->getMessage() . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 } else {
-    file_put_contents($logFile, "[$timestamp] MISSING DATA: from=" . ($from ?? 'NULL') . ", body=" . ($body ?? 'NULL') . ", raw=" . substr($rawData, 0, 200) . PHP_EOL, FILE_APPEND);
+    file_put_contents($logFile, "[$timestamp] MISSING DATA: from=" . ($from ?? 'NULL') . ", body=" . ($body ?? 'NULL') . ", raw=" . substr($rawData, 0, 200) . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
 http_response_code(200);

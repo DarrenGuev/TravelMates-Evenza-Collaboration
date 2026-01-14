@@ -1,0 +1,16 @@
+[2026-01-14 14:39:49] {
+  "from":"123456789",
+  "text":"test message",
+  "sentStamp":1768397991097,
+  "receivedStamp":1768397991098,
+  "sim":"sim1"
+}
+[2026-01-14 14:39:49] SMS STORED: From=123456789, Message=test message
+[2026-01-14 14:47:26] {
+  "from":"+639633880414",
+  "text":"Ty po",
+  "sentStamp":1768398446000,
+  "receivedStamp":1768398447415,
+  "sim":"sim2"
+}
+[2026-01-14 14:47:26] SMS STORED: From=639633880414, Message=Ty po
