@@ -1,26 +1,14 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
-
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
-
-// Include class autoloader
 require_once CLASSES_PATH . '/autoload.php';
-
-// Check if user is admin
 Auth::requireAdmin('../frontend/login.php');
 
 // Initialize models
 $bookingModel = new Booking();
 $userModel = new User();
-
-// [MODULARIZED] Booking Action Logic moved to: php/booking_status.php
-// If you have forms posting to this page for validation, update their action to 'php/booking_status.php'
-
-// Fetch all users (admins and customers)
 $customers = $userModel->getAllCustomers();
 $admins = $userModel->getAllAdmins();
 $usersData = array_merge($admins, $customers);
@@ -31,36 +19,20 @@ usort($usersData, function ($a, $b) {
 
 // Fetch all bookings with details
 $allBookingsData = $bookingModel->getAllWithDetails();
-
 // Fetch confirmed bookings (confirmed + completed)
 $confirmedBookingsData = $bookingModel->getConfirmedBookings();
-
 // Fetch pending bookings
 $pendingBookingsData = $bookingModel->getPendingBookings();
-
 // Fetch completed bookings
 $completedBookingsData = $bookingModel->getCompletedBookings();
-
 $countAllBookings = count($allBookingsData);
 $countUsers = count($usersData);
 $countConfirmed = count($confirmedBookingsData);
 $countPending = count($pendingBookingsData);
 $countCompleted = count($completedBookingsData);
 ?>
-<!doctype html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TravelMates - Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo ADMIN_URL; ?>/css/admin.css">
-
-</head>
-
+<?php $title = "Admin Dashboard"; ?>
+<?php include ADMIN_INCLUDES_PATH . '/head.php'; ?>
 <body>
     <?php include INCLUDES_PATH . '/loader.php'; ?>
 

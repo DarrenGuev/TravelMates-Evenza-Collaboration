@@ -57,7 +57,7 @@
                                             <?php foreach ($categoryFeatures as $feature) {
                                                 $checked = in_array($feature['featureId'], $roomFeatureIds) ? 'checked' : '';
                                             ?>
-                                                <div class="col-12 col-md-6 col-lg-4">
+                                                <div class="col-12">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="editFeatures[]" value="<?php echo $feature['featureId']; ?>" id="editFeature<?php echo $row['roomID'] . '_' . $feature['featureId']; ?>" <?php echo $checked; ?>>
                                                         <label class="form-check-label" for="editFeature<?php echo $row['roomID'] . '_' . $feature['featureId']; ?>">

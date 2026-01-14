@@ -374,7 +374,7 @@ const tableConfigs = {
                             
                             <!-- Edit Details Inline Modal -->
                             <div class="modal fade" id="editModal${booking.bookingID}" tabindex="-1">
-                                <div class="modal-dialog">
+                                <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Booking #${booking.bookingID}</h5>
@@ -414,10 +414,6 @@ const tableConfigs = {
                                                     </select>
                                                 </div>
                                                 
-                                                <div class="alert alert-info small mb-0">
-                                                    <i class="bi bi-info-circle me-1"></i>
-                                                    Use this to correct accidental status changes. Note: SMS notifications are not sent when editing.
-                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
