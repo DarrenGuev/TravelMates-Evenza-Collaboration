@@ -573,5 +573,16 @@ function sendReservationStatusSMS($conn, $reservationId, $status, $cancellationT
     error_log("SMS Error: HTTP Code " . $httpCode);
     return false;
 }
+
+/**
+ * Get the base URL for the evenza application
+ * @return string The base URL (e.g., http://localhost/TravelMates-Evenza-Collaboration/evenza)
+ */
+function getEvenzaBaseUrl() {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    $basePath = '/TravelMates-Evenza-Collaboration/evenza';
+    return $protocol . '://' . $host . $basePath;
+}
 ?>
 

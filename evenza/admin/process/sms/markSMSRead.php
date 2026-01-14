@@ -28,7 +28,7 @@ if ($smsId <= 0) {
     exit;
 }
 
-$query = "UPDATE sms_messages SET is_read = 1 WHERE sms_id = ?";
+$query = "UPDATE sms_received SET is_read = 1 WHERE sms_id = ?";
 $stmt = mysqli_prepare($conn, $query);
 
 if ($stmt) {

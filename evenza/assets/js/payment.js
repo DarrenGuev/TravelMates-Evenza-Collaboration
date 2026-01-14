@@ -37,11 +37,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Creating PayPal order...');
             showPaymentStatus('Creating your order...', 'processing');
             
-            return fetch('/evenza/user/process/paypal/paypal-create-order.php', {
+            return fetch('../process/paypal/paypal-create-order.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({
                     eventId: parseInt(eventId),
                     packageId: parseInt(packageId),
@@ -86,11 +87,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Payment approved, capturing...', data);
             showPaymentStatus('Processing your payment...', 'processing');
             
-            return fetch('/evenza/user/process/paypal/paypal-capture-order.php', {
+            return fetch('../process/paypal/paypal-capture-order.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({
                     orderId: data.orderID
                 })
@@ -118,13 +120,78 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .then(function(captureData) {
-                console.log('Payment captured:', captureData);
+                console.log('=== PAYPAL CAPTURE RESPONSE ===');
+                console.log('Full response:', JSON.stringify(captureData, null, 2));
+                console.log('Status:', captureData.status);
+                console.log('Transaction ID:', captureData.transactionId);
+                console.log('Success Token:', captureData.successToken);
+                console.log('Redirect URL from server:', captureData.redirectUrl);
+                console.log('================================');
                 
                 if (captureData.status === 'COMPLETED') {
                     showPaymentStatus('Payment successful! Redirecting...', 'success');
                     
                     setTimeout(function() {
-                        window.location.href = captureData.redirectUrl;
+                        // ALWAYS construct the redirect URL from scratch with the correct full path
+                        // Never trust the server's redirectUrl - construct it manually
+                        const protocol = window.location.protocol; // http: or https:
+                        const host = window.location.host; // localhost
+                        const basePath = '/TravelMates-Evenza-Collaboration/evenza';
+                        
+                        // Get success token and transaction ID from response
+                        const successToken = captureData.successToken || '';
+                        const txId = captureData.transactionId || '';
+                        
+                        // Validate that we have the required data
+                        if (!successToken) {
+                            console.error('ERROR: Success token is missing from response!');
+                            console.error('Response data:', captureData);
+                            alert('Error: Missing payment confirmation token. Please contact support.');
+                            return;
+                        }
+                        
+                        // Build query parameters
+                        const params = [];
+                        if (successToken) {
+                            params.push('success=' + encodeURIComponent(successToken));
+                        }
+                        if (txId) {
+                            params.push('tx=' + encodeURIComponent(txId));
+                        }
+                        
+                        // Construct the COMPLETE absolute URL
+                        let redirectUrl = protocol + '//' + host + basePath + '/user/pages/confirmation.php';
+                        if (params.length > 0) {
+                            redirectUrl += '?' + params.join('&');
+                        }
+                        
+                        console.log('=== PAYPAL REDIRECT DEBUG ===');
+                        console.log('Protocol:', protocol);
+                        console.log('Host:', host);
+                        console.log('Base Path:', basePath);
+                        console.log('Success Token (raw):', successToken);
+                        console.log('Success Token (length):', successToken.length);
+                        console.log('Transaction ID:', txId);
+                        console.log('Query Params:', params.join('&'));
+                        console.log('FINAL REDIRECT URL:', redirectUrl);
+                        console.log('Current page URL:', window.location.href);
+                        console.log('Server redirectUrl (ignored):', captureData.redirectUrl);
+                        console.log('============================');
+                        
+                        // Final safety check - if URL is still wrong, force fix it
+                        if (redirectUrl.indexOf('/TravelMates-Evenza-Collaboration/evenza') === -1) {
+                            console.error('CRITICAL ERROR: URL construction failed!');
+                            // Emergency fallback - construct manually
+                            redirectUrl = protocol + '//' + host + '/TravelMates-Evenza-Collaboration/evenza/user/pages/confirmation.php';
+                            if (params.length > 0) {
+                                redirectUrl += '?' + params.join('&');
+                            }
+                            console.error('Emergency fixed URL:', redirectUrl);
+                        }
+                        
+                        // Use replace to prevent back button issues
+                        console.log('Executing redirect to:', redirectUrl);
+                        window.location.replace(redirectUrl);
                     }, 1000);
                 } else {
                     throw new Error('Payment was not completed');

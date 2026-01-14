@@ -3,21 +3,68 @@ session_start();
 require_once '../../core/connect.php';
 require_once '../../includes/helpers.php';
 
+// Debug session info
+error_log('Confirmation Page - Session ID: ' . session_id());
+error_log('Confirmation Page - Session Name: ' . session_name());
+error_log('Confirmation Page - All GET params: ' . print_r($_GET, true));
+error_log('Confirmation Page - All SESSION keys: ' . print_r(array_keys($_SESSION), true));
+
 $successToken = isset($_GET['success']) ? trim($_GET['success']) : '';
 $transactionId = isset($_GET['tx']) ? trim($_GET['tx']) : '';
 
+// Debug logging
+error_log('Confirmation Page - Success Token from URL: ' . $successToken);
+error_log('Confirmation Page - Transaction ID from URL: ' . $transactionId);
+error_log('Confirmation Page - Session payment_success_token: ' . (isset($_SESSION['payment_success_token']) ? $_SESSION['payment_success_token'] : 'NOT SET'));
+error_log('Confirmation Page - Session payment_success_time: ' . (isset($_SESSION['payment_success_time']) ? $_SESSION['payment_success_time'] : 'NOT SET'));
+error_log('Confirmation Page - Current time: ' . time());
+if (isset($_SESSION['payment_success_time'])) {
+    error_log('Confirmation Page - Time difference: ' . (time() - $_SESSION['payment_success_time']) . ' seconds');
+}
+
 $isAuthorized = false;
+
+// First check: Token from URL matches session token
 if (!empty($successToken) && isset($_SESSION['payment_success_token'])) {
     if ($successToken === $_SESSION['payment_success_token']) {
         if (isset($_SESSION['payment_success_time']) && (time() - $_SESSION['payment_success_time']) < 300) {
             $isAuthorized = true;
+            error_log('Confirmation Page - Authorization SUCCESS via token match');
+        } else {
+            error_log('Confirmation Page - Authorization FAILED: Token expired or time check failed');
+        }
+    } else {
+        error_log('Confirmation Page - Authorization FAILED: Token mismatch');
+        error_log('  URL token: ' . $successToken);
+        error_log('  Session token: ' . $_SESSION['payment_success_token']);
+    }
+}
+
+// Second check: If we have a valid transaction ID in URL and matching session transaction
+if (!$isAuthorized && !empty($transactionId) && isset($_SESSION['payment_transaction_id'])) {
+    if ($transactionId === $_SESSION['payment_transaction_id']) {
+        if (isset($_SESSION['payment_success_time']) && (time() - $_SESSION['payment_success_time']) < 300) {
+            $isAuthorized = true;
+            error_log('Confirmation Page - Authorization SUCCESS via transaction ID match');
         }
     }
 }
 
+// Third check: If session has valid payment data (fallback for same-session access)
+if (!$isAuthorized && isset($_SESSION['payment_success_token']) && isset($_SESSION['payment_success_time'])) {
+    if ((time() - $_SESSION['payment_success_time']) < 300) {
+        // Session has recent payment data, allow access
+        $isAuthorized = true;
+        $successToken = $_SESSION['payment_success_token'];
+        $transactionId = $_SESSION['payment_transaction_id'] ?? '';
+        error_log('Confirmation Page - Authorization SUCCESS via session data (fallback)');
+    }
+}
+
 if (!$isAuthorized) {
+    error_log('Confirmation Page - Redirecting to index.php due to failed authorization');
     $_SESSION['error_message'] = 'Invalid or expired payment confirmation link. Please complete your payment to view confirmation.';
-    header('Location: ../../index.php');
+    header('Location: ' . getEvenzaBaseUrl() . '/index.php');
     exit;
 }
 
@@ -515,7 +562,7 @@ if (!$package) {
                                 
                                 <div class="mt-4">
                                     <a href="profile.php" class="btn btn-primary-luxury">View My Profile</a>
-                                    <a href="../../index.php" class="btn btn-outline-luxury ms-2">Return Home</a>
+                                    <a href="<?php echo getEvenzaBaseUrl(); ?>/index.php" class="btn btn-outline-luxury ms-2">Return Home</a>
                                 </div>
                             </div>
                         </div>

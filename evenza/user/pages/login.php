@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (!empty($redirect) && strpos($redirect, 'http') === false && strpos($redirect, '//') === false) {
                             header('Location: ' . $redirect);
                         } else {
-                            header('Location: ../../index.php');
+                            header('Location: ' . getEvenzaBaseUrl() . '/index.php');
                         }
                         exit;
                     } else {

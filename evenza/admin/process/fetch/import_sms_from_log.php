@@ -57,7 +57,7 @@ foreach ($lines as $line) {
     
     $phoneNumber = preg_replace('/[^0-9]/', '', $from);
     
-    $checkQuery = "SELECT sms_id FROM sms_messages WHERE phone = ? AND message_body = ? AND received_at = ?";
+    $checkQuery = "SELECT sms_id FROM sms_received WHERE phone = ? AND message_body = ? AND received_at = ?";
     $checkStmt = mysqli_prepare($conn, $checkQuery);
     
     if ($checkStmt) {
@@ -73,7 +73,7 @@ foreach ($lines as $line) {
         mysqli_stmt_close($checkStmt);
     }
     
-    $query = "INSERT INTO sms_messages (phone, message_body, received_at, raw_data) 
+    $query = "INSERT INTO sms_received (phone, message_body, received_at, raw_data) 
               VALUES (?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
     
