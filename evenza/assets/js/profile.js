@@ -103,7 +103,27 @@
                     if (captureData.status === 'COMPLETED') {
                         const modal = bootstrap.Modal.getInstance(document.getElementById('reservationDetailsModal'));
                         if (modal) modal.hide();
-                        window.location.href = captureData.redirectUrl;
+                        
+                        // Always construct the redirect URL with the correct full path
+                        const baseUrl = window.location.origin + '/TravelMates-Evenza-Collaboration/evenza';
+                        const successToken = captureData.successToken || '';
+                        const txId = captureData.transactionId || '';
+                        
+                        // Construct the full URL manually to ensure correct path
+                        let redirectUrl = baseUrl + '/user/pages/confirmation.php';
+                        const params = [];
+                        if (successToken) {
+                            params.push('success=' + encodeURIComponent(successToken));
+                        }
+                        if (txId) {
+                            params.push('tx=' + encodeURIComponent(txId));
+                        }
+                        if (params.length > 0) {
+                            redirectUrl += '?' + params.join('&');
+                        }
+                        
+                        console.log('Redirecting to:', redirectUrl);
+                        window.location.replace(redirectUrl);
                     } else {
                         throw new Error('Payment was not completed');
                     }

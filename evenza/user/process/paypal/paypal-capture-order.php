@@ -195,11 +195,26 @@ try {
         unset($_SESSION['paypal_order_package_id']);
         unset($_SESSION['paypal_order_reservation_id']);
         
+        $redirectUrl = getEvenzaBaseUrl() . '/user/pages/confirmation.php?success=' . urlencode($successToken) . '&tx=' . urlencode($transactionId);
+        error_log('PayPal Capture - Success Token: ' . $successToken);
+        error_log('PayPal Capture - Transaction ID: ' . $transactionId);
+        error_log('PayPal Capture - Redirect URL: ' . $redirectUrl);
+        error_log('PayPal Capture - Base URL: ' . getEvenzaBaseUrl());
+        error_log('PayPal Capture - Session ID: ' . session_id());
+        error_log('PayPal Capture - Session payment_success_token SET: ' . (isset($_SESSION['payment_success_token']) ? 'YES' : 'NO'));
+        if (isset($_SESSION['payment_success_token'])) {
+            error_log('PayPal Capture - Session payment_success_token VALUE: ' . $_SESSION['payment_success_token']);
+        }
+        
+        // Save session data before sending response to ensure it's available when client redirects
+        session_write_close();
+        
         ob_end_clean();
         echo json_encode([
             'status' => 'COMPLETED',
             'transactionId' => $transactionId,
-            'redirectUrl' => '/evenza/user/pages/confirmation.php?success=' . urlencode($successToken) . '&tx=' . urlencode($transactionId)
+            'successToken' => $successToken,
+            'redirectUrl' => $redirectUrl
         ]);
         exit;
     } else {

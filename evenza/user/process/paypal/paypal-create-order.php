@@ -11,6 +11,7 @@ header('Content-Type: application/json');
 try {
     require_once '../../../config/paypal.php';
     require_once '../../../core/connect.php';
+    require_once '../../../includes/helpers.php';
     
     ob_clean();
 } catch (Exception $e) {
@@ -92,8 +93,8 @@ $orderData = [
         'brand_name' => 'EVENZA',
         'landing_page' => 'NO_PREFERENCE',
         'user_action' => 'PAY_NOW',
-        'return_url' => getBaseUrl() . '/user/process/paypal/paypalCallback.php',
-        'cancel_url' => getBaseUrl() . '/user/pages/payment.php?eventId=' . $eventId . '&packageId=' . $packageId . '&cancelled=1'
+        'return_url' => getEvenzaBaseUrl() . '/user/process/paypal/paypalCallback.php',
+        'cancel_url' => getEvenzaBaseUrl() . '/user/pages/payment.php?eventId=' . $eventId . '&packageId=' . $packageId . '&cancelled=1'
     ]
 ];
 

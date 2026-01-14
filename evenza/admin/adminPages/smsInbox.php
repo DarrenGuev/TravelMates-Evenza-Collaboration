@@ -7,12 +7,11 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 5;
 $offset = ($page - 1) * $perPage;
 
-$unreadQuery = "SELECT COUNT(*) as unread_count FROM sms_messages WHERE is_read = 0 AND (raw_data IS NULL OR raw_data NOT LIKE ?)";
+// Query from sms_received table (received messages only)
+$unreadQuery = "SELECT COUNT(*) as unread_count FROM sms_received WHERE is_read = 0";
 $unreadStmt = mysqli_prepare($conn, $unreadQuery);
 $unreadCount = 0;
 if ($unreadStmt) {
-    $sentPattern = '%"type":"sent"%';
-    mysqli_stmt_bind_param($unreadStmt, "s", $sentPattern);
     mysqli_stmt_execute($unreadStmt);
     $unreadResult = mysqli_stmt_get_result($unreadStmt);
     if ($unreadRow = mysqli_fetch_assoc($unreadResult)) {
@@ -21,12 +20,10 @@ if ($unreadStmt) {
     mysqli_stmt_close($unreadStmt);
 }
 
-$countQuery = "SELECT COUNT(*) as total FROM sms_messages WHERE raw_data IS NULL OR raw_data NOT LIKE ?";
+$countQuery = "SELECT COUNT(*) as total FROM sms_received";
 $countStmt = mysqli_prepare($conn, $countQuery);
 $totalCount = 0;
 if ($countStmt) {
-    $sentPattern = '%"type":"sent"%';
-    mysqli_stmt_bind_param($countStmt, "s", $sentPattern);
     mysqli_stmt_execute($countStmt);
     $countResult = mysqli_stmt_get_result($countStmt);
     if ($countRow = mysqli_fetch_assoc($countResult)) {
@@ -36,16 +33,14 @@ if ($countStmt) {
 }
 
 $query = "SELECT sms_id, phone AS phone, message_body, received_at, is_read, created_at 
-          FROM sms_messages 
-          WHERE raw_data IS NULL OR raw_data NOT LIKE ? 
+          FROM sms_received 
           ORDER BY received_at DESC, created_at DESC 
           LIMIT ? OFFSET ?";
 $stmt = mysqli_prepare($conn, $query);
 $smsMessages = [];
 
 if ($stmt) {
-    $sentPattern = '%"type":"sent"%';
-    mysqli_stmt_bind_param($stmt, "sii", $sentPattern, $perPage, $offset);
+    mysqli_stmt_bind_param($stmt, "ii", $perPage, $offset);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     

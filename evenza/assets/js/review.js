@@ -150,10 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Hide form and show success message
                 reviewForm.style.display = 'none';
                 
-                // Reload page after 2 seconds to show the review
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+                // User remains on the same page - no automatic redirect
             } else {
                 reviewMessage.innerHTML = `
                     <div class="alert alert-danger">

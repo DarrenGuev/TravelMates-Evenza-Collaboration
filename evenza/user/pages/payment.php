@@ -177,7 +177,7 @@ $paymentStatus = isset($_GET['status']) ? $_GET['status'] : 'pending';
                                 </div>
                                 <script>
                                     setTimeout(function() {
-                                        window.location.href = '../../index.php';
+                                        window.location.href = 'confirmation.php';
                                     }, 2000);
                                 </script>
                             <?php endif; ?>
