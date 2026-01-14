@@ -39,10 +39,16 @@ if (empty($fullName) || empty($email)) {
 }
 
 if ($userId > 0) {
-    // Split fullName into firstName and lastName
-    $nameParts = explode(' ', $fullName, 2);
-    $firstName = $nameParts[0];
-    $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+    // Split fullName into firstName and lastName (split on last space)
+    $lastSpacePos = strrpos($fullName, ' ');
+    if ($lastSpacePos !== false) {
+        $firstName = substr($fullName, 0, $lastSpacePos);
+        $lastName = substr($fullName, $lastSpacePos + 1);
+    } else {
+        // If no space found, put everything in firstName
+        $firstName = $fullName;
+        $lastName = '';
+    }
     
     if (!empty($password)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -65,9 +71,16 @@ if ($userId > 0) {
     }
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     
-    $nameParts = explode(' ', $fullName, 2);
-    $firstName = $nameParts[0];
-    $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+    // Split fullName into firstName and lastName (split on last space)
+    $lastSpacePos = strrpos($fullName, ' ');
+    if ($lastSpacePos !== false) {
+        $firstName = substr($fullName, 0, $lastSpacePos);
+        $lastName = substr($fullName, $lastSpacePos + 1);
+    } else {
+        // If no space found, put everything in firstName
+        $firstName = $fullName;
+        $lastName = '';
+    }
     
     $query = "INSERT INTO users (firstName, lastName, fullName, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $query);
