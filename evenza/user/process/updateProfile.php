@@ -44,7 +44,12 @@ if ($checkStmt) {
     mysqli_stmt_close($checkStmt);
 }
 
-$query = "UPDATE users SET fullName = ?, email = ?, phone = ? WHERE userId = ?";
+// Split fullName into firstName and lastName
+$nameParts = explode(' ', $fullName, 2);
+$firstName = $nameParts[0];
+$lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+
+$query = "UPDATE users SET firstName = ?, lastName = ?, fullName = ?, email = ?, phone = ? WHERE userId = ?";
 $stmt = mysqli_prepare($conn, $query);
 if (!$stmt) {
     $error = mysqli_error($conn);
@@ -53,7 +58,7 @@ if (!$stmt) {
     exit;
 }
 
-mysqli_stmt_bind_param($stmt, "sssi", $fullName, $email, $phone, $userId);
+mysqli_stmt_bind_param($stmt, "sssssi", $firstName, $lastName, $fullName, $email, $phone, $userId);
 $ok = mysqli_stmt_execute($stmt);
 
 if (!$ok) {
