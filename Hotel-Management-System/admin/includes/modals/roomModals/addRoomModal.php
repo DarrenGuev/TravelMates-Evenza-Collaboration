@@ -47,7 +47,7 @@
                                             <h6 class="text-muted border-bottom pb-1"><i class="bi bi-tag-fill me-1"></i><?php echo htmlspecialchars($category); ?></h6>
                                             <div class="row">
                                                 <?php foreach ($categoryFeatures as $feature) { ?>
-                                                    <div class="col-12 col-md-6 col-lg-4">
+                                                    <div class="col-12">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="features[]" value="<?php echo $feature['featureId']; ?>" id="feature<?php echo $feature['featureId']; ?>">
                                                             <label class="form-check-label" for="feature<?php echo $feature['featureId']; ?>">
