@@ -115,7 +115,7 @@ if ($stmt) {
                                     <i class="fas fa-phone"></i>
                             </div>
                                 <div class="profile-info-content">
-                                    <div class="profile-info-label">Mobile Number</div>
+                                    <div class="profile-info-label">Phone Number</div>
                             <div class="profile-info-value"><?php echo htmlspecialchars(formatPhoneNumber($userData['mobile'])); ?></div>
                                 </div>
                             </div>
@@ -245,8 +245,8 @@ if ($stmt) {
                             <div class="error-message" id="editEmailError"></div>
                         </div>
                         <div class="mb-4">
-                            <label for="editMobile" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Mobile Number</label>
-                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>" style="border-radius: 10px;">
+                            <label for="editMobile" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Phone Number</label>
+                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>" placeholder="09XX XXX XXXX" style="border-radius: 10px;">
                             <div class="error-message" id="editMobileError"></div>
                         </div>
                     </form>
