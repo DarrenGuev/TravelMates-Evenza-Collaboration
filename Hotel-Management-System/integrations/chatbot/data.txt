@@ -1,7 +1,7 @@
 TravelMates Hotel - Quick Info
 
 ABOUT:
-Luxury hotel with affordable rates and world-class facilities. TravelMates is a web-based booking system designed to automate and simplify hotel operations, particularly room reservations. The system allows customers to view available rooms, make bookings online, and receive booking confirmations, while enabling hotel staff and administrators to manage reservations efficiently.
+Luxury hotel with affordable rates and world-class facilities. TravelMates is a web-based Hotel-Management-System designed to automate and simplify hotel operations, particularly room reservations. The system allows customers to view available rooms, make bookings online, and receive booking confirmations, while enabling hotel staff and administrators to manage reservations efficiently.
 
 OUR COLLABORATION:
 TravelMates partners with EVENZA, a premium event reservation and ticketing platform focused on delivering seamless and well-organized hotel-hosted events. EVENZA helps us connect guests with carefully curated experiences through a secure and user-friendly digital system, combining modern technology with professional event management.
@@ -201,7 +201,7 @@ EXTENDED STAY:
 
 PROPERTY POLICIES:
 - Smoking: Designated areas only (non-smoking rooms available)
-- Pets: Please inquire about pet policy
+- Pets: Our Hotel are Pet Friendly
 - Visitors: Guest policy applies
 - Quiet Hours: Respect other guests
 - Damage: Guests responsible for damages

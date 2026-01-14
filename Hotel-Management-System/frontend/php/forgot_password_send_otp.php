@@ -8,11 +8,17 @@ require_once SMS_PATH . '/SmsService.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+if (!isset($input['username']) || empty(trim($input['username']))) {
+    echo json_encode(['success' => false, 'message' => 'Username is required.']);
+    exit;
+}
+
 if (!isset($input['phoneNumber']) || empty(trim($input['phoneNumber']))) {
     echo json_encode(['success' => false, 'message' => 'Phone number is required.']);
     exit;
 }
 
+$username = trim($input['username']);
 $phoneNumber = trim($input['phoneNumber']);
 
 if (!preg_match('/^\+?[0-9]{7,15}$/', $phoneNumber)) {
@@ -22,10 +28,10 @@ if (!preg_match('/^\+?[0-9]{7,15}$/', $phoneNumber)) {
 
 try {
     $user = new User();
-    $userData = $user->findByPhone($phoneNumber);
+    $userData = $user->findByUsernameAndPhone($username, $phoneNumber);
 
     if (!$userData) {
-        echo json_encode(['success' => false, 'message' => 'No account found with this phone number.']);
+        echo json_encode(['success' => false, 'message' => 'No account found with this username and phone number combination.']);
         exit;
     }
 
@@ -33,6 +39,7 @@ try {
     
     //store OTP in session with expiry (5 minutes)
     $_SESSION['forgot_password_otp'] = $otp;
+    $_SESSION['forgot_password_username'] = $username;
     $_SESSION['forgot_password_phone'] = $phoneNumber;
     $_SESSION['forgot_password_user_id'] = $userData['userID'];
     $_SESSION['forgot_password_otp_expiry'] = time() + 300; // 5 minutes
@@ -51,6 +58,7 @@ try {
         ]);
     } else {
         unset($_SESSION['forgot_password_otp']);
+        unset($_SESSION['forgot_password_username']);
         unset($_SESSION['forgot_password_phone']);
         unset($_SESSION['forgot_password_user_id']);
         unset($_SESSION['forgot_password_otp_expiry']);

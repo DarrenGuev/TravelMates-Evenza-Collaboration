@@ -17,13 +17,9 @@ usort($usersData, function ($a, $b) {
     return strtotime($b['created_at']) <=> strtotime($a['created_at']);
 });
 
-// Fetch all bookings with details
 $allBookingsData = $bookingModel->getAllWithDetails();
-// Fetch confirmed bookings (confirmed + completed)
 $confirmedBookingsData = $bookingModel->getConfirmedBookings();
-// Fetch pending bookings
 $pendingBookingsData = $bookingModel->getPendingBookings();
-// Fetch completed bookings
 $completedBookingsData = $bookingModel->getCompletedBookings();
 $countAllBookings = count($allBookingsData);
 $countUsers = count($usersData);
@@ -31,8 +27,10 @@ $countConfirmed = count($confirmedBookingsData);
 $countPending = count($pendingBookingsData);
 $countCompleted = count($completedBookingsData);
 ?>
+
 <?php $title = "Admin Dashboard"; ?>
 <?php include ADMIN_INCLUDES_PATH . '/head.php'; ?>
+
 <body>
     <?php include INCLUDES_PATH . '/loader.php'; ?>
 

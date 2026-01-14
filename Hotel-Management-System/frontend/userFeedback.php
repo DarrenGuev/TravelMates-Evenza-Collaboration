@@ -1,10 +1,8 @@
 <?php
 session_start();
 
-// Include configuration file
 require_once __DIR__ . '/../config.php';
 
-// Include database connection
 require_once DBCONNECT_PATH . '/connect.php';
 
 $roomsQuery = "SELECT rooms.roomID, rooms.roomName, roomTypes.roomType FROM rooms 
@@ -12,7 +10,6 @@ $roomsQuery = "SELECT rooms.roomID, rooms.roomName, roomTypes.roomType FROM room
                 ORDER BY roomTypes.roomType, rooms.roomName";
 $roomsResult = $conn->query($roomsQuery);
 
-// Get success/error messages
 $successMsg = $_SESSION['feedback_success'] ?? null;
 $errorMsg = $_SESSION['feedback_error'] ?? null;
 unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
@@ -21,43 +18,8 @@ unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
 <!doctype html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TravelMates - Customer Reviews</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="<?php echo CSS_URL; ?>/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <style>
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 0.25rem;
-        }
-
-        .star-rating input {
-            display: none;
-        }
-
-        .star-rating label {
-            cursor: pointer;
-            font-size: 2rem;
-            color: #ddd;
-            transition: color 0.2s;
-        }
-
-        .star-rating label:hover,
-        .star-rating label:hover~label,
-        .star-rating input:checked~label {
-            color: #ffc107;
-        }
-
-        .star-rating label:before {
-            content: '★';
-        }
-    </style>
-</head>
+<?php $title = "Customer Reviews "; ?>
+<?php include INCLUDES_PATH . '/head.php'; ?>
 
 <body>
     <?php include INCLUDES_PATH . '/loader.php'; ?>
@@ -68,7 +30,6 @@ unset($_SESSION['feedback_success'], $_SESSION['feedback_error']);
         <div class="row justify-content-center pt-5 mt-5">
             <div class="col-12 col-lg-8">
 
-                <!-- Success/Error Alerts -->
                 <?php if ($successMsg): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i><?php echo $successMsg; ?>

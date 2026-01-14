@@ -6,116 +6,8 @@ require_once __DIR__ . '/../config.php';
 <!doctype html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forgot Password</title>
-    <link rel="icon" type="image/png" href="<?php echo IMAGES_URL; ?>/logo/logoW.png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?php echo CSS_URL; ?>/style.css">
-    <style>
-        .forgot-page {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .forgot-page::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            background: url('<?php echo BASE_URL; ?>/images/loginRegisterImg/img.jpg') center center/cover no-repeat;
-            filter: blur(5px);
-            z-index: 0;
-        }
-
-        .form-control-glass {
-            background: rgba(226, 226, 226, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: #fff !important;
-        }
-
-        .form-control-glass::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-control-glass:focus {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-color: rgba(255, 153, 0, 0.5) !important;
-            box-shadow: 0 0 15px rgba(255, 153, 0, 0.2) !important;
-        }
-
-        .btn-glass {
-            background: linear-gradient(135deg, #ff9900 0%, #ff6600 100%);
-        }
-
-        .step {
-            display: none;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        .otp-input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .step-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .step-dot.active {
-            background: #ff9900;
-            box-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
-        }
-
-        .step-dot.completed {
-            background: #28a745;
-        }
-
-        .timer-text {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.875rem;
-        }
-
-        .resend-btn {
-            color: #ff9900;
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .resend-btn:disabled {
-            color: rgba(255, 255, 255, 0.4);
-            cursor: not-allowed;
-            text-decoration: none;
-        }
-    </style>
-</head>
+<?php $title = "Forgot Password "; ?>
+<?php include INCLUDES_PATH . '/head.php'; ?>
 
 <body>
     <?php include INCLUDES_PATH . '/loader.php'; ?>
@@ -139,9 +31,23 @@ require_once __DIR__ . '/../config.php';
 
                         <!--step 1-->
                         <div class="step active" id="step1">
-                            <h5 class="text-white mb-3 text-center">Enter your phone number</h5>
-                            <p class="text-white-50 small text-center mb-4">We'll send a verification code to this number</p>
+                            <h5 class="text-white mb-3 text-center">Enter your account details</h5>
+                            <p class="text-white-50 small text-center mb-4">We'll send a verification code to your phone number</p>
                             <form id="phoneForm">
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0" style="border: 1px solid rgba(255, 255, 255, 0.2);">
+                                            <i class="bi bi-person text-white-50"></i>
+                                        </span>
+                                        <input type="text"
+                                            class="form-control form-control-lg form-control-glass rounded-end-3 border-start-0 py-3"
+                                            id="username" name="username"
+                                            placeholder="Enter your username"
+                                            autocomplete="username"
+                                            required>
+                                    </div>
+                                    <small class="text-white-50 d-block mt-2">Enter your account username</small>
+                                </div>
                                 <div class="mb-4">
                                     <div class="input-group">
                                         <span class="input-group-text bg-transparent border-end-0" style="border: 1px solid rgba(255, 255, 255, 0.2);">
@@ -249,6 +155,7 @@ require_once __DIR__ . '/../config.php';
         crossorigin="anonymous"></script>
     <script>
         const BASE_URL = '<?php echo BASE_URL; ?>';
+        let username = '';
         let phoneNumber = '';
         let timerInterval = null;
 
@@ -325,7 +232,13 @@ require_once __DIR__ . '/../config.php';
             e.preventDefault();
 
             const btn = document.getElementById('sendOtpBtn');
+            username = document.getElementById('username').value.trim();
             phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+            if (!username) {
+                showAlert('danger', 'Please enter your username.');
+                return;
+            }
 
             if (!phoneNumber) {
                 showAlert('danger', 'Please enter your phone number.');
@@ -341,6 +254,7 @@ require_once __DIR__ . '/../config.php';
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        username,
                         phoneNumber
                     })
                 });
@@ -412,6 +326,7 @@ require_once __DIR__ . '/../config.php';
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        username,
                         phoneNumber
                     })
                 });
@@ -456,6 +371,7 @@ require_once __DIR__ . '/../config.php';
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        username,
                         phoneNumber,
                         otpCode
                     })
@@ -505,6 +421,7 @@ require_once __DIR__ . '/../config.php';
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        username,
                         phoneNumber,
                         newPassword
                     })

@@ -7,6 +7,11 @@ require_once CLASSES_PATH . '/autoload.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+if (!isset($input['username']) || empty(trim($input['username']))) {
+    echo json_encode(['success' => false, 'message' => 'Username is required.']);
+    exit;
+}
+
 if (!isset($input['phoneNumber']) || empty(trim($input['phoneNumber']))) {
     echo json_encode(['success' => false, 'message' => 'Phone number is required.']);
     exit;
@@ -17,6 +22,7 @@ if (!isset($input['newPassword']) || empty(trim($input['newPassword']))) {
     exit;
 }
 
+$username = trim($input['username']);
 $phoneNumber = trim($input['phoneNumber']);
 $newPassword = $input['newPassword'];
 
@@ -27,6 +33,11 @@ if (strlen($newPassword) < 6) {
 
 if (!isset($_SESSION['forgot_password_verified']) || $_SESSION['forgot_password_verified'] !== true) {
     echo json_encode(['success' => false, 'message' => 'Please verify your phone number first.']);
+    exit;
+}
+
+if (!isset($_SESSION['forgot_password_username']) || $_SESSION['forgot_password_username'] !== $username) {
+    echo json_encode(['success' => false, 'message' => 'Username mismatch. Please start over.']);
     exit;
 }
 
@@ -48,6 +59,7 @@ try {
 
     if ($success) {//clear all forgot password session data
         unset($_SESSION['forgot_password_otp']);
+        unset($_SESSION['forgot_password_username']);
         unset($_SESSION['forgot_password_phone']);
         unset($_SESSION['forgot_password_user_id']);
         unset($_SESSION['forgot_password_otp_expiry']);

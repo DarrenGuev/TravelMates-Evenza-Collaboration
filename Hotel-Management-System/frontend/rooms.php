@@ -81,9 +81,6 @@ function groupFeaturesByCategory($features)
     }
     return $grouped;
 }
-
-// REMOVE icon helpers to keep all categories visually identical, even if admins add new ones.
-// function getCategoryIcon($category) { ... }  <-- delete or ignore this function if present
 ?>
 
 <?php $title = "Rooms "; ?>
@@ -348,15 +345,23 @@ function groupFeaturesByCategory($features)
                                         $features[] = $feature['featureName'];
                                     }
                                     $roomTypeName = $roomType['roomType'];
+                                    $isAvailable = isset($row['quantity']) && (int)$row['quantity'] > 0;
                                     ?>
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 pb-4 room-card"
                                         data-room-type="<?php echo strtolower($roomTypeName); ?>"
                                         data-price="<?php echo $row['base_price']; ?>"
                                         data-capacity="<?php echo (int) $row['capacity']; ?>"
                                         data-features="<?php echo strtolower(implode(',', $features)); ?>">
-                                        <div class="card h-100 bg-transparent shadow rounded-3">
+                                        <div class="card h-100 bg-transparent shadow rounded-3 <?php echo !$isAvailable ? 'opacity-75' : ''; ?>">
                                             <div
                                                 class="ratio ratio-4x3 overflow-hidden rounded-top-3 position-relative gallery-item">
+                                                <?php if (!$isAvailable): ?>
+                                                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.5); z-index: 2;">
+                                                    <span class="badge bg-danger fs-6 px-3 py-2">
+                                                        <i class="bi bi-x-circle me-1"></i>Unavailable
+                                                    </span>
+                                                </div>
+                                                <?php endif; ?>
                                                 <img src="<?php echo ADMIN_URL; ?>/assets/<?php echo htmlspecialchars($row['imagePath']); ?>"
                                                     class="card-img-top img-fluid"
                                                     alt="<?php echo htmlspecialchars($row['roomName']); ?>">
@@ -391,8 +396,14 @@ function groupFeaturesByCategory($features)
                                             </div>
                                             <div class="card-footer bg-transparent border-top-0 p-4 pt-0">
                                                 <div class="d-flex gap-2 flex-wrap">
+                                                    <?php if ($isAvailable): ?>
                                                     <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>"
                                                         class="btn btn-warning flex-grow-1">Book Now</a>
+                                                    <?php else: ?>
+                                                    <button class="btn btn-secondary flex-grow-1" disabled>
+                                                        <i class="bi bi-x-circle me-1"></i>Unavailable
+                                                    </button>
+                                                    <?php endif; ?>
                                                     <button class="btn btn-outline-secondary flex-grow-1" data-bs-toggle="modal"
                                                         data-bs-target="#roomDetailModal<?php echo $row['roomID']; ?>">More
                                                         Details</button>
@@ -447,8 +458,14 @@ function groupFeaturesByCategory($features)
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
+                                                    <?php if ($isAvailable): ?>
                                                     <a href="<?php echo FRONTEND_URL; ?>/roomPage.php?roomID=<?php echo $row['roomID']; ?>"
                                                         class="btn btn-warning">Book Now</a>
+                                                    <?php else: ?>
+                                                    <button class="btn btn-secondary" disabled>
+                                                        <i class="bi bi-x-circle me-1"></i>Unavailable
+                                                    </button>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
