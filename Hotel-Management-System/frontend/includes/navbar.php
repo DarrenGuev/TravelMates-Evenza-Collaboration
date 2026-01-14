@@ -2,6 +2,12 @@
 $isLoggedIn = isset($_SESSION['userID']);
 $username = $isLoggedIn ? $_SESSION['username'] : '';
 $userRole = $isLoggedIn && isset($_SESSION['role']) ? $_SESSION['role'] : '';
+
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isHome = ($currentPage === 'index.php');
+$isRooms = ($currentPage === 'rooms.php' || $currentPage === 'roomPage.php');
+$isEvents = ($currentPage === 'events.php');
+$isAbout = ($currentPage === 'about.php');
 ?>
 <link rel="stylesheet" href="<?php echo CSS_URL; ?>/navbar.css">
 <nav class="navbar navbar-expand-lg fixed-top glass shadow animate-nav border-bottom">
@@ -16,13 +22,13 @@ $userRole = $isLoggedIn && isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
         <div class="collapse navbar-collapse justify-content-center" id="mainNavbar">
             <div class="navbar-nav">
-                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo BASE_URL; ?>/index.php"><i
+                <a class="nav-link small text-body me-5 fw-bold <?php echo $isHome ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/index.php"><i
                         class="bi bi-house-fill me-2 fs-5"></i>HOME</a>
-                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo FRONTEND_URL; ?>/rooms.php"><i
+                <a class="nav-link small text-body me-5 fw-bold <?php echo $isRooms ? 'active' : ''; ?>" href="<?php echo FRONTEND_URL; ?>/rooms.php"><i
                         class="bi bi-door-open me-2 fs-5"></i>ROOMS</a>
-                <a class="nav-link small text-body me-5 fw-bold" href="<?php echo FRONTEND_URL; ?>/events.php"><i
+                <a class="nav-link small text-body me-5 fw-bold <?php echo $isEvents ? 'active' : ''; ?>" href="<?php echo FRONTEND_URL; ?>/events.php"><i
                         class="bi bi-calendar-event me-2 fs-5"></i>EVENTS</a>
-                <a class="nav-link small text-body fw-bold" href="<?php echo FRONTEND_URL; ?>/about.php"><i
+                <a class="nav-link small text-body fw-bold <?php echo $isAbout ? 'active' : ''; ?>" href="<?php echo FRONTEND_URL; ?>/about.php"><i
                         class="bi bi-info-circle me-2 fs-5"></i>ABOUT</a>
                 <div class="d-flex d-lg-none mt-3">
                     <?php if ($isLoggedIn){ ?>
