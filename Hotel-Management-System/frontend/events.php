@@ -32,6 +32,19 @@ require_once __DIR__ . '/../config.php';
         </div>
     </div>
 
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <h2 class="mb-3">
+                    Discover Exciting Events at Evenza!
+                </h2>
+                <p class="text-secondary fst-italic mb-3">
+                    Explore exciting events and make your reservations today! This will redirect you to Evenza's platform for a seamless booking experience.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <div class="container mt-5 mb-4">
         <div class="row mb-3">
             <div class="col-12">
