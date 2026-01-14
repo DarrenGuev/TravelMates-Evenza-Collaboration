@@ -162,8 +162,8 @@ $totalAmount = $selectedPackage['price'];
                             </div>
 
                             <div class="mb-4">
-                                <label for="mobile" class="form-label">Mobile Number <span class="required-asterisk">*</span></label>
-                                <input type="tel" class="form-control luxury-input" id="mobile" name="mobile" required placeholder="0921 123 4567">
+                                <label for="mobile" class="form-label">Phone Number <span class="required-asterisk">*</span></label>
+                                <input type="tel" class="form-control luxury-input" id="mobile" name="mobile" required placeholder="09XX XXX XXXX">
                                 <div class="error-message" id="mobileError"></div>
                             </div>
 

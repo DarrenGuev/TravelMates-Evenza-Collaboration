@@ -201,12 +201,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="post" action="" novalidate>
                 <div class="mb-4">
-                    <label for="email" class="form-label">Email Address</label>
+                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                     <input id="email" name="email" type="email" class="form-control" required placeholder="admin@evenza.com" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                     <div class="password-input-wrapper">
                         <input id="password" name="password" type="password" class="form-control" required placeholder="Enter your password">
                         <button type="button" class="password-toggle-btn" onclick="togglePassword('password', 'toggle_password')">

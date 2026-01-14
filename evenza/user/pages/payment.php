@@ -192,7 +192,7 @@ $paymentStatus = isset($_GET['status']) ? $_GET['status'] : 'pending';
                                 <ul class="list-unstyled mt-2">
                                     <li><small>Name: <?php echo htmlspecialchars($fullName); ?></small></li>
                                     <li><small>Email: <?php echo htmlspecialchars($email); ?></small></li>
-                                    <li><small>Mobile: <?php echo htmlspecialchars(formatPhoneNumber($mobile)); ?></small></li>
+                                    <li><small>Phone: <?php echo htmlspecialchars(formatPhoneNumber($mobile)); ?></small></li>
                                 </ul>
                             </div>
                             <div class="col-md-6 mb-3">

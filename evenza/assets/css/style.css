@@ -138,10 +138,21 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.3s ease;
 }
 
-.btn-login:hover {
-    background-color: var(--btn-dark-beige) !important;
-    border-color: var(--btn-dark-beige) !important;
+.navbar-nav .nav-link.btn-login {
+    color: var(--btn-olive) !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link.btn-login:hover {
     color: white !important;
+}
+
+.btn-login:hover {
+    background-color: var(--btn-olive) !important;
+    border-color: var(--btn-olive) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-medium);
 }
 
 .btn-register {

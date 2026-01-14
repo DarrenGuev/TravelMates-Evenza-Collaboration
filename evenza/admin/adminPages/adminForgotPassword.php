@@ -193,12 +193,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php else: ?>
                 <form method="post" action="" novalidate>
                     <div class="mb-4">
-                        <label for="email" class="form-label">Email Address</label>
+                        <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                         <input id="email" name="email" type="email" class="form-control" required placeholder="admin@evenza.com" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                     </div>
 
                     <div class="mb-4">
-                        <label for="new_password" class="form-label">New Password</label>
+                        <label for="new_password" class="form-label">New Password <span class="text-danger">*</span></label>
                         <div class="password-input-wrapper">
                             <input id="new_password" name="new_password" type="password" class="form-control" required placeholder="Enter new password">
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('new_password', 'toggle_new_password')">
@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="mb-4">
-                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <label for="confirm_password" class="form-label">Confirm New Password <span class="text-danger">*</span></label>
                         <div class="password-input-wrapper">
                             <input id="confirm_password" name="confirm_password" type="password" class="form-control" required placeholder="Confirm new password">
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('confirm_password', 'toggle_confirm_password')">
