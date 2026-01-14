@@ -318,7 +318,7 @@ const tableConfigs = {
             if (isRefundRequest) {
                 statusBadge = `<span class="badge bg-warning text-dark" title="User has requested a refund"><i class="bi bi-clock-history me-1"></i>Refund Requested</span>`;
             } else if (isRefunded) {
-                statusBadge = `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Refunded</span>`;
+                statusBadge = `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Cancelled</span>`;
             } else {
                 statusBadge = getStatusBadge(booking.bookingStatus);
             }
@@ -567,26 +567,43 @@ function goToAdminPage(tableType, page) {
 function switchTable(tableType) {
     // Reset page to 1 when switching tables
     if (adminCurrentPage.hasOwnProperty(tableType)) adminCurrentPage[tableType] = 1;
-    // Show loader
+    // Show loader (if present)
     const loader = document.getElementById('table-loader');
-    loader.classList.remove('d-none');
-    loader.classList.add('d-flex');
+    if (loader) {
+        loader.classList.remove('d-none');
+        loader.classList.add('d-flex');
+    }
 
     // Use setTimeout to simulate loading and allow the loader to render
     setTimeout(() => {
         const config = tableConfigs[tableType];
         if (!config) {
-            loader.classList.add('d-none');
-            loader.classList.remove('d-flex');
+            if (loader) {
+                loader.classList.remove('d-flex');
+                loader.classList.add('d-none');
+            }
             return;
         }
 
-        document.getElementById('tableHeaders').innerHTML = config.headers.map(h => `<th>${h}</th>`).join('');
+        // Required DOM elements for admin table
+        const headersEl = document.getElementById('tableHeaders');
+        const bodyEl = document.getElementById('tableBody');
+
+        // If elements are not present on the current page, hide loader and exit gracefully
+        if (!headersEl || !bodyEl) {
+            if (loader) {
+                loader.classList.remove('d-flex');
+                loader.classList.add('d-none');
+            }
+            return;
+        }
+
+        headersEl.innerHTML = config.headers.map(h => `<th>${h}</th>`).join('');
         const data = config.getData();
-        if (data.length > 0) {
-            document.getElementById('tableBody').innerHTML = data.map((item, index) => config.renderRow(item, index)).join('');
+        if (data && data.length > 0) {
+            bodyEl.innerHTML = data.map((item, index) => config.renderRow(item, index)).join('');
         } else {
-            document.getElementById('tableBody').innerHTML = `
+            bodyEl.innerHTML = `
                         <tr>
                             <td colspan="${config.headers.length}" class="text-center py-5">
                                 <div class="text-muted">
@@ -604,9 +621,11 @@ function switchTable(tableType) {
         document.querySelectorAll('#adminTabs .nav-link').forEach(tab => tab.classList.remove('active'));
         document.getElementById('tab-' + tableType)?.classList.add('active');
 
-        // Hide loader
-        loader.classList.remove('d-flex');
-        loader.classList.add('d-none');
+        // Hide loader (if present)
+        if (loader) {
+            loader.classList.remove('d-flex');
+            loader.classList.add('d-none');
+        }
         // Apply pagination for the current table
         try {
             applyAdminPagination(tableType);
@@ -618,7 +637,10 @@ function switchTable(tableType) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     initBookingModals();
-    switchTable('reservations');
+    // Only initialize admin table on pages that include the admin table elements
+    if (document.getElementById('tableHeaders') && document.getElementById('tableBody')) {
+        switchTable('reservations');
+    }
 });
 
 // Process refund function
