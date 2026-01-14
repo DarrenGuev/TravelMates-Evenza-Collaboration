@@ -158,7 +158,15 @@
             }
             if (mobileEl) {
                 mobileEl.addEventListener('input', function() {
+                    // Remove any non-digit characters
+                    this.value = this.value.replace(/[^0-9]/g, '');
                     clearError(this, document.getElementById('mobileError'));
+                });
+                // Also prevent non-digit key presses
+                mobileEl.addEventListener('keypress', function(e) {
+                    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab') {
+                        e.preventDefault();
+                    }
                 });
             }
             if (dateInput) {

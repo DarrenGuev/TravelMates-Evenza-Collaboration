@@ -163,7 +163,7 @@ $totalAmount = $selectedPackage['price'];
 
                             <div class="mb-4">
                                 <label for="mobile" class="form-label">Phone Number <span class="required-asterisk">*</span></label>
-                                <input type="tel" class="form-control luxury-input" id="mobile" name="mobile" required placeholder="09XX XXX XXXX">
+                                <input type="tel" class="form-control luxury-input" id="mobile" name="mobile" required placeholder="09XXXXXXXXX" pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onkeypress="return /[0-9]/.test(event.key)">
                                 <div class="error-message" id="mobileError"></div>
                             </div>
 
