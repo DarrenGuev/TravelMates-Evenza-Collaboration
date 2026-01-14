@@ -7,11 +7,11 @@
 return [
     'smtp' => [
         'host' => 'smtp.gmail.com',
-        'port' => 465,
-        'secure' => 'ssl',
+        'port' => 587,
+        'secure' => 'tls',
         'auth' => true,
         'username' => 'evenzacompany@gmail.com',
-        'password' => 'uzkb wcew mpwi wxfy', // App password for Gmail
+        'password' => 'dnddyxpiwrjekoip', // App password for Gmail (16 characters, no spaces)
     ],
     'from' => [
         'email' => 'evenzacompany@gmail.com',

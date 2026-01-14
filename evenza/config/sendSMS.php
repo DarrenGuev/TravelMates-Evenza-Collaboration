@@ -2,7 +2,13 @@
 /**
  * SMS Sending API
  * Sends SMS messages via Android SMS Gateway
+ * Version: 2026-01-14 - Updated IP to 192.168.18.28:8080
  */
+
+// Clear opcache for this file if it exists (helps with cached versions)
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate(__FILE__, true);
+}
 
 header('Content-Type: application/json');
 
@@ -56,10 +62,13 @@ if (strlen($phoneNumber) == 10) {
 
 error_log("SMS Phone Number: Original=" . $originalPhoneNumber . ", Formatted=" . $phoneNumber);
 
-$smsGatewayBaseUrl = 'http://192.168.1.20:8080';
+// SMS Gateway Configuration - Updated: 2026-01-14
+$smsGatewayBaseUrl = 'http://192.168.18.28:8080';
+error_log("SMS DEBUG: Gateway URL is set to: " . $smsGatewayBaseUrl);
 $smsGatewayUsername = 'sms';
 $smsGatewayPassword = 'admin123';
 
+// Prioritize most common endpoints first to reduce timeout issues
 $endpoints = ['/messages', '/message', '/send', '/', '/api/send', '/sms/send'];
 
 $smsDataFormats = [
@@ -76,9 +85,19 @@ $httpCode = 0;
 $error = null;
 $success = false;
 $lastError = '';
+$maxAttempts = 3; // Limit attempts to prevent timeout
+$attemptCount = 0;
 
 foreach ($endpoints as $endpoint) {
+    if ($attemptCount >= $maxAttempts) {
+        break; // Stop after max attempts to prevent timeout
+    }
+    
     foreach ($smsDataFormats as $formatData) {
+        if ($attemptCount >= $maxAttempts) {
+            break 2; // Stop after max attempts
+        }
+        
         if ($formatData['method'] === 'GET' && $formatData['format'] === 'query') {
             $smsGatewayUrl = $smsGatewayBaseUrl . $endpoint . '?' . $formatData['data'];
         } else {
@@ -100,17 +119,18 @@ foreach ($endpoints as $endpoint) {
         
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 8); // Reduced from 10 to 8 seconds
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3); // Reduced from 5 to 3 seconds
         
         curl_setopt($ch, CURLOPT_USERPWD, $smsGatewayUsername . ':' . $smsGatewayPassword);
         
+        $attemptCount++;
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         curl_close($ch);
         
-        error_log("SMS Attempt: URL=" . $smsGatewayUrl . ", Method=" . $formatData['method'] . ", Format=" . $formatData['format'] . ", Phone=" . $phoneNumber . ", HTTP Code=" . $httpCode . ", Response=" . substr($response, 0, 200));
+        error_log("SMS Attempt " . $attemptCount . ": URL=" . $smsGatewayUrl . ", Method=" . $formatData['method'] . ", Format=" . $formatData['format'] . ", Phone=" . $phoneNumber . ", HTTP Code=" . $httpCode . ", Response=" . substr($response, 0, 200));
         
         if ($httpCode === 200 || $httpCode === 201) {
             $responseData = json_decode($response, true);
@@ -130,6 +150,11 @@ foreach ($endpoints as $endpoint) {
         
         if ($error) {
             $lastError = $error;
+            // If it's a connection error, don't waste time on more attempts
+            if (strpos($error, 'timed out') !== false || strpos($error, 'Connection refused') !== false || strpos($error, 'No route to host') !== false) {
+                error_log("SMS Gateway appears unreachable. Stopping attempts.");
+                break 2;
+            }
         } else {
             $lastError = 'HTTP Code: ' . $httpCode;
         }
@@ -170,9 +195,17 @@ if ($success) {
         if ($stmt) {
             $rawData = json_encode(['type' => 'sent', 'to' => $phoneNumber, 'message' => $message, 'gateway_response' => $response]);
             mysqli_stmt_bind_param($stmt, "sss", $phoneNumber, $message, $rawData);
-            mysqli_stmt_execute($stmt);
+            if (mysqli_stmt_execute($stmt)) {
+                error_log("SMS Success: Message sent to " . $phoneNumber . " and logged to database");
+            } else {
+                error_log("SMS Database Error: Failed to insert SMS record - " . mysqli_error($conn));
+            }
             mysqli_stmt_close($stmt);
+        } else {
+            error_log("SMS Database Error: Failed to prepare INSERT statement - " . mysqli_error($conn));
         }
+    } else {
+        error_log("SMS Database Error: No database connection available");
     }
     
     error_log("SMS Success: Message sent to " . $phoneNumber);
