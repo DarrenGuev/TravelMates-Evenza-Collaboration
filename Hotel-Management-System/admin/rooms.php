@@ -301,12 +301,9 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
                                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $row['roomID']; ?>">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
-                                                <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this room?');">
-                                                    <input type="hidden" value="<?php echo $row['roomID'] ?>" name="deleteID">
-                                                    <button class="btn btn-outline-danger btn-sm" type="submit">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-outline-danger" onclick="openDeleteRoomModal(<?php echo $row['roomID']; ?>, '<?php echo htmlspecialchars($row['roomName'], ENT_QUOTES); ?>')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                             </div>
 
                                             <?php 
@@ -339,6 +336,7 @@ $featuresByCategory = $featureModel->getAllGroupedByCategory();
     <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/addRoomModal.php'; ?>
     <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/addRoomTypeModal.php'; ?>
     <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/deleteRoomTypeModal.php'; ?>
+    <?php include ADMIN_INCLUDES_PATH . '/modals/roomModals/deleteRoomModal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="javascript/pagination.js"></script>
