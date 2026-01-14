@@ -96,7 +96,7 @@ require_once __DIR__ . '/../config.php';
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <script>
-        const EVENTS_API_URL = 'http://localhost/TravelMates-Evenza-Collaboration/evenza/api/events.php';
+        const EVENTS_API_URL = '<?php echo BASE_URL; ?>/integrations/api/events.php';
         let allEvents = [];
         let currentPage = 1;
         const eventsPerPage = 8;
