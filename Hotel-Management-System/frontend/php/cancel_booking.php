@@ -35,8 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    // Check if booking is already cancelled
-    if ($booking['bookingStatus'] === Booking::STATUS_CANCELLED) {
+    // Check if booking is already cancelled. Allow refund requests even if already cancelled by admin/user.
+    $isRefundRequest = !empty($_POST['isRefundRequest']);
+    if ($booking['bookingStatus'] === Booking::STATUS_CANCELLED && !$isRefundRequest) {
         header("Location: ../bookings.php?error=This booking is already cancelled");
         exit();
     }
@@ -47,7 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    $isConfirmedBooking = $booking['bookingStatus'] === Booking::STATUS_CONFIRMED;
+    // Treat as a refund request if booking was confirmed or the form explicitly requests a refund
+    $isConfirmedBooking = $booking['bookingStatus'] === Booking::STATUS_CONFIRMED || $isRefundRequest;
     $isPaidBooking = $booking['paymentStatus'] === Booking::PAYMENT_PAID;
     
     // For confirmed/paid bookings, validate refund reason

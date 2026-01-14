@@ -179,6 +179,7 @@ function showBookingLoading(action) {
     let msg = 'Processing...';
     if (action === 'confirm') msg = 'Confirming booking...';
     else if (action === 'cancel') msg = 'Cancelling booking...';
+    else if (action === 'refund') msg = 'Processing refund...';
     else if (action === 'complete') msg = 'Completing booking...';
     
     modalMessage.textContent = msg;

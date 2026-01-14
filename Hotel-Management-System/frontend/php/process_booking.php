@@ -10,29 +10,13 @@ require_once DBCONNECT_PATH . '/connect.php';
 // Include class autoloader
 require_once __DIR__ . '/../../classes/autoload.php';
 
+// Include shared HTTP helper functions (ajax/redirect responses)
+require_once __DIR__ . '/../includes/http_helpers.php';
+
 // Detect AJAX flag (sent by frontend as form field 'ajax')
 $isAjax = false;
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax']) && $_POST['ajax'] == '1') {
     $isAjax = true;
-}
-
-function ajaxResponse($data, $status = 200)
-{
-    http_response_code($status);
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit();
-}
-
-function handleRedirectOrJson($message, $status = 400, $redirectTo = '../rooms.php')
-{
-    global $isAjax;
-    if ($isAjax) {
-        ajaxResponse(['success' => false, 'message' => $message], $status);
-    } else {
-        header("Location: {$redirectTo}?error=" . urlencode($message));
-        exit();
-    }
 }
 
 if (!Auth::isLoggedIn()) {

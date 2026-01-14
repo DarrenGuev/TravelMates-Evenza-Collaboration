@@ -179,6 +179,15 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                                 <i class="bi bi-arrow-counterclockwise me-1"></i>Request Refund
                                             </button>
                                         <?php endif; ?>
+
+                                        <?php
+                                            // Show refund button for any paid booking except when completed.
+                                            $isPaid = strtolower($booking['paymentStatus'] ?? '') === 'paid';
+                                            if ($isPaid && $booking['bookingStatus'] !== 'completed' && $booking['bookingStatus'] !== 'confirmed'): ?>
+                                            <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#refundModal<?php echo $booking['bookingID']; ?>">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>Request Refund
+                                            </button>
+                                        <?php endif; ?>
                                         
                                         <?php if ($booking['bookingStatus'] === 'pending'): 
                                             // If user has already requested a refund, show waiting badge instead of cancel button
@@ -235,7 +244,7 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                     
                                     <?php if ($isConfirmed): ?>
                                         <p>You are requesting a refund for your booking:</p>
-                                        <div class="card bg-light mb-3">
+                                        <div class="card mb-3 bg-body-secondary border-0">
                                             <div class="card-body">
                                                 <strong><?php echo htmlspecialchars($booking['roomName']); ?></strong><br>
                                                 <small class="text-muted">
@@ -289,6 +298,65 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                 </div>
                 <?php endif; ?>
 
+                <!-- Refund Modal for other paid statuses (e.g., cancelled or pending but paid) -->
+                <?php if ($isPaid && $booking['bookingStatus'] !== 'completed' && $booking['bookingStatus'] !== 'confirmed'): ?>
+                <div class="modal fade" id="refundModal<?php echo $booking['bookingID']; ?>" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-white">
+                                <h5 class="modal-title"><i class="bi bi-arrow-counterclockwise me-2"></i>Request Refund</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="php/cancel_booking.php" method="POST" onsubmit="return confirmCancellation(this, true);">
+                                <div class="modal-body">
+                                    <input type="hidden" name="bookingID" value="<?php echo $booking['bookingID']; ?>">
+                                    <input type="hidden" name="isRefundRequest" value="1">
+                                    <p>You are requesting a refund for your booking:</p>
+                                    <div class="card bg-body mb-3">
+                                        <div class="card-body">
+                                            <strong><?php echo htmlspecialchars($booking['roomName']); ?></strong><br>
+                                            <small class="text-muted">
+                                                Check-in: <?php echo date('M d, Y', strtotime($booking['checkInDate'])); ?><br>
+                                                Total Paid: ₱<?php echo number_format($booking['totalPrice'], 2); ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="refundReason<?php echo $booking['bookingID']; ?>_other" class="form-label">
+                                            <strong>Reason for Refund Request <span class="text-danger">*</span></strong>
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="refundReason<?php echo $booking['bookingID']; ?>_other" 
+                                                  name="refundReason" 
+                                                  rows="4" 
+                                                  required 
+                                                  placeholder="Please explain why you need to request a refund..."
+                                                  minlength="10"
+                                                  maxlength="500"></textarea>
+                                        <small class="text-muted">Minimum 10 characters. This will be reviewed by our admin team.</small>
+                                    </div>
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        <strong>Please note:</strong>
+                                        <ul class="mb-0 mt-2 small">
+                                            <li>Your refund request will be reviewed by our admin team</li>
+                                            <li>Processing time: 3-5 business days</li>
+                                            <li>Refund will be processed to your original payment method</li>
+                                            <li>You will be notified via email once processed</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Booking</button>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-send me-1"></i>Submit Refund Request
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <!-- Receipt Modal -->
                 <?php if ($booking['bookingStatus'] === 'confirmed'): ?>
                 <div class="modal fade" id="receiptModal<?php echo $booking['bookingID']; ?>" tabindex="-1">
