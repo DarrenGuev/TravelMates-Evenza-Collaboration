@@ -414,10 +414,6 @@ const tableConfigs = {
                                                     </select>
                                                 </div>
                                                 
-                                                <div class="alert alert-info small mb-0">
-                                                    <i class="bi bi-info-circle me-1"></i>
-                                                    Use this to correct accidental status changes.
-                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
