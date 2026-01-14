@@ -235,18 +235,18 @@ if ($stmt) {
                 <div class="modal-body" style="padding: 2rem;">
                     <form id="editProfileForm">
                         <div class="mb-4">
-                            <label for="editName" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Name</label>
+                            <label for="editName" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Name <span class="required-asterisk">*</span></label>
                             <input type="text" class="form-control luxury-input" id="editName" value="<?php echo htmlspecialchars($userData['name']); ?>" style="border-radius: 10px;">
                             <div class="error-message" id="editNameError"></div>
                         </div>
                         <div class="mb-4">
-                            <label for="editEmail" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Email</label>
+                            <label for="editEmail" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Email <span class="required-asterisk">*</span></label>
                             <input type="email" class="form-control luxury-input" id="editEmail" value="<?php echo htmlspecialchars($userData['email']); ?>" style="border-radius: 10px;">
                             <div class="error-message" id="editEmailError"></div>
                         </div>
                         <div class="mb-4">
-                            <label for="editMobile" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Phone Number</label>
-                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>" placeholder="09XX XXX XXXX" style="border-radius: 10px;">
+                            <label for="editMobile" class="form-label" style="font-weight: 500; color: var(--text-charcoal); margin-bottom: 0.5rem;">Phone Number <span class="required-asterisk">*</span></label>
+                            <input type="tel" class="form-control luxury-input" id="editMobile" value="<?php echo htmlspecialchars($userData['mobile']); ?>" placeholder="09XXXXXXXXX" pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onkeypress="return /[0-9]/.test(event.key)" style="border-radius: 10px;">
                             <div class="error-message" id="editMobileError"></div>
                         </div>
                     </form>

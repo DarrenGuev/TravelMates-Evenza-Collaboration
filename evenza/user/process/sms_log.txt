@@ -14,3 +14,27 @@
   "sim":"sim2"
 }
 [2026-01-14 14:47:26] SMS STORED: From=639633880414, Message=Ty po
+[2026-01-14 17:07:31] {
+  "from":"123456789",
+  "text":"test message",
+  "sentStamp":1768406852389,
+  "receivedStamp":1768406852390,
+  "sim":"sim1"
+}
+[2026-01-14 17:07:31] SMS STORED: From=123456789, Message=test message
+[2026-01-14 17:08:09] {
+  "from":"+639701319849",
+  "text":"nice one",
+  "sentStamp":1768406889000,
+  "receivedStamp":1768406890614,
+  "sim":"sim2"
+}
+[2026-01-14 17:08:09] SMS STORED: From=639701319849, Message=nice one
+[2026-01-15 00:18:40] {
+  "from":"+639701319849",
+  "text":"thanks for informing me",
+  "sentStamp":1768432720000,
+  "receivedStamp":1768432721545,
+  "sim":"sim2"
+}
+[2026-01-15 00:18:40] SMS STORED: From=639701319849, Message=thanks for informing me

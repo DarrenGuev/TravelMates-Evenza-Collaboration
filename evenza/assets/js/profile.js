@@ -426,7 +426,15 @@
         }
         if (mobileField) {
             mobileField.addEventListener('input', function() {
+                // Remove any non-digit characters
+                this.value = this.value.replace(/[^0-9]/g, '');
                 clearFieldError('editMobile', 'editMobileError');
+            });
+            // Also prevent non-digit key presses
+            mobileField.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab') {
+                    e.preventDefault();
+                }
             });
         }
     });
