@@ -90,7 +90,7 @@ try {
     // Fetch bookings from Evenza API
     $evenzaBookings = [];
     try {
-        $evenzaApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/evenza/api/user-bookings.php?userId=' . $userId;
+        $evenzaApiUrl = 'http://10.77.123.198/TravelMates-Evenza-Collaboration/evenza/api/user-bookings.php?userId=' . $userId;
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $evenzaApiUrl);

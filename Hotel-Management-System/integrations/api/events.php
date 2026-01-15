@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
-    $evenzaApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/evenza/api/events.php';
+    $evenzaApiUrl = 'http://10.77.123.198/TravelMates-Evenza-Collaboration/evenza/api/events.php';
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $evenzaApiUrl);

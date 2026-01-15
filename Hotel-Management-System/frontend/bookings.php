@@ -15,7 +15,7 @@ $bookingsData = $bookingModel->getByUserWithDetails($userID);
 
 // Fetch Evenza reservations from API
 try {
-    $evenzaApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/evenza/api/user-bookings.php?userId=' . $userID;
+    $evenzaApiUrl = 'http://10.77.123.198/TravelMates-Evenza-Collaboration/evenza/api/user-bookings.php?userId=' . $userID;
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $evenzaApiUrl);

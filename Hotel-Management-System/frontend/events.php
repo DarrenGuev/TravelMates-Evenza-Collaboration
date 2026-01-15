@@ -84,7 +84,7 @@ require_once __DIR__ . '/../config.php';
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
     <script>
-        const EVENTS_API_URL = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/evenza/api/events.php';
+        const EVENTS_API_URL = 'http://10.77.123.198/TravelMates-Evenza-Collaboration/evenza/api/events.php';
         let allEvents = [];
         let currentPage = 1;
         const eventsPerPage = 8;

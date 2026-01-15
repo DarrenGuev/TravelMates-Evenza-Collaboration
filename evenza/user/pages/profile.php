@@ -66,7 +66,7 @@ if ($stmt) {
 
 // Fetch hotel bookings from Hotel Management System API
 try {
-    $hotelApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/Hotel-Management-System/integrations/api/user-bookings.php?userId=' . $userId;
+    $hotelApiUrl = 'http://10.77.123.198/TravelMates-Evenza-Collaboration/Hotel-Management-System/integrations/api/user-bookings.php?userId=' . $userId;
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $hotelApiUrl);
