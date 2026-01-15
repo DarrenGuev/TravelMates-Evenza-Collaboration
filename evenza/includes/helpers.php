@@ -538,7 +538,7 @@ function sendReservationStatusSMS($conn, $reservationId, $status, $cancellationT
         return false;
     }
     
-    $smsApiUrl = 'http://localhost/evenza/config/sendSMS.php';
+    $smsApiUrl = 'http://localhost/TravelMates-Evenza-Collaboration/evenza/config/sendSMS.php';
     
     $ch = curl_init($smsApiUrl);
     curl_setopt($ch, CURLOPT_POST, 1);

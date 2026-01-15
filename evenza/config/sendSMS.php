@@ -63,7 +63,7 @@ if (strlen($phoneNumber) == 10) {
 error_log("SMS Phone Number: Original=" . $originalPhoneNumber . ", Formatted=" . $phoneNumber);
 
 // SMS Gateway Configuration - Updated: 2026-01-14
-$smsGatewayBaseUrl = 'http://192.168.18.28:8080';
+$smsGatewayBaseUrl = 'http://10.77.123.168:8080';
 error_log("SMS DEBUG: Gateway URL is set to: " . $smsGatewayBaseUrl);
 $smsGatewayUsername = 'sms';
 $smsGatewayPassword = 'admin123';

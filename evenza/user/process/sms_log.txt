@@ -38,3 +38,21 @@
   "sim":"sim2"
 }
 [2026-01-15 00:18:40] SMS STORED: From=639701319849, Message=thanks for informing me
+[2026-01-15 04:59:51] {
+  "from":"iprogSMS",
+  "text":"TravelMates\n\nYour TravelMates verification code is: 932857. This code expires in 5 minutes. Do not share this code with anyone.",
+  "sentStamp":1768478391000,
+  "receivedStamp":1768449592840,
+  "sim":"sim1"
+}
+[2026-01-15 04:59:51] SMS STORED: From=, Message=TravelMates
+
+Your TravelMates verification code is
+[2026-01-15 05:05:16] {
+  "from":"+639852068968",
+  "text":"thank you! ",
+  "sentStamp":1768478716000,
+  "receivedStamp":1768449917283,
+  "sim":"sim1"
+}
+[2026-01-15 05:05:16] SMS STORED: From=639852068968, Message=thank you! 

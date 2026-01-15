@@ -1307,7 +1307,7 @@ uksort($groupedReservations, function($a, $b) {
             showLoadingSpinner();
             
             // Make AJAX call to update status in database
-            fetch('/evenza/admin/process/update/updateReservationStatus.php', {
+            fetch('/TravelMates-Evenza-Collaboration/evenza/admin/process/update/updateReservationStatus.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
