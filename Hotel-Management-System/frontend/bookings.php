@@ -13,6 +13,64 @@ $roomModel = new Room();
 
 $bookingsData = $bookingModel->getByUserWithDetails($userID);
 
+// Fetch Evenza reservations from API
+try {
+    $evenzaApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/evenza/api/user-bookings.php?userId=' . $userID;
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $evenzaApiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+    
+    if (!$curlError && $httpCode === 200) {
+        $evenzaData = json_decode($response, true);
+        if (isset($evenzaData['success']) && $evenzaData['success'] && isset($evenzaData['data'])) {
+            // Transform Evenza reservations to match booking structure
+            foreach ($evenzaData['data'] as $reservation) {
+                $transformedReservation = [
+                    'bookingID' => $reservation['reservationId'],
+                    'roomName' => isset($reservation['eventName']) ? $reservation['eventName'] : 'Event Reservation',
+                    'imagePath' => 'images/carousel/placeholder.jpg', // Default placeholder
+                    'checkInDate' => $reservation['date'],
+                    'checkOutDate' => $reservation['date'],
+                    'totalPrice' => isset($reservation['totalAmount']) ? $reservation['totalAmount'] : 0,
+                    'bookingStatus' => isset($reservation['status']) ? $reservation['status'] : 'pending',
+                    'paymentStatus' => 'paid',
+                    'createdAt' => isset($reservation['createdAt']) ? $reservation['createdAt'] : null,
+                    'fullName' => Auth::getDisplayName(),
+                    'email' => '', // Not provided by API
+                    'phoneNumber' => '', // Not provided by API
+                    'numberOfGuests' => 1,
+                    'paymentMethod' => 'paypal',
+                    'source' => 'evenza',
+                    'packageName' => isset($reservation['packageName']) ? $reservation['packageName'] : '',
+                    'venue' => isset($reservation['venue']) ? $reservation['venue'] : '',
+                    'time' => isset($reservation['time']) ? $reservation['time'] : ''
+                ];
+                $bookingsData[] = $transformedReservation;
+            }
+        }
+    }
+} catch (Exception $e) {
+    // Silently fail - just show hotel bookings
+    error_log('Failed to fetch Evenza reservations: ' . $e->getMessage());
+}
+
+// Sort all bookings by check-in date (most recent first)
+usort($bookingsData, function($a, $b) {
+    $dateA = isset($a['checkInDate']) ? strtotime($a['checkInDate']) : 0;
+    $dateB = isset($b['checkInDate']) ? strtotime($b['checkInDate']) : 0;
+    return $dateB - $dateA;
+});
+
 function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
     if ($roomModel === null) {
         $roomModel = new Room();
@@ -69,17 +127,29 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
         <?php if (count($bookingsData) > 0): ?>
             <div class="row g-4">
                 <?php foreach ($bookingsData as $booking): 
-                    $features = getBookingRoomFeaturesArray($booking['roomID'], $roomModel);
+                    // Check if this is an Evenza booking or Hotel booking
+                    $isEvenzaBooking = isset($booking['source']) && $booking['source'] === 'evenza';
                     
+                    // Get features only for hotel bookings
+                    $features = [];
+                    if (!$isEvenzaBooking && isset($booking['roomID'])) {
+                        $features = getBookingRoomFeaturesArray($booking['roomID'], $roomModel);
+                    }
+                    
+                    // Calculate nights
                     $checkIn = new DateTime($booking['checkInDate']);
                     $checkOut = new DateTime($booking['checkOutDate']);
                     $nights = $checkIn->diff($checkOut)->days;
+                    if ($nights == 0 && $isEvenzaBooking) {
+                        $nights = 1; // Default for event bookings
+                    }
                     
                     $statusBadgeClass = match($booking['bookingStatus']) {
                         'confirmed' => 'bg-success',
                         'pending' => 'bg-warning',
                         'cancelled' => 'bg-danger',
                         'completed' => 'bg-info',
+                        'approved' => 'bg-success',
                         default => 'bg-secondary'
                     };
                     
@@ -89,6 +159,14 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                         'refunded' => 'bg-secondary',
                         default => 'bg-secondary'
                     };
+                    
+                    // Determine room type display
+                    $roomTypeDisplay = '';
+                    if ($isEvenzaBooking) {
+                        $roomTypeDisplay = isset($booking['packageName']) ? $booking['packageName'] : 'Event';
+                    } else {
+                        $roomTypeDisplay = isset($booking['roomType']) ? $booking['roomType'] : '';
+                    }
                 ?>
                 <div class="col-12">
                     <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
@@ -104,38 +182,65 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                             <div class="col-12 col-md-6">
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title fw-bold mb-0"><?php echo htmlspecialchars($booking['roomName']); ?></h5>
+                                        <h5 class="card-title fw-bold mb-0">
+                                            <?php echo htmlspecialchars($booking['roomName']); ?>
+                                            <?php if ($isEvenzaBooking): ?>
+                                                <span class="badge bg-info ms-2" style="font-size: 0.7rem;">Event Booking</span>
+                                            <?php endif; ?>
+                                        </h5>
                                         <span class="btn btn <?php echo $statusBadgeClass; ?> display-none pe-none ms-2 border-0 fs-5">
                                             <?php echo ucfirst($booking['bookingStatus']); ?>
                                         </span>
                                     </div>
-                                    <p class="text-muted small mb-3"><?php echo htmlspecialchars($booking['roomType']); ?> Room • Booking #<?php echo $booking['bookingID']; ?></p>
+                                    <p class="text-muted small mb-3">
+                                        <?php if ($isEvenzaBooking): ?>
+                                            <?php echo htmlspecialchars($roomTypeDisplay); ?>
+                                            <?php if (isset($booking['venue']) && $booking['venue']): ?>
+                                                • <?php echo htmlspecialchars($booking['venue']); ?>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <?php echo htmlspecialchars($roomTypeDisplay); ?> Room
+                                        <?php endif; ?>
+                                        • Booking #<?php echo $booking['bookingID']; ?>
+                                    </p>
                                     
-                                    <!-- Features -->
+                                    <!-- Features (Hotel bookings only) -->
+                                    <?php if (!$isEvenzaBooking && count($features) > 0): ?>
                                     <div class="mb-3">
                                         <?php foreach ($features as $featureName): ?>
                                             <span class="badge bg-dark me-1 mb-1"><?php echo htmlspecialchars($featureName); ?></span>
                                         <?php endforeach; ?>
                                     </div>
+                                    <?php endif; ?>
                                     
                                     <!-- Booking Info -->
                                     <div class="row">
                                         <div class="col-6 col-sm-4 mb-2">
-                                            <small class="text-muted d-block">Check-in</small>
+                                            <small class="text-muted d-block"><?php echo $isEvenzaBooking ? 'Event Date' : 'Check-in'; ?></small>
                                             <strong><?php echo date('M d, Y', strtotime($booking['checkInDate'])); ?></strong>
                                         </div>
+                                        <?php if (!$isEvenzaBooking || $nights > 0): ?>
                                         <div class="col-6 col-sm-4 mb-2">
-                                            <small class="text-muted d-block">Check-out</small>
+                                            <small class="text-muted d-block"><?php echo $isEvenzaBooking ? 'End Date' : 'Check-out'; ?></small>
                                             <strong><?php echo date('M d, Y', strtotime($booking['checkOutDate'])); ?></strong>
                                         </div>
                                         <div class="col-6 col-sm-4 mb-2">
                                             <small class="text-muted d-block">Duration</small>
-                                            <strong><?php echo $nights; ?> night(s)</strong>
+                                            <strong><?php echo $nights; ?> <?php echo $isEvenzaBooking ? 'day(s)' : 'night(s)'; ?></strong>
                                         </div>
+                                        <?php endif; ?>
+                                        <?php if (isset($booking['time']) && $booking['time'] && $isEvenzaBooking): ?>
+                                        <div class="col-12 col-sm-8 mb-2">
+                                            <small class="text-muted d-block">Event Time</small>
+                                            <strong><?php echo htmlspecialchars($booking['time']); ?></strong>
+                                        </div>
+                                        <?php endif; ?>
+                                        <?php if (!$isEvenzaBooking): ?>
                                         <div class="col-6 col-sm-4 mb-2">
                                             <small class="text-muted d-block">Guests</small>
                                             <strong><?php echo $booking['numberOfGuests']; ?> guest(s)</strong>
                                         </div>
+                                        <?php endif; ?>
                                         <div class="col-6 col-sm-4 mb-2">
                                             <small class="text-muted d-block">Payment</small>
                                             <?php
@@ -170,6 +275,8 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                         <h4 class="fw-bold text-warning mb-0">₱<?php echo number_format($booking['totalPrice'], 2); ?></h4>
                                     </div>
                                     
+                                    <!-- Only show action buttons for hotel bookings, not Evenza bookings -->
+                                    <?php if (!$isEvenzaBooking): ?>
                                     <div class="d-grid gap-2 justify-content-center">
                                         <?php if ($booking['bookingStatus'] === 'confirmed'): ?>
                                             <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#receiptModal<?php echo $booking['bookingID']; ?>">
@@ -214,14 +321,25 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                                             Booked on <?php echo date('M d, Y', strtotime($booking['createdAt'])); ?>
                                         </small>
                                     </div>
+                                    <?php else: ?>
+                                    <!-- Evenza bookings: just show booked date -->
+                                    <div class="d-grid gap-2 justify-content-center">
+                                        <small class="text-muted text-center">
+                                            Booked on <?php echo isset($booking['createdAt']) ? date('M d, Y', strtotime($booking['createdAt'])) : 'N/A'; ?>
+                                        </small>
+                                        <small class="text-info text-center">
+                                            <i class="bi bi-info-circle me-1"></i>Event booking from Evenza system
+                                        </small>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Cancel/Refund Modal -->
-                <?php if ($booking['bookingStatus'] === 'pending' || $booking['bookingStatus'] === 'confirmed'): ?>
+                <!-- Cancel/Refund Modal (Only for Hotel bookings) -->
+                <?php if (!$isEvenzaBooking && ($booking['bookingStatus'] === 'pending' || $booking['bookingStatus'] === 'confirmed')): ?>
                 <?php 
                     $isConfirmed = $booking['bookingStatus'] === 'confirmed';
                     $isPaid = $booking['paymentStatus'] === 'paid';
@@ -298,8 +416,8 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                 </div>
                 <?php endif; ?>
 
-                <!-- Refund Modal for other paid statuses (e.g., cancelled or pending but paid) -->
-                <?php if ($isPaid && $booking['bookingStatus'] !== 'completed' && $booking['bookingStatus'] !== 'confirmed'): ?>
+                <!-- Refund Modal for other paid statuses (e.g., cancelled or pending but paid) - Only for Hotel bookings -->
+                <?php if (!$isEvenzaBooking && $isPaid && $booking['bookingStatus'] !== 'completed' && $booking['bookingStatus'] !== 'confirmed'): ?>
                 <div class="modal fade" id="refundModal<?php echo $booking['bookingID']; ?>" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -357,8 +475,8 @@ function getBookingRoomFeaturesArray($roomID, $roomModel = null) {
                     </div>
                 </div>
                 <?php endif; ?>
-                <!-- Receipt Modal -->
-                <?php if ($booking['bookingStatus'] === 'confirmed'): ?>
+                <!-- Receipt Modal (Only for Hotel bookings) -->
+                <?php if (!$isEvenzaBooking && $booking['bookingStatus'] === 'confirmed'): ?>
                 <div class="modal fade" id="receiptModal<?php echo $booking['bookingID']; ?>" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">

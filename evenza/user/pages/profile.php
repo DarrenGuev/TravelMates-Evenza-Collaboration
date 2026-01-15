@@ -32,6 +32,8 @@ if ($userStmt) {
 
 $reservations = [];
 $userId = $_SESSION['user_id'];
+
+// Fetch reservations from Evenza database
 $query = "
     SELECT r.*, 
            e.title as eventName, 
@@ -40,7 +42,8 @@ $query = "
            r.reservationDate as date,
            r.paymentDeadline,
            r.userCancelled,
-           CONCAT(COALESCE(r.startTime, ''), ' - ', COALESCE(r.endTime, '')) as time
+           CONCAT(COALESCE(r.startTime, ''), ' - ', COALESCE(r.endTime, '')) as time,
+           'evenza' as source
     FROM reservations r
     LEFT JOIN events e ON r.eventId = e.eventId
     LEFT JOIN packages p ON r.packageId = p.packageId
@@ -60,6 +63,60 @@ if ($stmt) {
     
     mysqli_stmt_close($stmt);
 }
+
+// Fetch hotel bookings from Hotel Management System API
+try {
+    $hotelApiUrl = 'http://172.20.10.10/TravelMates-Evenza-Collaboration/Hotel-Management-System/integrations/api/user-bookings.php?userId=' . $userId;
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $hotelApiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+    
+    if (!$curlError && $httpCode === 200) {
+        $hotelData = json_decode($response, true);
+        if (isset($hotelData['success']) && $hotelData['success'] && isset($hotelData['data'])) {
+            // Filter to only get hotel bookings (not evenza bookings returned by the API)
+            foreach ($hotelData['data'] as $booking) {
+                if (isset($booking['source']) && $booking['source'] === 'hotel') {
+                    // Transform hotel booking to match reservation structure
+                    $transformedBooking = [
+                        'reservationId' => $booking['bookingID'],
+                        'eventName' => $booking['roomName'] . ' - Hotel Booking',
+                        'venue' => 'Hotel',
+                        'packageName' => isset($booking['roomType']) ? $booking['roomType'] : 'Room Booking',
+                        'date' => $booking['checkInDate'],
+                        'time' => $booking['checkInDate'] . ' - ' . $booking['checkOutDate'],
+                        'status' => $booking['bookingStatus'],
+                        'totalAmount' => $booking['totalPrice'],
+                        'createdAt' => $booking['createdAt'],
+                        'source' => 'hotel',
+                        'bookingDetails' => $booking // Keep original booking details
+                    ];
+                    $reservations[] = $transformedBooking;
+                }
+            }
+        }
+    }
+} catch (Exception $e) {
+    // Silently fail - just show Evenza reservations
+    error_log('Failed to fetch hotel bookings: ' . $e->getMessage());
+}
+
+// Sort all reservations by date (most recent first)
+usort($reservations, function($a, $b) {
+    $dateA = isset($a['date']) ? strtotime($a['date']) : 0;
+    $dateB = isset($b['date']) ? strtotime($b['date']) : 0;
+    return $dateB - $dateA;
+});
 ?>
 <!DOCTYPE html>
 <html lang="en">
